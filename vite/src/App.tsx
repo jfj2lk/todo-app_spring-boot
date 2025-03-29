@@ -1,35 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [name, setName] = useState<string>("");
+
+  // GETリクエストをテスト
+  const handleGetRequest = async () => {
+    const response = await fetch("/api/todos");
+    const json = await response.json();
+    console.log(json);
+  };
+
+  // POSTリクエストをテスト
+  const handlePostRequest = async (name: string) => {
+    const response = await fetch("/api/todos", {
+      method: "POST",
+      body: JSON.stringify(name),
+    });
+    const json = await response.json();
+    console.log(json);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      {/* GETリクエスト */}
+      <h1>Api Test</h1>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleGetRequest();
+        }}
+      >
+        <button>get</button>
+      </form>
+
+      {/* POSTリクエスト */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handlePostRequest(name);
+        }}
+      >
+        <input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+        />
+        <button>post</button>
+      </form>
+    </div>
+  );
 }
 
-export default App
+export default App;
