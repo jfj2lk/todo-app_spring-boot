@@ -34,4 +34,15 @@ public class Todo {
 
     @UpdateTimestamp
     private Timestamp updatedAt;
+
+    /**
+     * ユーザーが変更できるプロパティのみを指定して、Todoオブジェクトを作成する
+     * 
+     * @param name
+     * @param desc
+     */
+    public Todo(String name, String desc) {
+        this.name = name;
+        this.desc = desc;
+    }
 }
