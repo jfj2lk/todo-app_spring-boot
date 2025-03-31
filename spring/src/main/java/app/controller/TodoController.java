@@ -1,6 +1,6 @@
 package app.controller;
 
-import app.form.todo.AddTodoForm;
+import app.form.todo.add.AddTodoForm;
 import app.model.Todo;
 import app.service.TodoService;
 

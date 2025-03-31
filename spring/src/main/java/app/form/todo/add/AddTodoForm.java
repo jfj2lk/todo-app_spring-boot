@@ -1,4 +1,4 @@
-package app.form.todo;
+package app.form.todo.add;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

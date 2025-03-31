@@ -1,7 +1,7 @@
 package app.service;
 
-import app.form.todo.AddTodoForm;
-import app.form.todo.AddTodoInput;
+import app.form.todo.add.AddTodoForm;
+import app.form.todo.add.AddTodoInput;
 import app.model.Todo;
 import app.repository.TodoRepository;
 
