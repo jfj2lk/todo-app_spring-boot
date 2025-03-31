@@ -6,9 +6,11 @@
 
 #### プロパティ
 
-- messages: string[]
+- messages?: string[]
   - 必要な場合のみ指定。レスポンスメッセージを格納。
-- data: obj
+- validationErrorMessages?: [{ defaultMessage: string }]
+  - 必要な場合のみ指定。バリデーションエラーメッセージを格納。
+- data?: obj
   - 必要な場合のみ指定。要求されているデータを格納。
 
 ## コミットメッセージのプレフィックス
