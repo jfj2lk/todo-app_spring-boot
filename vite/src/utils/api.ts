@@ -1,10 +1,10 @@
-import { HttpMethod, RequestBody } from "@/types/api";
+import { ApiResponse, HttpMethod, RequestBody } from "@/types/api";
 
 const apiRequest = async <T>(
   url: string,
   method: HttpMethod = "GET",
   body: RequestBody = null
-): Promise<T> => {
+): Promise<ApiResponse<T>> => {
   try {
     // APIリクエストオプションの設定
     const options: RequestInit = {
@@ -24,11 +24,17 @@ const apiRequest = async <T>(
 
     // APIリクエスト & レスポンス取得
     const res = await fetch(url, options);
-    const json = await res.json();
+    const json: ApiResponse<T> = await res.json();
 
     // エラーレスポンスの場合は例外を投げる
     if (!res.ok) {
-      throw Error(`${json.message}`);
+      // バリデーションエラーメッセージを整形
+      const validationErrorMessages = json.validationErrorMessages?.map(
+        (message) => {
+          return "・" + message.defaultMessage;
+        }
+      );
+      throw Error(`\n${validationErrorMessages}`);
     }
 
     // レスポンスのJSONを呼び出し元へ返す
@@ -37,10 +43,9 @@ const apiRequest = async <T>(
     // 例外メッセージの設定
     throw Error(
       [
-        "",
+        "\n",
         "APIリクエストでエラーが発生しました。",
         `URL:${url}`,
-        "ERROR:",
         `${error}`,
       ].join("\n")
     );
