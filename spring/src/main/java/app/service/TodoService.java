@@ -1,11 +1,12 @@
 package app.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import app.form.todo.AddTodoForm;
+import app.form.todo.TodoAddInput;
 import app.model.Todo;
 import app.repository.TodoRepository;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TodoService {
@@ -29,7 +30,8 @@ public class TodoService {
      */
     @Transactional
     public Todo addTodo(AddTodoForm addTodoForm) {
-        Todo addTodo = new Todo(addTodoForm.getName(), addTodoForm.getDesc());
+        TodoAddInput todoAddInput = addTodoForm.getTodo();
+        Todo addTodo = new Todo(todoAddInput.getName(), todoAddInput.getDesc());
         return todoRepository.save(addTodo);
     }
 
