@@ -7,6 +7,8 @@ import app.form.todo.AddTodoForm;
 import app.model.Todo;
 import app.service.TodoService;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -24,19 +26,20 @@ public class TodoController {
     }
 
     @GetMapping("/todos")
-    public Iterable<Todo> getAllTodos() {
-        return todoService.getAllTodos();
+    public ResponseEntity<Map<String, Iterable<Todo>>> getAllTodos() {
+        return ResponseEntity.ok().body(Map.of("data", todoService.getAllTodos()));
     }
 
     @PostMapping("/todos")
-    public Object addTodo(@Validated @RequestBody AddTodoForm addTodoForm, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> addTodo(@Validated @RequestBody AddTodoForm addTodoForm,
+            BindingResult bindingResult) {
         // バリデーションエラーが発生した場合は、バリデーションエラーを返す
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().body(Map.of("message", bindingResult.getAllErrors()));
         }
 
         // DBにフォームから送信されたTodoデータを保存し、その結果を返す
         Todo addedTodo = todoService.addTodo(addTodoForm);
-        return addedTodo;
+        return ResponseEntity.ok().body(Map.of("data", addedTodo));
     }
 }
