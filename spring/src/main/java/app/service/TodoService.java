@@ -1,7 +1,7 @@
 package app.service;
 
 import app.form.todo.AddTodoForm;
-import app.form.todo.TodoAddInput;
+import app.form.todo.AddTodoInput;
 import app.model.Todo;
 import app.repository.TodoRepository;
 
@@ -30,7 +30,7 @@ public class TodoService {
      */
     @Transactional
     public Todo addTodo(AddTodoForm addTodoForm) {
-        TodoAddInput todoAddInput = addTodoForm.getTodo();
+        AddTodoInput todoAddInput = addTodoForm.getTodo();
         Todo addTodo = new Todo(todoAddInput.getName(), todoAddInput.getDesc());
         return todoRepository.save(addTodo);
     }
