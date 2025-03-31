@@ -2,6 +2,8 @@ package app.service;
 
 import app.form.todo.add.AddTodoForm;
 import app.form.todo.add.AddTodoInput;
+import app.form.todo.update.UpdateTodoForm;
+import app.form.todo.update.UpdateTodoInput;
 import app.model.Todo;
 import app.repository.TodoRepository;
 
@@ -35,4 +37,13 @@ public class TodoService {
         return todoRepository.save(addTodo);
     }
 
+    /**
+     * Todoを更新する
+     */
+    @Transactional
+    public Todo updateTodo(Long id, UpdateTodoForm updateTodoForm) {
+        UpdateTodoInput updateTodoInput = updateTodoForm.getTodo();
+        Todo updateTodo = new Todo(id, updateTodoInput.getName(), updateTodoInput.getDesc());
+        return todoRepository.save(updateTodo);
+    }
 }
