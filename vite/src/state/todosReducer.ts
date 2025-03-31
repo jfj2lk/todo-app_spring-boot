@@ -1,4 +1,4 @@
-import { Todo, TodoReducerActions } from "../types/todo";
+import { Todo, TodoReducerActions } from "@/types/todo";
 
 const todosReducer = (todos: Todo[], action: TodoReducerActions): Todo[] => {
   switch (action.type) {
