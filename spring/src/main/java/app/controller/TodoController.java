@@ -35,7 +35,7 @@ public class TodoController {
             BindingResult bindingResult) {
         // バリデーションエラーが発生した場合は、バリデーションエラーを返す
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(Map.of("message", bindingResult.getAllErrors()));
+            return ResponseEntity.badRequest().body(Map.of("data", bindingResult.getAllErrors()));
         }
 
         // DBにフォームから送信されたTodoデータを保存し、その結果を返す
