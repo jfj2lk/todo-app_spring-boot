@@ -1,15 +1,10 @@
 package app.form.todo;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class AddTodoForm {
-    @NotBlank(message = "nameは必須です")
-    @Size(max = 255, message = "nameは255文字以内で入力してください")
-    private String name;
-
-    @Size(max = 255, message = "descは255文字以内で入力してください")
-    private String desc;
+    @NotNull(message = "todoは必須です")
+    private TodoAddInput todo;
 }
