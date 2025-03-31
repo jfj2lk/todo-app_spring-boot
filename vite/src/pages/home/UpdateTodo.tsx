@@ -1,4 +1,3 @@
-import { ApiResponse } from "@/types/api";
 import { Todo, TodoReducerActions } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 import React, { useEffect, useRef, useState } from "react";
@@ -17,11 +16,9 @@ const UpdateTodo = (props: {
 
   // Todo更新
   const handleUpdateTodo = async (updateTodoId: number) => {
-    const json = await apiRequest<ApiResponse<Todo>>(
-      `/api/todos/${updateTodoId}`,
-      "PATCH",
-      { todo: { name: todoName, desc: todoDesc } }
-    );
+    const json = await apiRequest<Todo>(`/api/todos/${updateTodoId}`, "PATCH", {
+      todo: { name: todoName, desc: todoDesc },
+    });
     props.todoDispatch({ type: "updated", data: json.data });
     props.setEditingId(null);
   };

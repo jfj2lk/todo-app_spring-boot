@@ -1,4 +1,3 @@
-import { ApiResponse } from "@/types/api";
 import { Todo, TodoReducerActions } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 
@@ -9,10 +8,7 @@ const DeleteTodo = (props: {
 }) => {
   // Todo削除
   const handleDeleteTodo = async (deleteTodoId: number) => {
-    const json = await apiRequest<ApiResponse<Todo>>(
-      `/api/todos/${deleteTodoId}`,
-      "DELETE"
-    );
+    const json = await apiRequest<Todo>(`/api/todos/${deleteTodoId}`, "DELETE");
     props.todoDispatch({ type: "deleted", id: json.data });
   };
 

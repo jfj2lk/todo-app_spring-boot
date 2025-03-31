@@ -1,4 +1,3 @@
-import { ApiResponse } from "@/types/api";
 import { Todo, TodoReducerActions } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 import { useState } from "react";
@@ -12,7 +11,7 @@ const AddTodo = (props: {
 
   // Todo追加
   const handleAddTodo = async () => {
-    const json = await apiRequest<ApiResponse<Todo>>("/api/todos", "POST", {
+    const json = await apiRequest<Todo>("/api/todos", "POST", {
       todo: { name: todoName, desc: todoDesc },
     });
     props.todoDispatch({ type: "added", data: json.data });
