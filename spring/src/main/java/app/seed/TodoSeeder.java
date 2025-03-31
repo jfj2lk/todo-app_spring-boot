@@ -15,8 +15,8 @@ public class TodoSeeder {
     }
 
     public void seedInitialTodo() {
-        Todo todo1 = new Todo(null, "todo1", null, null);
-        Todo todo2 = new Todo(null, "todo2", null, null);
+        Todo todo1 = new Todo(null, "todo1", null, null, null);
+        Todo todo2 = new Todo(null, "todo2", null, null, null);
         todoRepository.save(todo1);
         todoRepository.save(todo2);
     }
