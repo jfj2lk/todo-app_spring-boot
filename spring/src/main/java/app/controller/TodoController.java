@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.form.todo.add.AddTodoForm;
+import app.form.todo.update.UpdateTodoForm;
 import app.model.Todo;
 import app.service.TodoService;
 
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,5 +47,19 @@ public class TodoController {
         // DBにフォームから送信されたTodoデータを保存し、その結果を返す
         Todo addedTodo = todoService.addTodo(addTodoForm);
         return ResponseEntity.ok().body(Map.of("data", addedTodo));
+    }
+
+    // Todo更新
+    @PatchMapping("/todos/{id}")
+    public Object updateTodo(@PathVariable("id") Long id, @Validated @RequestBody UpdateTodoForm updateTodoForm,
+            BindingResult bindingResult) {
+        // バリデーションエラーが発生した場合は、バリデーションエラーを返す
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(Map.of("data", bindingResult.getAllErrors()));
+        }
+
+        // フォームから送られたTodoデータで更新し、その結果を返す
+        Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
+        return ResponseEntity.ok().body(Map.of("data", updatedTodo));
     }
 }
