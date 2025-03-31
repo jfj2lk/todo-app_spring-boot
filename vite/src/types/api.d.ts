@@ -7,5 +7,5 @@ export type RequestBody = object | null;
 // レスポンスのJSONオブジェクト
 export type ApiResponse<T> = {
   data?: T;
-  message?: string;
+  message?: string[];
 };
