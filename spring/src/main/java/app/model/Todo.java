@@ -36,12 +36,18 @@ public class Todo {
     private Timestamp updatedAt;
 
     /**
-     * ユーザーが変更できるプロパティのみを指定して、Todoオブジェクトを作成する
-     * 
-     * @param name
-     * @param desc
+     * 指定した名前、説明を持つTodoオブジェクトを作成する
      */
     public Todo(String name, String desc) {
+        this.name = name;
+        this.desc = desc;
+    }
+
+    /**
+     * 指定されたID、名前、説明を持つTodoオブジェクトを作成する
+     */
+    public Todo(Long id, String name, String desc) {
+        this.id = id;
         this.name = name;
         this.desc = desc;
     }
