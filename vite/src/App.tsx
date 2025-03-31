@@ -3,6 +3,7 @@ import "./App.css";
 
 function App() {
   const [name, setName] = useState<string>("");
+  const [desc, setDesc] = useState<string>("");
 
   // GETリクエストをテスト
   const handleGetRequest = async () => {
@@ -15,10 +16,20 @@ function App() {
   const handlePostRequest = async (name: string) => {
     const response = await fetch("/api/todos", {
       method: "POST",
-      body: JSON.stringify(name),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, desc }),
     });
     const json = await response.json();
-    console.log(json);
+
+    if (!response.ok) {
+      json.forEach((error: any) => {
+        console.log(error.defaultMessage);
+      });
+    } else {
+      console.log(json);
+    }
   };
 
   return (
@@ -41,14 +52,32 @@ function App() {
           handlePostRequest(name);
         }}
       >
-        <input
-          type="text"
-          name="name"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-        />
+        <div>
+          <label>
+            <span>name: </span>
+            <input
+              type="text"
+              name="name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            <span>desc:</span>
+            <input
+              type="text"
+              name="desc"
+              value={desc}
+              onChange={(e) => {
+                setDesc(e.target.value);
+              }}
+            />
+          </label>
+        </div>
         <button>post</button>
       </form>
     </div>
