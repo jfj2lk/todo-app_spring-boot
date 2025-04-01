@@ -6,7 +6,7 @@
 
 #### プロパティ
 
-- messages?: string[]
+- message?: string
   - 必要な場合のみ指定。レスポンスメッセージを格納。
 - validationErrorMessages?: [{ defaultMessage: string }]
   - 必要な場合のみ指定。バリデーションエラーメッセージを格納。
