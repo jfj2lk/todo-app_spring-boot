@@ -6,6 +6,7 @@ import app.form.todo.update.UpdateTodoForm;
 import app.form.todo.update.UpdateTodoInput;
 import app.model.Todo;
 import app.repository.TodoRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +33,10 @@ public class TodoService {
      */
     @Transactional
     public Todo addTodo(AddTodoForm addTodoForm) {
+        // フォームからTodoの入力データを取得し、その値でTodoオブジェクト作成
         AddTodoInput todoAddInput = addTodoForm.getTodo();
         Todo addTodo = new Todo(todoAddInput.getName(), todoAddInput.getDesc());
+
         return todoRepository.save(addTodo);
     }
 
@@ -41,9 +44,15 @@ public class TodoService {
      * Todoを更新する
      */
     @Transactional
-    public Todo updateTodo(Long id, UpdateTodoForm updateTodoForm) {
+    public Todo updateTodo(Long id, UpdateTodoForm updateTodoForm) throws EntityNotFoundException {
+        // 指定されたIDに対応するTodoが存在しない場合は例外を投げる
+        todoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                "id=" + id + "のTodoが見つかりません"));
+
+        // フォームからTodoの入力データを取得し、その値でTodoオブジェクト作成
         UpdateTodoInput updateTodoInput = updateTodoForm.getTodo();
         Todo updateTodo = new Todo(id, updateTodoInput.getName(), updateTodoInput.getDesc());
+
         return todoRepository.save(updateTodo);
     }
 }
