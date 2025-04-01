@@ -4,6 +4,7 @@ import app.form.todo.add.AddTodoForm;
 import app.form.todo.update.UpdateTodoForm;
 import app.model.Todo;
 import app.service.TodoService;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.Map;
 
@@ -44,9 +45,14 @@ public class TodoController {
             return ResponseEntity.badRequest().body(Map.of("validationErrorMessages", bindingResult.getAllErrors()));
         }
 
-        // DBにフォームから送信されたTodoデータを保存し、その結果を返す
-        Todo addedTodo = todoService.addTodo(addTodoForm);
-        return ResponseEntity.ok().body(Map.of("data", addedTodo));
+        try {
+            // DBにフォームから送信されたTodoデータを保存し、その結果を返す
+            Todo addedTodo = todoService.addTodo(addTodoForm);
+            return ResponseEntity.ok().body(Map.of("data", addedTodo));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
+        }
+
     }
 
     // Todo更新
@@ -58,8 +64,16 @@ public class TodoController {
             return ResponseEntity.badRequest().body(Map.of("validationErrorMessages", bindingResult.getAllErrors()));
         }
 
-        // フォームから送られたTodoデータで更新し、その結果を返す
-        Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
-        return ResponseEntity.ok().body(Map.of("data", updatedTodo));
+        try {
+            // フォームから送られたTodoデータで更新し、その結果を返す
+            Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
+            return ResponseEntity.ok().body(Map.of("data", updatedTodo));
+        } catch (EntityNotFoundException e) {
+            // リソースが存在しないエラーの場合
+            return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
+        }
+
     }
 }
