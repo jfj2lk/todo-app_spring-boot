@@ -34,7 +34,12 @@ const apiRequest = async <T>(
           return "・" + message.defaultMessage;
         }
       );
-      throw Error(`\n${validationErrorMessages}`);
+      throw Error(
+        [
+          `${json.message}`,
+          `Validation Error: ${validationErrorMessages}`,
+        ].join("\n\n")
+      );
     }
 
     // レスポンスのJSONを呼び出し元へ返す
@@ -43,11 +48,11 @@ const apiRequest = async <T>(
     // 例外メッセージの設定
     throw Error(
       [
-        "\n",
+        "",
         "APIリクエストでエラーが発生しました。",
         `URL:${url}`,
         `${error}`,
-      ].join("\n")
+      ].join("\n\n")
     );
   }
 };
