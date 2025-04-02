@@ -13,6 +13,9 @@ import org.springframework.validation.BindingResult;
 @Component
 public class ControllerAspect {
 
+    /**
+     * コントローラーの引数にBindingResultがある場合は、バリデーションチェックを行い、バリデーションエラーが発生している場合はエラーレスポンスを返す
+     */
     @Around("execution(* app.controller..*.*(..))")
     public Object validateRequestBody(ProceedingJoinPoint joinPoint) throws Throwable {
         // メソッドに渡される引数を取得
