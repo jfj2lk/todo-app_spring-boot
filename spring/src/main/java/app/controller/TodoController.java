@@ -40,11 +40,6 @@ public class TodoController {
     @PostMapping("/todos")
     public ResponseEntity<Map<String, Object>> addTodo(@Validated @RequestBody AddTodoForm addTodoForm,
             BindingResult bindingResult) {
-        // バリデーションエラーが発生した場合は、バリデーションエラーを返す
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(Map.of("validationErrorMessages", bindingResult.getAllErrors()));
-        }
-
         try {
             // DBにフォームから送信されたTodoデータを保存し、その結果を返す
             Todo addedTodo = todoService.addTodo(addTodoForm);
@@ -59,11 +54,6 @@ public class TodoController {
     @PatchMapping("/todos/{id}")
     public Object updateTodo(@PathVariable("id") Long id, @Validated @RequestBody UpdateTodoForm updateTodoForm,
             BindingResult bindingResult) {
-        // バリデーションエラーが発生した場合は、バリデーションエラーを返す
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(Map.of("validationErrorMessages", bindingResult.getAllErrors()));
-        }
-
         try {
             // フォームから送られたTodoデータで更新し、その結果を返す
             Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
