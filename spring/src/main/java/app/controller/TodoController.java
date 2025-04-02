@@ -38,7 +38,7 @@ public class TodoController {
 
     // Todo追加
     @PostMapping("/todos")
-    public ResponseEntity<Map<String, Object>> addTodo(@Validated @RequestBody AddTodoForm addTodoForm,
+    public ResponseEntity<Map<String, Todo>> addTodo(@Validated @RequestBody AddTodoForm addTodoForm,
             BindingResult bindingResult) {
         // DBにフォームから送信されたTodoデータを保存し、その結果を返す
         Todo addedTodo = todoService.addTodo(addTodoForm);
@@ -48,11 +48,10 @@ public class TodoController {
 
     // Todo更新
     @PatchMapping("/todos/{id}")
-    public Object updateTodo(@PathVariable("id") Long id, @Validated @RequestBody UpdateTodoForm updateTodoForm,
+    public ResponseEntity<Map<String, Todo>> updateTodo(@PathVariable("id") Long id, @Validated @RequestBody UpdateTodoForm updateTodoForm,
             BindingResult bindingResult) {
         // フォームから送られたTodoデータで更新し、その結果を返す
         Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
         return ResponseEntity.ok().body(Map.of("data", updatedTodo));
-
     }
 }
