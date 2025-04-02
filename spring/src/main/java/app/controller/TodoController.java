@@ -40,13 +40,9 @@ public class TodoController {
     @PostMapping("/todos")
     public ResponseEntity<Map<String, Object>> addTodo(@Validated @RequestBody AddTodoForm addTodoForm,
             BindingResult bindingResult) {
-        try {
-            // DBにフォームから送信されたTodoデータを保存し、その結果を返す
-            Todo addedTodo = todoService.addTodo(addTodoForm);
-            return ResponseEntity.ok().body(Map.of("data", addedTodo));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
-        }
+        // DBにフォームから送信されたTodoデータを保存し、その結果を返す
+        Todo addedTodo = todoService.addTodo(addTodoForm);
+        return ResponseEntity.ok().body(Map.of("data", addedTodo));
 
     }
 
@@ -54,16 +50,9 @@ public class TodoController {
     @PatchMapping("/todos/{id}")
     public Object updateTodo(@PathVariable("id") Long id, @Validated @RequestBody UpdateTodoForm updateTodoForm,
             BindingResult bindingResult) {
-        try {
-            // フォームから送られたTodoデータで更新し、その結果を返す
-            Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
-            return ResponseEntity.ok().body(Map.of("data", updatedTodo));
-        } catch (EntityNotFoundException e) {
-            // リソースが存在しないエラーの場合
-            return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
-        }
+        // フォームから送られたTodoデータで更新し、その結果を返す
+        Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
+        return ResponseEntity.ok().body(Map.of("data", updatedTodo));
 
     }
 }
