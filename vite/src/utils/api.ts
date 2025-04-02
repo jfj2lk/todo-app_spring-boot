@@ -31,7 +31,7 @@ const apiRequest = async <T>(
       // バリデーションエラーメッセージを整形
       const validationErrorMessages = json.validationErrorMessages?.map(
         (message) => {
-          return "・" + message.defaultMessage;
+          return "\n・" + message.defaultMessage;
         }
       );
       throw Error(
