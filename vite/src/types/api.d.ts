@@ -8,5 +8,5 @@ export type RequestBody = object | null;
 export type ApiResponse<T> = {
   data?: T;
   message?: string;
-  validationErrorMessages?: [{ defaultMessage: string }];
+  errors?: [{ defaultMessage?: string }];
 };
