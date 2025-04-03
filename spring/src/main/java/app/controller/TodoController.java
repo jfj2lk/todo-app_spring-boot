@@ -5,6 +5,7 @@ import app.form.todo.add.AddTodoForm;
 import app.form.todo.update.UpdateTodoForm;
 import app.model.Todo;
 import app.service.TodoService;
+import lombok.AllArgsConstructor;
 
 import java.util.Map;
 
@@ -21,12 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class TodoController {
     private final TodoService todoService;
-
-    public TodoController(TodoService todoService) {
-        this.todoService = todoService;
-    }
 
     // 全てのTodo取得
     @GetMapping("/todos")

@@ -7,18 +7,16 @@ import app.form.todo.update.UpdateTodoInput;
 import app.model.Todo;
 import app.repository.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@AllArgsConstructor
 public class TodoService {
 
     private TodoRepository todoRepository;
-
-    public TodoService(TodoRepository todoRepository) {
-        this.todoRepository = todoRepository;
-    }
 
     /**
      * 全てのTodoをDBから取得する
