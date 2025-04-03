@@ -55,4 +55,18 @@ public class TodoService {
 
         return todoRepository.save(updateTodo);
     }
+
+    /**
+     * Todoを削除する
+     */
+    public Long deleteTodo(Long id) throws EntityNotFoundException {
+        // 指定されたIDに対応するTodoが存在しない場合は例外を投げる
+        todoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+                "id=" + id + "のTodoが見つかりません"));
+
+        // Todo削除
+        todoRepository.deleteById(id);
+        // 削除したTodoのIDを返す
+        return id;
+    }
 }
