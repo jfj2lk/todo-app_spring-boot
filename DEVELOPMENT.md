@@ -8,8 +8,8 @@
 
 - message?: string
   - 必要な場合のみ指定。レスポンスメッセージを格納。
-- validationErrorMessages?: [{ defaultMessage: string }]
-  - 必要な場合のみ指定。バリデーションエラーメッセージを格納。
+- errors?: [{ defaultMessage?: string }]
+  - エラーが発生した場合に自動でセットされる。エラー情報を格納。
 - data?: obj
   - 必要な場合のみ指定。要求されているデータを格納。
 
