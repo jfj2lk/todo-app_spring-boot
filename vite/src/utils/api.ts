@@ -28,17 +28,12 @@ const apiRequest = async <T>(
 
     // エラーレスポンスの場合は例外を投げる
     if (!res.ok) {
-      // バリデーションエラーメッセージを整形
-      const validationErrorMessages = json.validationErrorMessages?.map(
-        (message) => {
-          return "\n・" + message.defaultMessage;
-        }
-      );
+      // エラーメッセージを整形
+      const errorMessages = json.errors?.map((error) => {
+        return "\n・" + error.defaultMessage;
+      });
       throw Error(
-        [
-          `${json.message}`,
-          `Validation Error: ${validationErrorMessages}`,
-        ].join("\n\n")
+        [`${json.message}`, `Validation Error: ${errorMessages}`].join("\n\n")
       );
     }
 
