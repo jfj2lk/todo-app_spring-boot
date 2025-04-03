@@ -1,4 +1,4 @@
-package app.aspect.controller;
+package app.aspect.archive;
 
 import java.util.Map;
 
@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 
-@Aspect
-@Component
+// @Aspect
+// @Component
 public class ControllerAspect {
 
     /**

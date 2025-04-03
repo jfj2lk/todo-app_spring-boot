@@ -1,4 +1,4 @@
-package app.aspect.controller;
+package app.aspect.archive;
 
 import java.util.Map;
 
@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+// @RestControllerAdvice
 public class ControllerExceptionHandler {
 
     /**
