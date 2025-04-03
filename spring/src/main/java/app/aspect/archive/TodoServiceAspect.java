@@ -1,4 +1,4 @@
-package app.aspect.service;
+package app.aspect.archive;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import app.repository.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;
 
-@Aspect
-@Component
+// @Aspect
+// @Component
 public class TodoServiceAspect {
     private TodoRepository todoRepository;
 
