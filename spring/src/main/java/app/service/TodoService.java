@@ -45,10 +45,6 @@ public class TodoService {
      */
     @Transactional
     public Todo updateTodo(Long id, UpdateTodoForm updateTodoForm) throws EntityNotFoundException {
-        // 指定されたIDに対応するTodoが存在しない場合は例外を投げる
-        todoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
-                "id=" + id + "のTodoが見つかりません"));
-
         // フォームからTodoの入力データを取得し、その値でTodoオブジェクト作成
         UpdateTodoInput updateTodoInput = updateTodoForm.getTodo();
         Todo updateTodo = new Todo(id, updateTodoInput.getName(), updateTodoInput.getDesc());
@@ -60,12 +56,9 @@ public class TodoService {
      * Todoを削除する
      */
     public Long deleteTodo(Long id) throws EntityNotFoundException {
-        // 指定されたIDに対応するTodoが存在しない場合は例外を投げる
-        todoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
-                "id=" + id + "のTodoが見つかりません"));
-
         // Todo削除
         todoRepository.deleteById(id);
+
         // 削除したTodoのIDを返す
         return id;
     }
