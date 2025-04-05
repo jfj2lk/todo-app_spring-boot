@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import app.form.todo.update.UpdateTodoInput;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,11 +47,10 @@ public class Todo {
     }
 
     /**
-     * 指定されたID、名前、説明を持つTodoオブジェクトを作成する
+     * 入力フォームの値でプロパティの値を更新する
      */
-    public Todo(Long id, String name, String desc) {
-        this.id = id;
-        this.name = name;
-        this.desc = desc;
+    public void updateWithForm(UpdateTodoInput input) {
+        this.name = input.getName();
+        this.desc = input.getDesc();
     }
 }
