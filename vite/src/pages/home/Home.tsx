@@ -5,7 +5,7 @@ import { useEffect, useReducer } from "react";
 import AddTodo from "./AddTodo";
 import TodoList from "./TodoList";
 
-function App() {
+function Home() {
   const [todos, todoDispatch] = useReducer(todosReducer, []);
 
   // Todos取得
@@ -29,4 +29,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
