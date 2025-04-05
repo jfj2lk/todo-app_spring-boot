@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import app.form.todo.add.AddTodoForm;
+import app.form.todo.add.AddTodoInput;
 import app.form.todo.update.UpdateTodoForm;
 import app.form.todo.update.UpdateTodoInput;
 import jakarta.persistence.Column;
@@ -48,7 +50,16 @@ public class Todo {
     }
 
     /**
-     * 入力フォームの値でプロパティの値を更新する
+     * Todo追加フォームの値でTodoオブジェクトを作成する
+     */
+    public Todo(AddTodoForm addTodoForm) {
+        AddTodoInput addTodoInput = addTodoForm.getTodo();
+        this.name = addTodoInput.getName();
+        this.desc = addTodoInput.getDesc();
+    }
+
+    /**
+     * Todo更新フォームの値でプロパティの値を更新する
      */
     public void updateWithForm(UpdateTodoForm updateTodoForm) {
         UpdateTodoInput updateTodoInput = updateTodoForm.getTodo();
