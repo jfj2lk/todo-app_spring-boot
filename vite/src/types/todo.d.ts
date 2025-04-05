@@ -1,0 +1,17 @@
+// Todoモデル
+export type Todo = {
+  id: number;
+  name: string;
+  desc: string;
+  createdAt: any;
+  updatedAt: any;
+};
+
+// リデューサのアクションタイプ
+type TodoReducerActionTypes = "initialized" | "added" | "updated" | "deleted";
+
+// リデューサのアクション
+export type TodoReducerActions = { type: TodoReducerActionTypes } & Record<
+  string,
+  any
+>;
