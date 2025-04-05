@@ -43,11 +43,11 @@ public class TodoService {
      */
     @Transactional
     public Todo updateTodo(Long id, UpdateTodoForm updateTodoForm) throws EntityNotFoundException {
-        // フォームからTodoの入力データを取得し、その値でTodoオブジェクト作成
+        // 更新対象のTodoをDBから取得
         Todo updateTodo = todoRepository.findById(id).get();
-        UpdateTodoInput updateTodoInput = updateTodoForm.getTodo();
-        updateTodo.updateWithForm(updateTodoInput);
-
+        // フォームからTodoの入力データを取得し、その値でTodoの内容更新
+        updateTodo.updateWithForm(updateTodoForm);
+        // Todoを更新し、更新結果を返す
         return todoRepository.save(updateTodo);
     }
 
