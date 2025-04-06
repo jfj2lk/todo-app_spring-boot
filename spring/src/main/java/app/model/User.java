@@ -41,4 +41,13 @@ public class User {
 
     @UpdateTimestamp
     private Timestamp updatedAt;
+
+    /**
+     * 指定した名前、メールアドレス、パスワードを持つUserを作成する
+     */
+    public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 }
