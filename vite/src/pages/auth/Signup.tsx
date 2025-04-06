@@ -1,3 +1,5 @@
+import { User } from "@/types/user";
+import { apiRequest } from "@/utils/api";
 import { useState } from "react";
 
 const Signup = () => {
@@ -12,7 +14,9 @@ const Signup = () => {
     email: string,
     password: string
   ) => {
-    console.log(name, email, password);
+    const json = await apiRequest<User>("/api/users", "POST", {
+      user: { name, email, password },
+    });
   };
 
   return (
