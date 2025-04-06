@@ -2,10 +2,10 @@ import { todosReducer } from "@/state/todosReducer";
 import { Todo } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 import { useEffect, useReducer } from "react";
-import AddTodo from "./AddTodo";
-import TodoList from "./TodoList";
+import AddTodo from "./components/AddTodo";
+import TodoList from "./components/TodoList";
 
-function App() {
+const Todos = () => {
   const [todos, todoDispatch] = useReducer(todosReducer, []);
 
   // Todos取得
@@ -27,6 +27,6 @@ function App() {
       <TodoList todos={todos} todoDispatch={todoDispatch} />
     </div>
   );
-}
+};
 
-export default App;
+export default Todos;
