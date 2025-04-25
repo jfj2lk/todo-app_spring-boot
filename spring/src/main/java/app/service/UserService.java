@@ -1,5 +1,7 @@
 package app.service;
 
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +19,7 @@ import lombok.AllArgsConstructor;
 public class UserService {
 
     private final UserRepository userRepository;
-
-    /**
-     * ログイン処理
-     */
-    public User login(LoginForm loginForm) throws EntityNotFoundException {
-        final LoginInput loginInput = loginForm.getUser();
-        // メールアドレスとパスワードが一致するユーザーを取得
-        final User user = userRepository.findByEmailAndPassword(loginInput.getEmail(), loginInput.getPassword())
-                .orElseThrow(() -> new EntityNotFoundException("メールアドレスかパスワードが間違っています"));
-        return user;
-    }
+    private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     /**
      * Userを追加する
@@ -42,7 +34,27 @@ public class UserService {
 
         // フォームの値でUserオブジェクトを作成
         User addUser = new User(addUserForm);
+        // パスワード暗号化
+        String rawPassword = addUser.getPassword();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        addUser.setPassword(encodedPassword);
         // Userを追加し、結果を返す
         return userRepository.save(addUser);
     }
+
+    /**
+     * ログイン処理
+     */
+    public User login(LoginForm loginForm) throws EntityNotFoundException {
+        final LoginInput loginInput = loginForm.getUser();
+        // メールアドレスが一致するユーザーを取得
+        User user = userRepository.findByEmail(loginInput.getEmail()).get();
+        // パスワードが一致するかチェック
+        boolean isPasswordMatch = passwordEncoder.matches(loginInput.getPassword(), user.getPassword());
+        if (!isPasswordMatch) {
+            throw new EntityNotFoundException("メールアドレスかパスワードが間違っています");
+        }
+        return user;
+    }
+
 }
