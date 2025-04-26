@@ -33,7 +33,8 @@ public class UserController {
         final User addedUser = userService.addUser(addUserForm);
         // JWTトークン発行
         String jwtToken = jwtService.generateToken(addedUser);
-        return ResponseEntity.ok().body(Map.ofEntries(Map.entry("data", addedUser), Map.entry("jwtToken", jwtToken)));
+        return ResponseEntity.ok()
+                .body(Map.of("accessToken", jwtToken));
     }
 
     /**
@@ -44,7 +45,8 @@ public class UserController {
         final User loginUser = userService.login(loginForm);
         // JWTトークン発行
         String jwtToken = jwtService.generateToken(loginUser);
-        return ResponseEntity.ok().body(Map.ofEntries(Map.entry("data", loginUser), Map.entry("jwtToken", jwtToken)));
+        return ResponseEntity.ok()
+                .body(Map.of("accessToken", jwtToken));
     }
 
 }
