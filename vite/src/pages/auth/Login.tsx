@@ -12,7 +12,10 @@ const Login = () => {
     const json = await apiRequest<User>("/api/login", "POST", {
       user: { email, password },
     });
-    console.log(json);
+    if (json.accessToken) {
+      localStorage.setItem("accessToken", json.accessToken);
+    }
+    console.log("ログイン成功！");
   };
 
   return (

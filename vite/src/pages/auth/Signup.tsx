@@ -17,6 +17,10 @@ const Signup = () => {
     const json = await apiRequest<User>("/api/users", "POST", {
       user: { name, email, password },
     });
+    if (json.accessToken) {
+      localStorage.setItem("accessToken", json.accessToken);
+    }
+    console.log("新規登録成功！");
   };
 
   return (
