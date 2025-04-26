@@ -3,6 +3,7 @@ package app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.auth.JwtService;
 import app.form.user.add.AddUserForm;
 import app.form.user.login.LoginForm;
 import app.model.User;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class UserController {
 
     private UserService userService;
+    private JwtService jwtService;
 
     /**
      * ユーザーを追加する
@@ -29,7 +31,9 @@ public class UserController {
     @PostMapping("/users")
     public ResponseEntity<Map<String, Object>> signup(@Validated @RequestBody AddUserForm addUserForm) {
         final User addedUser = userService.addUser(addUserForm);
-        return ResponseEntity.ok().body(Map.of("data", addedUser));
+        // JWTトークン発行
+        String jwtToken = jwtService.generateToken(addedUser);
+        return ResponseEntity.ok().body(Map.ofEntries(Map.entry("data", addedUser), Map.entry("jwtToken", jwtToken)));
     }
 
     /**
@@ -38,7 +42,9 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginForm loginForm) {
         final User loginUser = userService.login(loginForm);
-        return ResponseEntity.ok().body(Map.of("data", loginUser));
+        // JWTトークン発行
+        String jwtToken = jwtService.generateToken(loginUser);
+        return ResponseEntity.ok().body(Map.ofEntries(Map.entry("data", loginUser), Map.entry("jwtToken", jwtToken)));
     }
 
 }
