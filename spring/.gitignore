@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Secret ###
+# 署名に使用する鍵ファイルなどを格納。
+**/src/main/resources/secret/*
