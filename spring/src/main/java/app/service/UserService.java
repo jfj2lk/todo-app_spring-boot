@@ -4,10 +4,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import app.form.user.add.AddUserForm;
 import app.form.user.login.LoginForm;
 import app.form.user.login.LoginInput;
+import app.form.user.signup.SignUpForm;
 import app.model.User;
 import app.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
@@ -19,15 +18,17 @@ import lombok.AllArgsConstructor;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    private final PasswordEncoder passwordEncoder =
+            PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     /**
      * Userを追加する
      */
     @Transactional
-    public User addUser(AddUserForm addUserForm) throws EntityExistsException {
+    public User signup(SignUpForm addUserForm) throws EntityExistsException {
         // 同じメールアドレスのUserが存在する場合は例外を投げる
-        boolean existEmail = userRepository.findByEmail(addUserForm.getUser().getEmail()).isPresent();
+        boolean existEmail =
+                userRepository.findByEmail(addUserForm.getUser().getEmail()).isPresent();
         if (existEmail) {
             throw new EntityExistsException("既に存在するメールアドレスです");
         }
@@ -50,7 +51,8 @@ public class UserService {
         // メールアドレスが一致するユーザーを取得
         User user = userRepository.findByEmail(loginInput.getEmail()).get();
         // パスワードが一致するかチェック
-        boolean isPasswordMatch = passwordEncoder.matches(loginInput.getPassword(), user.getPassword());
+        boolean isPasswordMatch =
+                passwordEncoder.matches(loginInput.getPassword(), user.getPassword());
         if (!isPasswordMatch) {
             throw new EntityNotFoundException("メールアドレスかパスワードが間違っています");
         }

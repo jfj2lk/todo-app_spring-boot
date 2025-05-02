@@ -1,4 +1,4 @@
-package app.form.user.add;
+package app.form.user.signup;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddUserForm {
+public class SignUpForm {
 
     @Valid
     @NotNull(message = "userは必須です")
-    private AddUserInput user;
+    private SignUpInput user;
 
 }

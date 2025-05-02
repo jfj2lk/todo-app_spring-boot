@@ -4,8 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.auth.JwtService;
-import app.form.user.add.AddUserForm;
 import app.form.user.login.LoginForm;
+import app.form.user.signup.SignUpForm;
 import app.model.User;
 import app.service.UserService;
 import lombok.AllArgsConstructor;
@@ -28,14 +28,14 @@ public class UserController {
     /**
      * ユーザーを追加する
      */
-    @PostMapping("/users")
+    @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> signup(
-            @Validated @RequestBody AddUserForm addUserForm) {
-        final User addedUser = userService.addUser(addUserForm);
+            @Validated @RequestBody SignUpForm signUpForm) {
+        final User signedUpUser = userService.signup(signUpForm);
         // JWTトークン発行
-        String jwtToken = jwtService.generateJwt(addedUser);
+        String jwt = jwtService.generateJwt(signedUpUser);
         return ResponseEntity.ok()
-                .body(Map.of("accessToken", jwtToken));
+                .body(Map.of("accessToken", jwt));
     }
 
     /**
@@ -45,9 +45,9 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginForm loginForm) {
         final User loginUser = userService.login(loginForm);
         // JWTトークン発行
-        String jwtToken = jwtService.generateJwt(loginUser);
+        String jwt = jwtService.generateJwt(loginUser);
         return ResponseEntity.ok()
-                .body(Map.of("accessToken", jwtToken));
+                .body(Map.of("accessToken", jwt));
     }
 
 }
