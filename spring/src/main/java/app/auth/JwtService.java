@@ -2,12 +2,16 @@ package app.auth;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import app.model.User;
+import app.repository.UserRepository;
+import io.jsonwebtoken.ExpiredJwtException;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -21,29 +25,43 @@ public class JwtService {
     private String signInKeyPath = "secret/hs256.key";
     // HMAC用の署名鍵
     private SecretKey hmacSignInKey;
-    // JWTの有効期限
-    private long expirationDate;
 
     /**
-     * コンストラクタ
+     * コンストラクタ。
      */
     public JwtService() {
         this.hmacSignInKey = createHmacSignInKey();
-        this.expirationDate = createExpirationDate();
     }
 
     /**
      * JWTの生成。
      */
     // TODO:UserDetail実装に変える。
-    public String generateToken(User user) {
+    public String generateJwt(User user) {
         return Jwts
                 .builder()
                 .subject(String.valueOf(user.getId()))
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + this.expirationDate))
+                .expiration(new Date(System.currentTimeMillis() + createExpirationDate()))
                 .signWith(this.hmacSignInKey)
                 .compact();
+    }
+
+    /**
+     * JWTの検証。
+     */
+    public void validateJwt(String jwt) {
+        try {
+            Jwts
+                    .parser()
+                    .verifyWith(hmacSignInKey)
+                    .build()
+                    .parseSignedClaims(jwt);
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredJwtException(null, null, null, e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -88,7 +106,7 @@ public class JwtService {
         final long HOUR_IN_MILLIS = MINUTES_IN_SECONDS * HOURS_IN_MINUTES;
 
         // 有効期限
-        final long EXPIRATION_DATE_IN_MILLIS = SECONDS_IN_MILLIS * 30;
+        final long EXPIRATION_DATE_IN_MILLIS = SECONDS_IN_MILLIS * 60;
         return EXPIRATION_DATE_IN_MILLIS;
     }
 }

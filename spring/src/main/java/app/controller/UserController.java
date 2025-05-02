@@ -29,10 +29,11 @@ public class UserController {
      * ユーザーを追加する
      */
     @PostMapping("/users")
-    public ResponseEntity<Map<String, Object>> signup(@Validated @RequestBody AddUserForm addUserForm) {
+    public ResponseEntity<Map<String, Object>> signup(
+            @Validated @RequestBody AddUserForm addUserForm) {
         final User addedUser = userService.addUser(addUserForm);
         // JWTトークン発行
-        String jwtToken = jwtService.generateToken(addedUser);
+        String jwtToken = jwtService.generateJwt(addedUser);
         return ResponseEntity.ok()
                 .body(Map.of("accessToken", jwtToken));
     }
@@ -44,7 +45,7 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginForm loginForm) {
         final User loginUser = userService.login(loginForm);
         // JWTトークン発行
-        String jwtToken = jwtService.generateToken(loginUser);
+        String jwtToken = jwtService.generateJwt(loginUser);
         return ResponseEntity.ok()
                 .body(Map.of("accessToken", jwtToken));
     }

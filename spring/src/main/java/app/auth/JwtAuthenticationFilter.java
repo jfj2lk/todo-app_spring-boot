@@ -1,7 +1,7 @@
 package app.auth;
 
 import org.springframework.web.filter.OncePerRequestFilter;
-
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +37,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // "Bearer "の後のトークン部分を抽出
         jwt = authHeader.substring(7);
 
+        // JWT検証
+        try {
+            jwtService.validateJwt(jwt);
+        } catch (ExpiredJwtException e) {
+            // JWTの有効期限切れの場合
+            createResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWTの有効期限が切れています。");
+            return;
+        } catch (Exception e) {
+            // JWTの検証中にエラーが発生した場合
+            createResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT検証中にエラーが発生しました。");
+            return;
+        }
+
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * レスポンスを作成する。
+     */
+    private void createResponse(HttpServletResponse response, int status, String message)
+            throws IOException {
+        response.setStatus(status);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
+        String json = "{\"message\": \"" + message + "\"}";
+        response.getWriter().write(json);
     }
 }
