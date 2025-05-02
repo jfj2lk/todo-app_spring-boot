@@ -15,9 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import app.form.todo.add.AddTodoForm;
-import app.form.todo.add.AddTodoInput;
+import app.form.todo.add.AddTodoFieldForm;
 import app.form.todo.update.UpdateTodoForm;
-import app.form.todo.update.UpdateTodoInput;
+import app.form.todo.update.UpdateTodoFieldForm;
 import app.model.Todo;
 import app.repository.TodoRepository;
 import app.service.TodoService;
@@ -52,7 +52,7 @@ public class TodoServiceTest {
     @Test
     void Todoが追加できているか() {
         // Todo入力内容の作成
-        final AddTodoInput addTodoInput = new AddTodoInput("AddTodo", "AddDesc");
+        final AddTodoFieldForm addTodoInput = new AddTodoFieldForm("AddTodo", "AddDesc");
         final AddTodoForm addTodoForm = new AddTodoForm(addTodoInput);
 
         // Todo追加
@@ -76,7 +76,8 @@ public class TodoServiceTest {
         entityManager.clear();
 
         // Todo入力内容の作成
-        final UpdateTodoInput updateTodoInput = new UpdateTodoInput("UpdateTodo", "UpdateDesc");
+        final UpdateTodoFieldForm updateTodoInput =
+                new UpdateTodoFieldForm("UpdateTodo", "UpdateDesc");
         final UpdateTodoForm updateTodoForm = new UpdateTodoForm(updateTodoInput);
 
         // Todo更新

@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import app.form.user.login.LoginForm;
-import app.form.user.login.LoginInput;
+import app.form.user.login.LoginUserFieldForm;
 import app.form.user.signup.SignUpForm;
 import app.model.User;
 import app.repository.UserRepository;
@@ -47,7 +47,7 @@ public class UserService {
      * ログイン処理
      */
     public User login(LoginForm loginForm) throws EntityNotFoundException {
-        final LoginInput loginInput = loginForm.getUser();
+        final LoginUserFieldForm loginInput = loginForm.getUser();
         // メールアドレスが一致するユーザーを取得
         User user = userRepository.findByEmail(loginInput.getEmail()).get();
         // パスワードが一致するかチェック

@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import app.form.user.signup.SignUpForm;
-import app.form.user.signup.SignUpInput;
+import app.form.user.signup.SignUpUserFieldForm;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -56,7 +56,7 @@ public class User {
      * User追加フォームの値でUserを作成する
      */
     public User(SignUpForm addUserForm) {
-        SignUpInput addUserInput = addUserForm.getUser();
+        SignUpUserFieldForm addUserInput = addUserForm.getUser();
         this.name = addUserInput.getName();
         this.email = addUserInput.getEmail();
         this.password = addUserInput.getPassword();

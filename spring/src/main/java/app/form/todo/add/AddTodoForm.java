@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class AddTodoForm {
     @Valid
     @NotNull(message = "todoは必須です")
-    private AddTodoInput todo;
+    private AddTodoFieldForm todo;
 }

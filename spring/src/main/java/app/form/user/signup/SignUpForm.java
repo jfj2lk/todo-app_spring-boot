@@ -13,6 +13,6 @@ public class SignUpForm {
 
     @Valid
     @NotNull(message = "userは必須です")
-    private SignUpInput user;
+    private SignUpUserFieldForm user;
 
 }

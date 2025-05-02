@@ -1,4 +1,4 @@
-package app.form.user.login;
+package app.form.user.signup;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginInput {
+public class SignUpUserFieldForm {
+    @NotBlank
+    @Column(nullable = false, length = 255)
+    private String name;
+
     @NotBlank
     @Column(nullable = false, length = 255)
     private String email;
