@@ -2,6 +2,7 @@ package app.auth;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.lang.Arrays;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final JwtInfo jwtInfo;
     private final JwtService jwtService;
 
     @Override
@@ -25,6 +26,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+
+        // リクエストURLが許可リストに入っているかの判定結果を取得
+        boolean includedAllowList = isIncludedAllowList(request);
+        if (includedAllowList) {
+            // 許可リストに入っている場合は次のフィルターを実行する
+            doFilter(request, response, filterChain);
+            return;
+        }
+
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
 
@@ -51,6 +62,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * リクエストURLが許可リストのURLに含まれているか
+     */
+    public boolean isIncludedAllowList(HttpServletRequest request) {
+        // リクエストURIを取得
+        String requestUri = request.getRequestURI();
+        // リクエストURIが許可リストのURLに含まれているかの判定結果を返す
+        return Arrays.asList(jwtInfo.permitAllUrls)
+                .stream().anyMatch(requestUri::startsWith);
     }
 
     /**

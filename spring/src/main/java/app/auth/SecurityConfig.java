@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JwtInfo jwtInfo;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
@@ -25,9 +26,12 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 // 全てのリクエストを許可
                 .authorizeHttpRequests(
-                        auth -> auth.anyRequest().permitAll())
+                        auth -> auth
+                                .requestMatchers(jwtInfo.permitAllUrls).permitAll()
+                                .anyRequest().authenticated())
                 // JWT認証
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
