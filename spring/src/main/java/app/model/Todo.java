@@ -60,6 +60,5 @@ public class Todo {
     public void updateWithForm(UpdateTodoForm updateTodoForm) {
         this.name = updateTodoForm.getName();
         this.desc = updateTodoForm.getDesc();
-        this.updatedAt = null;
     }
 }
