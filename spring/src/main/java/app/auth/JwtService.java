@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import java.util.Date;
+import java.util.List;
 import javax.crypto.SecretKey;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import app.model.User;
-import app.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -52,16 +55,29 @@ public class JwtService {
      */
     public void validateJwt(String jwt) {
         try {
-            Jwts
+            Claims claims = Jwts
                     .parser()
                     .verifyWith(hmacSignInKey)
                     .build()
-                    .parseSignedClaims(jwt);
+                    .parseSignedClaims(jwt).getPayload();
+            // 検証に成功した場合は認証情報を設定する
+            setAuthInfo(claims);
         } catch (ExpiredJwtException e) {
             throw new ExpiredJwtException(null, null, null, e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 認証情報を設定する。
+     */
+    public void setAuthInfo(Claims claims) {
+        String subject = claims.getSubject();
+        List<SimpleGrantedAuthority> authorities = List.of();
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(subject, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     /**
@@ -106,7 +122,7 @@ public class JwtService {
         final long HOUR_IN_MILLIS = MINUTES_IN_SECONDS * HOURS_IN_MINUTES;
 
         // 有効期限
-        final long EXPIRATION_DATE_IN_MILLIS = SECONDS_IN_MILLIS * 60;
+        final long EXPIRATION_DATE_IN_MILLIS = SECONDS_IN_MILLIS * 60 * 60 * 24;
         return EXPIRATION_DATE_IN_MILLIS;
     }
 }
