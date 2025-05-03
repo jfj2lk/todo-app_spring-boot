@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import app.form.user.LoginForm;
-import app.form.user.signup.SignUpForm;
+import app.form.user.SignUpForm;
 import app.model.User;
 import app.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
@@ -27,7 +27,7 @@ public class UserService {
     public User signup(SignUpForm addUserForm) throws EntityExistsException {
         // 同じメールアドレスのUserが存在する場合は例外を投げる
         boolean existEmail =
-                userRepository.findByEmail(addUserForm.getUser().getEmail()).isPresent();
+                userRepository.findByEmail(addUserForm.getEmail()).isPresent();
         if (existEmail) {
             throw new EntityExistsException("既に存在するメールアドレスです");
         }

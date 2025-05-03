@@ -10,7 +10,8 @@ const Login = () => {
   // ログイン
   const handleLogin = async (email: string, password: string) => {
     const json = await apiRequest<User>("/api/login", "POST", {
-      user: { email, password },
+      email,
+      password,
     });
     if (json.accessToken) {
       localStorage.setItem("accessToken", json.accessToken);

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.auth.JwtService;
 import app.form.user.LoginForm;
-import app.form.user.signup.SignUpForm;
+import app.form.user.SignUpForm;
 import app.model.User;
 import app.service.UserService;
 import lombok.AllArgsConstructor;

@@ -15,7 +15,9 @@ const Signup = () => {
     password: string
   ) => {
     const json = await apiRequest<User>("/api/signup", "POST", {
-      user: { name, email, password },
+      name,
+      email,
+      password,
     });
     if (json.accessToken) {
       localStorage.setItem("accessToken", json.accessToken);
