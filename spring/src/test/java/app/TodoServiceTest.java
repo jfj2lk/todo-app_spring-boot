@@ -10,8 +10,8 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import app.form.todo.add.AddTodoForm;
@@ -22,17 +22,15 @@ import app.model.Todo;
 import app.repository.TodoRepository;
 import app.service.TodoService;
 import jakarta.persistence.EntityManager;
+import lombok.AllArgsConstructor;
 
 @SpringBootTest
 @Transactional
+@AllArgsConstructor
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class TodoServiceTest {
-    @Autowired
     private TodoService todoService;
-
-    @Autowired
     private TodoRepository todoRepository;
-
-    @Autowired
     private EntityManager entityManager;
 
     @Test
