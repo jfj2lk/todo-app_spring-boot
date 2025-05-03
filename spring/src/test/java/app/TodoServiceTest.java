@@ -26,15 +26,15 @@ import lombok.AllArgsConstructor;
 
 @SpringBootTest
 @Transactional
-@AllArgsConstructor
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@AllArgsConstructor
 public class TodoServiceTest {
     private TodoService todoService;
     private TodoRepository todoRepository;
     private EntityManager entityManager;
 
     @Test
-    void 全てのTodoが取得できているか() {
+    void 全てのTodoが取得できるか() {
         // 全てのTodoの数
         final int dbAllTodosCount = 2;
 
@@ -48,7 +48,7 @@ public class TodoServiceTest {
     }
 
     @Test
-    void Todoが追加できているか() {
+    void Todoが追加できるか() {
         // Todo入力内容の作成
         final AddTodoFieldForm addTodoInput = new AddTodoFieldForm("AddTodo", "AddDesc");
         final AddTodoForm addTodoForm = new AddTodoForm(addTodoInput);
@@ -66,7 +66,7 @@ public class TodoServiceTest {
     }
 
     @Test
-    void Todoが更新できているか() throws InterruptedException {
+    void Todoが更新できるか() throws InterruptedException {
         // 更新対象のTodoのID
         final Long updateTodoId = 1l;
         // 更新前のTodo取得
@@ -93,7 +93,7 @@ public class TodoServiceTest {
     }
 
     @Test
-    void Todoが削除できているか() {
+    void Todoが削除できるか() {
         // 全てのTodoの数
         final int dbAllTodosCount = 2;
         // 削除対象のTodoのID
