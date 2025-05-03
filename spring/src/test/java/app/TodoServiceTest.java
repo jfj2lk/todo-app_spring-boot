@@ -11,6 +11,7 @@ import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import app.service.TodoService;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @Transactional
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
