@@ -1,6 +1,5 @@
 spring:
   profiles:
-    default: dev
     active: dev
   application:
     name: spring
