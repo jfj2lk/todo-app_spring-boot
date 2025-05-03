@@ -119,7 +119,7 @@ public class JwtService {
         // 1分のミリ秒
         final long MINUTE_IN_MILLIS = SECONDS_IN_MILLIS * MINUTES_IN_SECONDS;
         // 1時間のミリ秒
-        final long HOUR_IN_MILLIS = MINUTES_IN_SECONDS * HOURS_IN_MINUTES;
+        final long HOUR_IN_MILLIS = MINUTE_IN_MILLIS * HOURS_IN_MINUTES;
 
         // 有効期限
         final long EXPIRATION_DATE_IN_MILLIS = HOUR_IN_MILLIS * 1;
