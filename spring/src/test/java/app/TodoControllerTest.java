@@ -8,45 +8,87 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Optional;
 import java.util.stream.StreamSupport;
-
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import app.form.todo.add.AddTodoForm;
+import app.auth.JwtService;
 import app.form.todo.add.AddTodoFieldForm;
 import app.form.todo.update.UpdateTodoForm;
 import app.form.todo.update.UpdateTodoFieldForm;
 import app.model.Todo;
+import app.model.User;
 import app.repository.TodoRepository;
+import app.repository.UserRepository;
+import app.seeder.TestTodoSeeder;
+import app.seeder.TestUserSeeder;
 import app.service.TodoService;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@AutoConfigureMockMvc
 @Transactional
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@AllArgsConstructor
-public class TodoServiceTest {
-    private TodoService todoService;
-    private TodoRepository todoRepository;
-    private EntityManager entityManager;
+@RequiredArgsConstructor
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Slf4j
+public class TodoControllerTest {
+    private final MockMvc mockMvc;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final TodoService todoService;
+    private final TodoRepository todoRepository;
+    private final TestTodoSeeder testTodoSeeder;
+    private final TestUserSeeder testUserSeeder;
+    private final EntityManager entityManager;
+    private String jwt;
+    private final TestUtils testUtils;
+
+    @BeforeAll
+    public void seedInitialData() {
+        testUserSeeder.seedInitialUser();
+        testTodoSeeder.seedInitialTodo();
+        User user = userRepository.findById(1l).orElseThrow();
+        this.jwt = jwtService.generateJwt(user);
+    }
 
     @Test
-    void 全てのTodoが取得できるか() {
-        // 全てのTodoの数
-        final int dbAllTodosCount = 2;
+    void 全てのTodoが取得できるか() throws Exception {
+        // IDが1のTodoを取得
+        Todo expectedTodo = this.testTodoSeeder.getSeedTodos().get(0);
 
-        // 全てのTodo取得
-        final Iterable<Todo> allTodos = todoService.getAllTodos();
-        // 取得したTodoの数を取得
-        final long allTodosCount = StreamSupport.stream(allTodos.spliterator(), false).count();
+        mockMvc
+                .perform(get("/api/todos")
+                        .header("Authorization", "Bearer " + this.jwt))
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                // 全てのTodoが取得できているか
+                .andExpect(jsonPath("$.data.length()")
+                        .value(this.testTodoSeeder.getSeedTodos().size()))
+                // 取得したTodoの形式が正しいか
+                .andExpectAll(
+                        jsonPath("$.data[0].id").value(expectedTodo.getId()),
+                        jsonPath("$.data[0].name").value(expectedTodo.getName()),
+                        jsonPath("$.data[0].desc").value(expectedTodo.getDesc()),
+                        jsonPath("$.data[0].createdAt").exists(),
+                        jsonPath("$.data[0].updatedAt").exists());
 
-        // テスト
-        assertEquals(dbAllTodosCount, allTodosCount, "全てのTodoの数取得できていることを確認");
     }
 
     @Test
