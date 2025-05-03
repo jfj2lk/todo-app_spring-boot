@@ -122,7 +122,7 @@ public class JwtService {
         final long HOUR_IN_MILLIS = MINUTES_IN_SECONDS * HOURS_IN_MINUTES;
 
         // 有効期限
-        final long EXPIRATION_DATE_IN_MILLIS = SECONDS_IN_MILLIS * 60 * 60 * 24;
+        final long EXPIRATION_DATE_IN_MILLIS = HOUR_IN_MILLIS * 1;
         return EXPIRATION_DATE_IN_MILLIS;
     }
 }
