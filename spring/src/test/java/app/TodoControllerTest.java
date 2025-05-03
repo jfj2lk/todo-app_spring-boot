@@ -1,15 +1,10 @@
 package app;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.Optional;
-import java.util.stream.StreamSupport;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.time.OffsetDateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
+import com.jayway.jsonpath.JsonPath;
 import app.auth.JwtService;
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
@@ -39,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @RequiredArgsConstructor
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -57,11 +51,23 @@ public class TodoControllerTest {
     private final TestUtils testUtils;
 
     @BeforeAll
-    public void seedInitialData() {
+    public void setUpAll() {}
+
+    @BeforeEach
+    public void setUp() {
+        // 初期データを作成
         testUserSeeder.seedInitialUser();
         testTodoSeeder.seedInitialTodo();
+        // JWTの取得
         User user = userRepository.findById(1l).orElseThrow();
         this.jwt = jwtService.generateJwt(user);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        // DBのデータ全削除
+        userRepository.deleteAll();
+        todoRepository.deleteAll();
     }
 
     @Test
@@ -91,12 +97,12 @@ public class TodoControllerTest {
 
     @Test
     void Todoが追加できるか() throws Exception {
+        // 追加するTodoのID
+        int addTodoId = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todo追加用のフォームを作成
         AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3");
         // Todo追加用のフォームのJSON形式
         String addTodoFormJson = testUtils.toJson(addTodoForm);
-        // 追加したTodoのID
-        int addedTodoId = this.testTodoSeeder.getSeedTodos().size() + 1;
 
         // Todo追加
         mockMvc
@@ -110,39 +116,54 @@ public class TodoControllerTest {
                         content().contentType(MediaType.APPLICATION_JSON))
                 // 追加したTodoの形式が正しいか
                 .andExpectAll(
-                        jsonPath("$.data.id").value(addedTodoId),
+                        jsonPath("$.data.id").value(addTodoId),
                         jsonPath("$.data.name").value(addTodoForm.getName()),
                         jsonPath("$.data.desc").value(addTodoForm.getDesc()),
                         jsonPath("$.data.createdAt").exists(),
                         jsonPath("$.data.updatedAt").exists());
     }
 
-    // @Test
-    // void Todoが更新できるか() throws InterruptedException {
-    // // 更新対象のTodoのID
-    // final Long updateTodoId = 1l;
-    // // 更新前のTodo取得
-    // final Todo beforeUpdateTodo = todoRepository.findById(updateTodoId).get();
-    // entityManager.clear();
+    @Test
+    void Todoが更新できるか() throws Exception {
+        // 更新するTodoのID
+        int updateTodoId = 1;
+        // Todo更新用のフォームを作成
+        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update");
+        // Todo追加用のフォームのJSON形式
+        String updateTodoFormJson = testUtils.toJson(updateTodoForm);
 
-    // // Todo入力内容の作成
-    // final UpdateTodoForm updateTodoInput =
-    // new UpdateTodoForm("UpdateTodo", "UpdateDesc");
-    // final UpdateTodoForm updateTodoForm = new UpdateTodoForm(updateTodoInput);
+        // Todoの作成日時と更新日時に差を付ける為、待機
+        Thread.sleep(1000);
 
-    // // Todo更新
-    // Thread.sleep(1000);
-    // final Todo updatedTodo = todoService.updateTodo(updateTodoId, updateTodoForm);
-
-    // // テスト
-    // assertAll("値が更新されていないことを確認",
-    // () -> assertEquals(beforeUpdateTodo.getCreatedAt(), updatedTodo.getCreatedAt()),
-    // () -> assertEquals(beforeUpdateTodo.getId(), updatedTodo.getId()));
-    // assertAll("値が更新されていることを確認",
-    // () -> assertEquals("UpdateTodo", updatedTodo.getName()),
-    // () -> assertEquals("UpdateDesc", updatedTodo.getDesc()),
-    // () -> assertNotEquals(beforeUpdateTodo.getUpdatedAt(), updatedTodo.getUpdatedAt()));
-    // }
+        // Todo更新
+        mockMvc
+                .perform(patch("/api/todos/" + updateTodoId)
+                        .header("Authorization", "Bearer " + this.jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateTodoFormJson))
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                // 更新したTodoの形式が正しいか
+                .andExpectAll(
+                        jsonPath("$.data.id").value(updateTodoId),
+                        jsonPath("$.data.name").value(updateTodoForm.getName()),
+                        jsonPath("$.data.desc").value(updateTodoForm.getDesc()),
+                        jsonPath("$.data.createdAt").exists(),
+                        jsonPath("$.data.updatedAt").exists(),
+                        // 更新日時が作成日時よりも後か
+                        result -> {
+                            String responseBody = result.getResponse().getContentAsString();
+                            OffsetDateTime createdAt =
+                                    OffsetDateTime
+                                            .parse(JsonPath.read(responseBody, "$.data.createdAt"));
+                            OffsetDateTime updatedAt =
+                                    OffsetDateTime
+                                            .parse(JsonPath.read(responseBody, "$.data.updatedAt"));
+                            assertTrue(updatedAt.isAfter(createdAt));
+                        });
+    }
 
     // @Test
     // void Todoが削除できるか() {
