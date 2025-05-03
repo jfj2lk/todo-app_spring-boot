@@ -1,7 +1,7 @@
 package app.service;
 
 import app.form.todo.AddTodoForm;
-import app.form.todo.update.UpdateTodoForm;
+import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
 import app.repository.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;

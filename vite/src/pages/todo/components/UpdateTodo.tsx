@@ -17,7 +17,8 @@ const UpdateTodo = (props: {
   // Todo更新
   const handleUpdateTodo = async (updateTodoId: number) => {
     const json = await apiRequest<Todo>(`/api/todos/${updateTodoId}`, "PATCH", {
-      todo: { name: todoName, desc: todoDesc },
+      name: todoName,
+      desc: todoDesc,
     });
     props.todoDispatch({ type: "updated", data: json.data });
     props.setEditingId(null);
