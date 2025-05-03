@@ -4,8 +4,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import app.form.user.login.LoginForm;
-import app.form.user.login.LoginUserFieldForm;
+import app.form.user.LoginForm;
 import app.form.user.signup.SignUpForm;
 import app.model.User;
 import app.repository.UserRepository;
@@ -47,14 +46,14 @@ public class UserService {
      * ログイン処理
      */
     public User login(LoginForm loginForm) throws EntityNotFoundException {
-        final LoginUserFieldForm loginInput = loginForm.getUser();
         // メールアドレスが一致するユーザーを取得
-        User user = userRepository.findByEmail(loginInput.getEmail()).get();
+        User user = userRepository.findByEmail(loginForm.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("メールアドレスかパスワードが間違っています。"));
         // パスワードが一致するかチェック
         boolean isPasswordMatch =
-                passwordEncoder.matches(loginInput.getPassword(), user.getPassword());
+                passwordEncoder.matches(loginForm.getPassword(), user.getPassword());
         if (!isPasswordMatch) {
-            throw new EntityNotFoundException("メールアドレスかパスワードが間違っています");
+            throw new EntityNotFoundException("メールアドレスかパスワードが間違っています。");
         }
         return user;
     }
