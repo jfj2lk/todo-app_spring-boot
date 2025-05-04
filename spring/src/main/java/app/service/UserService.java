@@ -1,5 +1,6 @@
 package app.service;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,8 +9,7 @@ import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
 import app.repository.UserRepository;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
+
 import lombok.AllArgsConstructor;
 
 @Service
@@ -24,12 +24,12 @@ public class UserService {
      * Userを追加する
      */
     @Transactional
-    public User signup(SignUpForm addUserForm) throws EntityExistsException {
+    public User signup(SignUpForm addUserForm) throws RuntimeException {
         // 同じメールアドレスのUserが存在する場合は例外を投げる
         boolean existEmail =
                 userRepository.findByEmail(addUserForm.getEmail()).isPresent();
         if (existEmail) {
-            throw new EntityExistsException("既に存在するメールアドレスです");
+            throw new RuntimeException("既に存在するメールアドレスです");
         }
 
         // フォームの値でUserオブジェクトを作成
@@ -45,15 +45,15 @@ public class UserService {
     /**
      * ログイン処理
      */
-    public User login(LoginForm loginForm) throws EntityNotFoundException {
+    public User login(LoginForm loginForm) throws RuntimeException {
         // メールアドレスが一致するユーザーを取得
         User user = userRepository.findByEmail(loginForm.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("メールアドレスかパスワードが間違っています。"));
+                .orElseThrow(() -> new RuntimeException("メールアドレスかパスワードが間違っています。"));
         // パスワードが一致するかチェック
         boolean isPasswordMatch =
                 passwordEncoder.matches(loginForm.getPassword(), user.getPassword());
         if (!isPasswordMatch) {
-            throw new EntityNotFoundException("メールアドレスかパスワードが間違っています。");
+            throw new RuntimeException("メールアドレスかパスワードが間違っています。");
         }
         return user;
     }

@@ -1,62 +1,57 @@
 package app.model;
 
 import java.sql.Timestamp;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import app.form.user.SignUpForm;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Table("user")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
-    @Column(nullable = false, length = 255)
     private String name;
 
     @NotBlank
-    @Column(nullable = false, length = 255, unique = true)
     private String email;
 
     @NotBlank
-    @Column(nullable = false, length = 255)
     private String password;
 
-    @CreationTimestamp
     private Timestamp createdAt;
 
-    @UpdateTimestamp
     private Timestamp updatedAt;
 
     /**
      * 指定した名前、メールアドレス、パスワードを持つUserを作成する
      */
     public User(String name, String email, String password) {
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         this.name = name;
         this.email = email;
         this.password = password;
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
     /**
      * サインアップフォームの値でUserを作成する
      */
     public User(SignUpForm signUpForm) {
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         this.name = signUpForm.getName();
         this.email = signUpForm.getEmail();
         this.password = signUpForm.getPassword();
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 }

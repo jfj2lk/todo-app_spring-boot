@@ -1,7 +1,7 @@
 package app.form.user;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginForm {
     @NotBlank
-    @Column(nullable = false, length = 255)
+    @Size(max = 255)
     private String email;
 
     @NotBlank
-    @Column(nullable = false, length = 255)
+    @Size(max = 255)
     private String password;
 }

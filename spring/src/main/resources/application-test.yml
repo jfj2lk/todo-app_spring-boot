@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: spring
   datasource:
     url: jdbc:h2:mem:db
     # jdbc:h2:file:~
@@ -10,17 +8,10 @@ spring:
   sql:
     init:
       encoding: UTF-8
-  # mode: embedded
-  # schema-locations: classpath:/schema.sql
-  # data-locations: classpath:/data.sql
+      mode: embedded
+      schema-locations: classpath:/schema.sql
+      # data-locations: classpath:/data.sql
   h2:
     console:
       enabled: true
       path: /h2
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        "[globally_quoted_identifiers]": true
-        "[globally_quoted_identifiers_skip_column_definitions]": true
