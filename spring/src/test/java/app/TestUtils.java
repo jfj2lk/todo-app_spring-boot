@@ -8,7 +8,7 @@ public class TestUtils {
     /**
      * オブジェクトをJSON文字列に変換する。
      */
-    public static String toJson(Object object) throws Exception {
+    public String toJson(Object object) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(object);
     }
