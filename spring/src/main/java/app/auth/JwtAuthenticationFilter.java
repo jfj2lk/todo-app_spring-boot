@@ -1,7 +1,8 @@
 package app.auth;
 
 import org.springframework.web.filter.OncePerRequestFilter;
-import app.auth.JwtInfo.JwtValidateResult;
+import app.constants.JwtConstants;
+import app.constants.JwtConstants.JwtValidateResult;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.lang.Arrays;
 import jakarta.servlet.FilterChain;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtInfo jwtInfo;
+    private final JwtConstants jwtInfo;
     private final JwtService jwtService;
 
     @Override

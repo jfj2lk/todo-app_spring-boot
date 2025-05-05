@@ -13,9 +13,9 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import com.jayway.jsonpath.JsonPath;
-import app.auth.JwtInfo;
 import app.auth.JwtService;
-import app.auth.JwtInfo.JwtValidateResult;
+import app.constants.JwtConstants;
+import app.constants.JwtConstants.JwtValidateResult;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
@@ -48,11 +48,11 @@ public class AuthControllerTest {
     private final TestUserSeeder testUserSeeder;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final JwtInfo jwtInfo;
+    private final JwtConstants jwtInfo;
 
     AuthControllerTest(MockMvc mockMvc, UserRepository userRepository, TestUtils testUtils,
             TestTodoSeeder testTodoSeeder, TestUserSeeder testUserSeeder, JwtService jwtService,
-            JwtInfo jwtInfo) {
+            JwtConstants jwtInfo) {
         this.mockMvc = mockMvc;
         this.userRepository = userRepository;
         this.testUtils = testUtils;

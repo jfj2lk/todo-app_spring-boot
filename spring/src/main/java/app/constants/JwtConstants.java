@@ -1,9 +1,9 @@
-package app.auth;
+package app.constants;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class JwtInfo {
+public class JwtConstants {
     // 認証を行わないURLのリスト
     public final String[] permitAllUrls = """
             /api/auth/signup

@@ -6,7 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import app.constants.JwtConstants;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtInfo jwtInfo;
+    private final JwtConstants jwtInfo;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
