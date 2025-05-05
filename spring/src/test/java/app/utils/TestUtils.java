@@ -1,4 +1,4 @@
-package app;
+package app.utils;
 
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
