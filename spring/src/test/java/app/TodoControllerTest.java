@@ -123,6 +123,7 @@ class TodoControllerTest {
     void Todoが更新できるか() throws Exception {
         // 更新するTodoのID
         long updateTodoId = 1;
+        int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size();
         // Todo更新用のフォームを作成
         UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update");
         // Todo追加用のフォームのJSON形式
@@ -157,6 +158,10 @@ class TodoControllerTest {
                                     .parse(JsonPath.read(responseBody, "$.data.updatedAt"));
                             assertTrue(updatedAt.isAfter(createdAt));
                         });
+
+        // 全てのTodoの件数を取得
+        long actualTotalTodoCount = this.todoRepository.count();
+        assertEquals(expectedTotalTodoCount, actualTotalTodoCount, "Todoの件数が変わっていないことを確認");
     }
 
     @Test
