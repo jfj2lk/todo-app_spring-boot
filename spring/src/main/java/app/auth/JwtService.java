@@ -85,12 +85,12 @@ public class JwtService {
      */
     public byte[] getSignInKeyBytes() {
         try {
-            // ファイルからBASE64エンコードされた、秘密鍵の値を取得
+            // ファイルからBASE64エンコードされた、署名鍵の値を取得
             ClassPathResource resource = new ClassPathResource(signInKeyPath);
             byte[] bytes = resource.getInputStream().readAllBytes();
-            String base64EncodedPrivateKey = new String(bytes, StandardCharsets.UTF_8).trim();
-            // 秘密鍵をデコードして取得したバイト値を返す
-            return Decoders.BASE64.decode(base64EncodedPrivateKey);
+            String base64EncodedSignInKey = new String(bytes, StandardCharsets.UTF_8).trim();
+            // 署名鍵をデコードして取得したバイト値を返す
+            return Decoders.BASE64.decode(base64EncodedSignInKey);
         } catch (IOException e) {
             throw new RuntimeException("署名鍵ファイルの読み込みに失敗しました。", e);
         }
