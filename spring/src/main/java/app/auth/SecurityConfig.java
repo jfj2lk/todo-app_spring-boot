@@ -22,14 +22,14 @@ public class SecurityConfig {
         http
                 // CSRF要求無効化
                 .csrf(csrf -> csrf.disable())
-                // iframe埋め込み許可（H2コンソール確認用）
+                // iframeの埋め込みを許可（H2コンソール確認用）
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-                // 全てのリクエストを許可
+                // 許可URL以外にアクセス制限をかける
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers(jwtInfo.permitAllUrls).permitAll()
                                 .anyRequest().authenticated())
-                // JWT認証
+                // JWT認証を追加
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class);
         return http.build();
