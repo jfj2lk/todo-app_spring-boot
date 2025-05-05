@@ -1,4 +1,4 @@
-package app.aspect.archive;
+package app.archive;
 
 import java.util.Map;
 
@@ -33,7 +33,8 @@ public class ControllerAspect {
 
         // バリデーションエラーがある場合、エラーレスポンスを返す
         if (bindingResult != null && bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(Map.of("validationErrorMessages", bindingResult.getAllErrors()));
+            return ResponseEntity.badRequest()
+                    .body(Map.of("validationErrorMessages", bindingResult.getAllErrors()));
         }
 
         // 元の処理を続行
