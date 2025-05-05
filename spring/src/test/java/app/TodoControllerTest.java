@@ -2,9 +2,7 @@ package app;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,19 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import com.jayway.jsonpath.JsonPath;
-import app.auth.JwtService;
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
-import app.model.User;
-import app.repository.TodoRepository;
-import app.repository.UserRepository;
 import app.seeder.TestTodoSeeder;
 import app.seeder.TestUserSeeder;
-import app.service.TodoService;
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -34,40 +26,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@RequiredArgsConstructor
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Slf4j
-public class TodoControllerTest {
+class TodoControllerTest {
     private final MockMvc mockMvc;
-    private final JwtService jwtService;
-    private final UserRepository userRepository;
-    private final TodoService todoService;
-    private final TodoRepository todoRepository;
+    private final TestUtils testUtils;
     private final TestTodoSeeder testTodoSeeder;
     private final TestUserSeeder testUserSeeder;
-    private final EntityManager entityManager;
-    private String jwt;
-    private final TestUtils testUtils;
+    private final String jwt;
+
+    TodoControllerTest(MockMvc mockMvc, TestUtils testUtils, TestTodoSeeder testTodoSeeder,
+            TestUserSeeder testUserSeeder) {
+        this.mockMvc = mockMvc;
+        this.testUtils = testUtils;
+        this.testTodoSeeder = testTodoSeeder;
+        this.testUserSeeder = testUserSeeder;
+        this.jwt = this.testUtils.createJwt();
+    }
 
     @BeforeAll
-    public void setUpAll() {}
-
-    @BeforeEach
-    public void setUp() {
+    void setUpAll() {
         // 初期データを作成
         testUserSeeder.seedInitialUser();
         testTodoSeeder.seedInitialTodo();
-        // JWTの取得
-        User user = userRepository.findById(1l).orElseThrow();
-        this.jwt = jwtService.generateJwt(user);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        // DBのデータ全削除
-        userRepository.deleteAll();
-        todoRepository.deleteAll();
     }
 
     @Test
@@ -155,12 +138,10 @@ public class TodoControllerTest {
                         // 更新日時が作成日時よりも後か
                         result -> {
                             String responseBody = result.getResponse().getContentAsString();
-                            OffsetDateTime createdAt =
-                                    OffsetDateTime
-                                            .parse(JsonPath.read(responseBody, "$.data.createdAt"));
-                            OffsetDateTime updatedAt =
-                                    OffsetDateTime
-                                            .parse(JsonPath.read(responseBody, "$.data.updatedAt"));
+                            OffsetDateTime createdAt = OffsetDateTime
+                                    .parse(JsonPath.read(responseBody, "$.data.createdAt"));
+                            OffsetDateTime updatedAt = OffsetDateTime
+                                    .parse(JsonPath.read(responseBody, "$.data.updatedAt"));
                             assertTrue(updatedAt.isAfter(createdAt));
                         });
     }
@@ -180,7 +161,8 @@ public class TodoControllerTest {
     // // 全てのTodo取得
     // final Iterable<Todo> allTodos = todoService.getAllTodos();
     // // 取得したTodoの数を取得
-    // final long allTodosCount = StreamSupport.stream(allTodos.spliterator(), false).count();
+    // final long allTodosCount = StreamSupport.stream(allTodos.spliterator(),
+    // false).count();
 
     // // テスト
     // assertEquals(dbAllTodosCount - 1, allTodosCount, "Todoの件数が1件少なくなっていることを確認");
