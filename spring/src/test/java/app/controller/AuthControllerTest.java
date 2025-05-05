@@ -3,18 +3,17 @@ package app.controller;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import com.jayway.jsonpath.JsonPath;
 import app.auth.JwtService;
-import app.constants.JwtConstants;
 import app.constants.JwtConstants.JwtValidateResult;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
@@ -37,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Slf4j
 public class AuthControllerTest {
@@ -48,11 +46,11 @@ public class AuthControllerTest {
     private final TestUserSeeder testUserSeeder;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final JwtConstants jwtInfo;
 
-    AuthControllerTest(MockMvc mockMvc, UserRepository userRepository, TestUtils testUtils,
-            TestTodoSeeder testTodoSeeder, TestUserSeeder testUserSeeder, JwtService jwtService,
-            JwtConstants jwtInfo) {
+    @Autowired
+    AuthControllerTest(MockMvc mockMvc, UserRepository userRepository,
+            TestUtils testUtils, TestTodoSeeder testTodoSeeder,
+            TestUserSeeder testUserSeeder, JwtService jwtService) {
         this.mockMvc = mockMvc;
         this.userRepository = userRepository;
         this.testUtils = testUtils;
@@ -60,7 +58,6 @@ public class AuthControllerTest {
         this.testUserSeeder = testUserSeeder;
         this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         this.jwtService = jwtService;
-        this.jwtInfo = jwtInfo;
     }
 
     @BeforeAll

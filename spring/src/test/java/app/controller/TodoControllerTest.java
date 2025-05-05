@@ -8,11 +8,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import com.jayway.jsonpath.JsonPath;
@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Slf4j
 class TodoControllerTest {
@@ -43,8 +42,9 @@ class TodoControllerTest {
     private final TestUserSeeder testUserSeeder;
     private final String jwt;
 
-    TodoControllerTest(MockMvc mockMvc, TodoRepository todoRepository, TestUtils testUtils,
-            TestTodoSeeder testTodoSeeder,
+    @Autowired
+    TodoControllerTest(MockMvc mockMvc, TodoRepository todoRepository,
+            TestUtils testUtils, TestTodoSeeder testTodoSeeder,
             TestUserSeeder testUserSeeder) {
         this.mockMvc = mockMvc;
         this.todoRepository = todoRepository;
