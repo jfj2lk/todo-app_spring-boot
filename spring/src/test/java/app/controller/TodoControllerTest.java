@@ -1,4 +1,4 @@
-package app;
+package app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -16,6 +16,7 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import com.jayway.jsonpath.JsonPath;
+import app.TestUtils;
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
