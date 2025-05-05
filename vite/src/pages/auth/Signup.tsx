@@ -14,7 +14,7 @@ const Signup = () => {
     email: string,
     password: string
   ) => {
-    const json = await apiRequest<User>("/api/signup", "POST", {
+    const json = await apiRequest<User>("/api/auth/signup", "POST", {
       name,
       email,
       password,

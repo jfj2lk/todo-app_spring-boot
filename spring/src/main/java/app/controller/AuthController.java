@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
-public class UserController {
+public class AuthController {
 
     private UserService userService;
     private JwtService jwtService;
@@ -28,7 +28,7 @@ public class UserController {
     /**
      * ユーザーを追加する
      */
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<Map<String, Object>> signup(
             @Validated @RequestBody SignUpForm signUpForm) {
         final User signedUpUser = userService.signup(signUpForm);
@@ -41,7 +41,7 @@ public class UserController {
     /**
      * ログインする
      */
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginForm loginForm) {
         final User loginUser = userService.login(loginForm);
         // JWTトークン発行

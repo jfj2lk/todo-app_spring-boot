@@ -9,7 +9,7 @@ const Login = () => {
 
   // ログイン
   const handleLogin = async (email: string, password: string) => {
-    const json = await apiRequest<User>("/api/login", "POST", {
+    const json = await apiRequest<User>("/api/auth/login", "POST", {
       email,
       password,
     });
