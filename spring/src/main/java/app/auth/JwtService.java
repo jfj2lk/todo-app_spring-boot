@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import app.auth.JwtInfo.JwtValidateResult;
 import app.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -53,7 +53,7 @@ public class JwtService {
     /**
      * JWTの検証。
      */
-    public void validateJwt(String jwt) {
+    public JwtValidateResult validateJwt(String jwt) {
         try {
             Claims claims = Jwts
                     .parser()
@@ -62,10 +62,11 @@ public class JwtService {
                     .parseSignedClaims(jwt).getPayload();
             // 検証に成功した場合は認証情報を設定する
             setAuthInfo(claims);
+            return JwtValidateResult.SUCCESS;
         } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtException(null, null, null, e);
+            return JwtValidateResult.EXPIRED;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return JwtValidateResult.INVALID;
         }
     }
 
