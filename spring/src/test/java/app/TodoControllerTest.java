@@ -1,7 +1,10 @@
 package app;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -16,6 +19,7 @@ import com.jayway.jsonpath.JsonPath;
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
+import app.repository.TodoRepository;
 import app.seeder.TestTodoSeeder;
 import app.seeder.TestUserSeeder;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +36,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Slf4j
 class TodoControllerTest {
     private final MockMvc mockMvc;
+    private final TodoRepository todoRepository;
     private final TestUtils testUtils;
     private final TestTodoSeeder testTodoSeeder;
     private final TestUserSeeder testUserSeeder;
     private final String jwt;
 
-    TodoControllerTest(MockMvc mockMvc, TestUtils testUtils, TestTodoSeeder testTodoSeeder,
+    TodoControllerTest(MockMvc mockMvc, TodoRepository todoRepository, TestUtils testUtils,
+            TestTodoSeeder testTodoSeeder,
             TestUserSeeder testUserSeeder) {
         this.mockMvc = mockMvc;
+        this.todoRepository = todoRepository;
         this.testUtils = testUtils;
         this.testTodoSeeder = testTodoSeeder;
         this.testUserSeeder = testUserSeeder;
@@ -49,13 +56,13 @@ class TodoControllerTest {
     @BeforeAll
     void setUpAll() {
         // 初期データを作成
-        testUserSeeder.seedInitialUser();
-        testTodoSeeder.seedInitialTodo();
+        this.testUserSeeder.seedInitialUser();
+        this.testTodoSeeder.seedInitialTodo();
     }
 
     @Test
     void 全てのTodoが取得できるか() throws Exception {
-        // IDが1のTodoを取得
+        // IDが1の作成予定のTodo情報を取得
         Todo expectedTodo = this.testTodoSeeder.getSeedTodos().get(0);
 
         // 全てのTodoを取得
@@ -66,10 +73,10 @@ class TodoControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
-                // 全てのTodoが取得できているか
+                // Todoが全件数取得できているか
                 .andExpect(jsonPath("$.data.length()")
                         .value(this.testTodoSeeder.getSeedTodos().size()))
-                // 取得したTodoの形式が正しいか
+                // レスポンスのTodoの形式が正しいか
                 .andExpectAll(
                         jsonPath("$.data[0].id").value(expectedTodo.getId()),
                         jsonPath("$.data[0].name").value(expectedTodo.getName()),
@@ -81,11 +88,13 @@ class TodoControllerTest {
     @Test
     void Todoが追加できるか() throws Exception {
         // 追加するTodoのID
-        int addTodoId = this.testTodoSeeder.getSeedTodos().size() + 1;
+        long addTodoId = this.testTodoSeeder.getSeedTodos().size() + 1;
+        // Todo追加後のTodoの全件数
+        int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todo追加用のフォームを作成
         AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3");
-        // Todo追加用のフォームのJSON形式
-        String addTodoFormJson = testUtils.toJson(addTodoForm);
+        // Todo追加用のフォームのJSON形式を作成
+        String addTodoFormJson = this.testUtils.toJson(addTodoForm);
 
         // Todo追加
         mockMvc
@@ -97,25 +106,29 @@ class TodoControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
-                // 追加したTodoの形式が正しいか
+                // レスポンスの追加したTodoの形式が正しいか
                 .andExpectAll(
                         jsonPath("$.data.id").value(addTodoId),
                         jsonPath("$.data.name").value(addTodoForm.getName()),
                         jsonPath("$.data.desc").value(addTodoForm.getDesc()),
                         jsonPath("$.data.createdAt").exists(),
                         jsonPath("$.data.updatedAt").exists());
+
+        // 全てのTodoの件数を取得
+        long actualTotalTodoCount = this.todoRepository.count();
+        assertEquals(expectedTotalTodoCount, actualTotalTodoCount, "Todoが1件分追加されていることを確認");
     }
 
     @Test
     void Todoが更新できるか() throws Exception {
         // 更新するTodoのID
-        int updateTodoId = 1;
+        long updateTodoId = 1;
         // Todo更新用のフォームを作成
         UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update");
         // Todo追加用のフォームのJSON形式
-        String updateTodoFormJson = testUtils.toJson(updateTodoForm);
+        String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
 
-        // Todoの作成日時と更新日時に差を付ける為、待機
+        // Todoの作成日時と更新日時に差を付ける為、待機する
         Thread.sleep(1000);
 
         // Todo更新
@@ -128,14 +141,14 @@ class TodoControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
-                // 更新したTodoの形式が正しいか
+                // レスポンスの更新したTodoの形式が正しいか
                 .andExpectAll(
                         jsonPath("$.data.id").value(updateTodoId),
                         jsonPath("$.data.name").value(updateTodoForm.getName()),
                         jsonPath("$.data.desc").value(updateTodoForm.getDesc()),
                         jsonPath("$.data.createdAt").exists(),
                         jsonPath("$.data.updatedAt").exists(),
-                        // 更新日時が作成日時よりも後か
+                        // 更新日時が作成日時よりも後になっているか
                         result -> {
                             String responseBody = result.getResponse().getContentAsString();
                             OffsetDateTime createdAt = OffsetDateTime
