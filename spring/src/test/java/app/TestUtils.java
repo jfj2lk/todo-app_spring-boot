@@ -4,14 +4,14 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import app.auth.JwtService;
 import app.model.User;
-import app.service.UserService;
+import app.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class TestUtils {
     private final JwtService jwtService;
-    private final UserService userService;
+    private final AuthService userService;
 
     /**
      * ユーザーID1のJWTを作成する。

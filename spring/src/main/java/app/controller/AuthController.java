@@ -7,7 +7,7 @@ import app.auth.JwtService;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
-import app.service.UserService;
+import app.service.AuthService;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @AllArgsConstructor
 public class AuthController {
 
-    private UserService userService;
+    private AuthService userService;
     private JwtService jwtService;
 
     /**
