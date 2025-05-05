@@ -1,6 +1,5 @@
 package app.service;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public class UserService {
         User addUser = new User(addUserForm);
         // パスワード暗号化
         String rawPassword = addUser.getPassword();
-        String encodedPassword = passwordEncoder.encode(rawPassword);
+        String encodedPassword = encryptPassword(rawPassword);
         addUser.setPassword(encodedPassword);
         // Userを追加し、結果を返す
         return userRepository.save(addUser);
@@ -58,4 +57,10 @@ public class UserService {
         return user;
     }
 
+    /**
+     * パスワードを暗号化する（Bcrypt）。
+     */
+    public String encryptPassword(String rawPassword) {
+        return passwordEncoder.encode(rawPassword);
+    }
 }
