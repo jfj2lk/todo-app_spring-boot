@@ -159,27 +159,30 @@ class TodoControllerTest {
                         });
     }
 
-    // @Test
-    // void Todoが削除できるか() {
-    // // 全てのTodoの数
-    // final int dbAllTodosCount = 2;
-    // // 削除対象のTodoのID
-    // final Long deleteTodoId = 1l;
+    @Test
+    void Todoが削除できるか() throws Exception {
+        // 削除するTodoのID
+        long deleteTodoId = 1L;
+        // Todo削除後のTodoの全件数
+        int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size() - 1;
 
-    // // Todo削除
-    // final Long deletedTodoId = todoService.deleteTodo(deleteTodoId);
-    // // 削除したTodoを取得
-    // final Optional<Todo> deletedTodo = todoRepository.findById(deleteTodoId);
+        // Todo削除
+        mockMvc
+                .perform(delete("/api/todos/" + deleteTodoId)
+                        .header("Authorization", "Bearer " + this.jwt))
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                // レスポンスの形式が正しいか（削除したTodoのIDが返ってくるか）
+                .andExpect(jsonPath("$.data").value(deleteTodoId));
 
-    // // 全てのTodo取得
-    // final Iterable<Todo> allTodos = todoService.getAllTodos();
-    // // 取得したTodoの数を取得
-    // final long allTodosCount = StreamSupport.stream(allTodos.spliterator(),
-    // false).count();
+        // 全てのTodoの件数を取得
+        long actualTotalTodoCount = todoRepository.count();
+        assertEquals(expectedTotalTodoCount, actualTotalTodoCount, "Todoが1件分削除されていることを確認");
 
-    // // テスト
-    // assertEquals(dbAllTodosCount - 1, allTodosCount, "Todoの件数が1件少なくなっていることを確認");
-    // assertEquals(deleteTodoId, deletedTodoId, "削除したTodoのIDが取得できていることを確認");
-    // assertFalse(deletedTodo.isPresent(), "削除したTodoが存在しないことを確認");
-    // }
+        // 削除したTodoを取得
+        Optional<Todo> deleteTodo = todoRepository.findById(deleteTodoId);
+        assertFalse(deleteTodo.isPresent(), "削除したTodoが存在しないことを確認");
+    }
 }
