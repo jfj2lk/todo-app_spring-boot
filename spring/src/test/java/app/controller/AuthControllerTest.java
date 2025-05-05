@@ -16,6 +16,7 @@ import com.jayway.jsonpath.JsonPath;
 import app.auth.JwtInfo;
 import app.auth.JwtService;
 import app.auth.JwtInfo.JwtValidateResult;
+import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
 import app.repository.UserRepository;
@@ -117,5 +118,42 @@ public class AuthControllerTest {
         assertEquals(expectedTotalUserCount, totalUserCount, "新規登録したユーザー分、レコードの数が増えていることを確認");
     }
 
-    // TODO: ログイン機能の動作を確認するテストの作成。
+    @Test
+    void ログインできるか() throws Exception {
+        // 期待するログインするユーザーのID
+        long expectedLoginUserId = 1;
+        // 期待するログイン後の全てのユーザーのレコード数
+        long expectedTotalUserCount = this.testUserSeeder.getSeedUsers().size();
+        // ログイン用のフォーム
+        LoginForm loginForm = new LoginForm("a@a", "a");
+        // ログイン用のフォームのJSON形式
+        String loginFormJson = this.testUtils.toJson(loginForm);
+
+        // ログインAPIのレスポンス検証
+        String responseContents = mockMvc
+                .perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginFormJson))
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        // レスポンスのJWTの形式が正しいか確認
+        String jwt = JsonPath.read(responseContents, "$.accessToken");
+        JwtValidateResult jwtValidateResult = this.jwtService.validateJwt(jwt);
+        assertEquals(JwtValidateResult.SUCCESS, jwtValidateResult, "レスポンスのJWTの形式が正しいことを確認");
+
+        // 新規登録したユーザーの形式が正しいか確認
+        User loggedinUser = userRepository.findByEmail("a@a").get();
+        assertAll(
+                () -> assertEquals(expectedLoginUserId, loggedinUser.getId()),
+                () -> assertEquals(loginForm.getEmail(), loggedinUser.getEmail()),
+                () -> assertTrue(this.passwordEncoder.matches(
+                        loginForm.getPassword(),
+                        loggedinUser.getPassword())),
+                () -> assertNotNull(loggedinUser.getCreatedAt()),
+                () -> assertNotNull(loggedinUser.getUpdatedAt()));
+    }
 }
