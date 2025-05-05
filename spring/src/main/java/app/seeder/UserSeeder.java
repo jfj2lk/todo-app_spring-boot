@@ -1,4 +1,4 @@
-package app.seed;
+package app.seeder;
 
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +13,8 @@ import lombok.AllArgsConstructor;
 public class UserSeeder {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    private final PasswordEncoder passwordEncoder =
+            PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     /**
      * ユーザーの初期データをシードする

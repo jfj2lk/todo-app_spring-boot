@@ -1,4 +1,4 @@
-package app.seed;
+package app.seeder;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;

@@ -1,4 +1,4 @@
-package app.seed;
+package app.seeder;
 
 import org.springframework.stereotype.Component;
 
