@@ -1,18 +1,36 @@
 package app.controller;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import com.jayway.jsonpath.JsonPath;
+import app.auth.JwtInfo;
+import app.auth.JwtService;
+import app.auth.JwtInfo.JwtValidateResult;
+import app.form.user.SignUpForm;
+import app.model.User;
 import app.repository.UserRepository;
 import app.seeder.TestTodoSeeder;
 import app.seeder.TestUserSeeder;
 import app.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.Optional;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -27,17 +45,21 @@ public class AuthControllerTest {
     private final TestUtils testUtils;
     private final TestTodoSeeder testTodoSeeder;
     private final TestUserSeeder testUserSeeder;
-    private final String jwt;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final JwtInfo jwtInfo;
 
     AuthControllerTest(MockMvc mockMvc, UserRepository userRepository, TestUtils testUtils,
-            TestTodoSeeder testTodoSeeder,
-            TestUserSeeder testUserSeeder) {
+            TestTodoSeeder testTodoSeeder, TestUserSeeder testUserSeeder, JwtService jwtService,
+            JwtInfo jwtInfo) {
         this.mockMvc = mockMvc;
         this.userRepository = userRepository;
         this.testUtils = testUtils;
         this.testTodoSeeder = testTodoSeeder;
         this.testUserSeeder = testUserSeeder;
-        this.jwt = this.testUtils.createJwt();
+        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        this.jwtService = jwtService;
+        this.jwtInfo = jwtInfo;
     }
 
     @BeforeAll
@@ -47,4 +69,53 @@ public class AuthControllerTest {
         this.testTodoSeeder.seedInitialTodo();
     }
 
+    @Test
+    void 新規登録できるか() throws Exception {
+        // 期待する新規登録するユーザーのID
+        long expectedSignUpUserId = this.testUserSeeder.getSeedUsers().size() + 1;
+        // 期待する新規登録後の全てのユーザーのレコード数
+        long expectedTotalUserCount = this.testUserSeeder.getSeedUsers().size() + 1;
+        // 新規登録用のフォーム
+        SignUpForm signUpForm = new SignUpForm("c", "c@c", "c");
+        // 新規登録用のフォームのJSON形式
+        String signUpFormJson = this.testUtils.toJson(signUpForm);
+
+        // 新規登録APIのレスポンス検証
+        String responseContents = mockMvc
+                .perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signUpFormJson))
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        // レスポンスのJWTの形式が正しいか確認
+        String jwt = JsonPath.read(responseContents, "$.accessToken");
+        JwtValidateResult jwtValidateResult = this.jwtService.validateJwt(jwt);
+        assertEquals(JwtValidateResult.SUCCESS, jwtValidateResult, "レスポンスのJWTの形式が正しいことを確認");
+
+        // 新規登録したユーザーがDBに追加されているか確認
+        Optional<User> signedUpUserOptional = userRepository.findByEmail("c@c");
+        assertTrue(signedUpUserOptional.isPresent(), "新規登録したユーザーがDBに追加されていることを確認");
+        User signedUpUser = signedUpUserOptional.get();
+
+        // 新規登録したユーザーの形式が正しいか確認
+        assertAll(
+                () -> assertEquals(expectedSignUpUserId, signedUpUser.getId()),
+                () -> assertEquals(signUpForm.getName(), signedUpUser.getName()),
+                () -> assertEquals(signUpForm.getEmail(), signedUpUser.getEmail()),
+                () -> assertTrue(this.passwordEncoder.matches(
+                        signUpForm.getPassword(),
+                        signedUpUser.getPassword())),
+                () -> assertNotNull(signedUpUser.getCreatedAt()),
+                () -> assertNotNull(signedUpUser.getUpdatedAt()));
+
+        // 新規登録したユーザー分、レコードの数が増えているか確認
+        long totalUserCount = userRepository.count();
+        assertEquals(expectedTotalUserCount, totalUserCount, "新規登録したユーザー分、レコードの数が増えていることを確認");
+    }
+
+    // TODO: ログイン機能の動作を確認するテストの作成。
 }
