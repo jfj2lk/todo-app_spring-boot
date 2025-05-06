@@ -1,8 +1,8 @@
 package app.controller;
 
 import app.annotation.CheckTodoExists;
-import app.form.todo.add.AddTodoForm;
-import app.form.todo.update.UpdateTodoForm;
+import app.form.todo.AddTodoForm;
+import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
 import app.service.TodoService;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,8 @@ public class TodoController {
 
     // Todo追加
     @PostMapping("/todos")
-    public ResponseEntity<Map<String, Todo>> addTodo(@Validated @RequestBody AddTodoForm addTodoForm) {
+    public ResponseEntity<Map<String, Todo>> addTodo(
+            @Validated @RequestBody AddTodoForm addTodoForm) {
         // DBにフォームから送信されたTodoデータを保存し、その結果を返す
         Todo addedTodo = todoService.addTodo(addTodoForm);
         return ResponseEntity.ok().body(Map.of("data", addedTodo));
@@ -45,7 +46,8 @@ public class TodoController {
 
     // Todo更新
     @PatchMapping("/todos/{id}")
-    public ResponseEntity<Map<String, Todo>> updateTodo(@CheckTodoExists @PathVariable("id") Long id,
+    public ResponseEntity<Map<String, Todo>> updateTodo(
+            @CheckTodoExists @PathVariable("id") Long id,
             @Validated @RequestBody UpdateTodoForm updateTodoForm) {
         // フォームから送られたTodoデータで更新し、その結果を返す
         Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);

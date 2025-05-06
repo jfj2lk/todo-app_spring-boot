@@ -12,7 +12,8 @@ const AddTodo = (props: {
   // Todo追加
   const handleAddTodo = async () => {
     const json = await apiRequest<Todo>("/api/todos", "POST", {
-      todo: { name: todoName, desc: todoDesc },
+      name: todoName,
+      desc: todoDesc,
     });
     props.todoDispatch({ type: "added", data: json.data });
     setTodoName("");

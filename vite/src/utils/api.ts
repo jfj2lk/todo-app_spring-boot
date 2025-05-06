@@ -6,16 +6,17 @@ const apiRequest = async <T>(
   body: RequestBody = null
 ): Promise<ApiResponse<T>> => {
   try {
+    // ローカルストレージの値取得
+    const accessToken = localStorage.getItem("accessToken");
     // APIリクエストオプションの設定
     const options: RequestInit = {
-      headers: Object.assign(
-        {
-          Accept: "application/json",
-        },
-        body && {
+      headers: {
+        Accept: "application/json",
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+        ...(body && {
           "Content-Type": "application/json",
-        }
-      ),
+        }),
+      },
       method,
       ...(body && {
         body: JSON.stringify(body),

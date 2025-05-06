@@ -1,14 +1,22 @@
+import { User } from "@/types/user";
+import { apiRequest } from "@/utils/api";
 import { useState } from "react";
 
 const Login = () => {
   // 入力欄の値のstate
-  const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   // ログイン
-  const handleLogin = async (name: string, email: string, password: string) => {
-    console.log(name, email, password);
+  const handleLogin = async (email: string, password: string) => {
+    const json = await apiRequest<User>("/api/auth/login", "POST", {
+      email,
+      password,
+    });
+    if (json.accessToken) {
+      localStorage.setItem("accessToken", json.accessToken);
+    }
+    console.log("ログイン成功！");
   };
 
   return (
@@ -16,7 +24,7 @@ const Login = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleLogin(name, email, password);
+          handleLogin(email, password);
         }}
       >
         <div
@@ -26,16 +34,6 @@ const Login = () => {
             gap: "5px",
           }}
         >
-          {/* 名前入力欄 */}
-          <label htmlFor="name">名前:</label>
-          <input
-            id="name"
-            type="text"
-            name="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-
           {/* メールアドレス入力欄 */}
           <label htmlFor="email">メールアドレス:</label>
           <input
