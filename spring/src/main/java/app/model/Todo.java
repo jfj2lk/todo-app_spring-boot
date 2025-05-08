@@ -3,6 +3,8 @@ package app.model;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import jakarta.validation.constraints.NotBlank;
@@ -39,9 +41,10 @@ public class Todo {
      * Todo追加フォームの値でTodoオブジェクトを作成する
      */
     public Todo(AddTodoForm addTodoForm) {
+        // 現在ログイン中のユーザーIDを取得
+        Long principal = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        // TODO: JWTから取得したユーザーIDをセットするようにする。
-        this.userId = null;
+        this.userId = principal;
         this.name = addTodoForm.getName();
         this.desc = addTodoForm.getDesc();
         this.createdAt = now;
