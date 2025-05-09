@@ -40,11 +40,9 @@ public class Todo {
     /**
      * Todo追加フォームの値でTodoオブジェクトを作成する
      */
-    public Todo(AddTodoForm addTodoForm) {
-        // 現在ログイン中のユーザーIDを取得
-        Long principal = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    public Todo(AddTodoForm addTodoForm, Long loginUserId) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        this.userId = principal;
+        this.userId = loginUserId;
         this.name = addTodoForm.getName();
         this.desc = addTodoForm.getDesc();
         this.createdAt = now;
