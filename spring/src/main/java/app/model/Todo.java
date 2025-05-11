@@ -3,11 +3,9 @@ package app.model;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +17,7 @@ public class Todo {
     @Id
     private Long id;
     private Long userId;
-    @NotBlank
+    private Boolean isCompleted;
     private String name;
     private String desc;
     private Timestamp createdAt;
@@ -31,6 +29,19 @@ public class Todo {
     public Todo(Long userId, String name, String desc) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         this.userId = userId;
+        this.name = name;
+        this.desc = desc;
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    /**
+     * 指定したユーザーID、完了フラグ、名前、説明を持つTodoオブジェクトを作成する
+     */
+    public Todo(Long userId, Boolean isCompleted, String name, String desc) {
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        this.userId = userId;
+        this.isCompleted = isCompleted;
         this.name = name;
         this.desc = desc;
         this.createdAt = now;
