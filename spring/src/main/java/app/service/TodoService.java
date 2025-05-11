@@ -63,7 +63,7 @@ public class TodoService {
         // ログイン中のユーザーIDを取得
         Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Todo deleteTodo = todoRepository.findByIdAndUserId(id, loginUserId)
-                .orElseThrow(() -> new RuntimeException("削除対象のTodoが見つかりませんでした"));
+                .orElseThrow(() -> new RuntimeException("削除対象のTodoが見つかりませんでした。"));
         // Todo削除
         todoRepository.delete(deleteTodo);
         // 削除したTodoのIDを返す
