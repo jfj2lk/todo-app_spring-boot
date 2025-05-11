@@ -69,4 +69,24 @@ public class TodoService {
         // 削除したTodoのIDを返す
         return id;
     }
+
+    /**
+     * Todo完了・未完了状態切り替え
+     */
+    public Todo toggleCompleteTodo(Long todoId) {
+        // ログイン中のユーザーIDを取得
+        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Todo updateTodo = todoRepository.findByIdAndUserId(
+                todoId, loginUserId)
+                .orElseThrow(() -> new RuntimeException("更新対象のTodoが見つかりませんでした。"));
+        // isCompletedの値がtrueならfalse、falseならtrueの値をセットする
+        if (updateTodo.getIsCompleted()) {
+            updateTodo.setIsCompleted(false);
+        } else {
+            updateTodo.setIsCompleted(true);
+        }
+
+        // todoを更新し、更新後の値を返す
+        return todoRepository.save(updateTodo);
+    }
 }
