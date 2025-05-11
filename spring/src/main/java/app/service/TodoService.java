@@ -5,7 +5,7 @@ import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
 import app.repository.TodoRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +20,10 @@ public class TodoService {
      */
     @Transactional
     public Iterable<Todo> getAllTodos() {
+        // ログイン中のユーザーIDを取得
+        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         // 全てのTodo取得
-        return todoRepository.findAll();
+        return todoRepository.findAllByUserId(loginUserId);
     }
 
     /**
@@ -29,8 +31,10 @@ public class TodoService {
      */
     @Transactional
     public Todo addTodo(AddTodoForm addTodoForm) {
+        // ログイン中のユーザーIDを取得
+        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         // フォームの値でTodoオブジェクトを作成する
-        Todo addTodo = new Todo(addTodoForm);
+        Todo addTodo = new Todo(addTodoForm, loginUserId);
         // Todoを追加し、追加結果を返す
         return todoRepository.save(addTodo);
     }
@@ -41,8 +45,11 @@ public class TodoService {
     @Transactional
     public Todo updateTodo(Long id, UpdateTodoForm updateTodoForm)
             throws RuntimeException {
+        // ログイン中のユーザーIDを取得
+        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         // 更新対象のTodoをDBから取得
-        Todo updateTodo = todoRepository.findById(id).get();
+        Todo updateTodo = todoRepository.findByIdAndUserId(id, loginUserId)
+                .orElseThrow(() -> new RuntimeException("更新対象のTodoが見つかりませんでした。"));
         // フォームの値でTodoオブジェクトを更新する
         updateTodo.updateWithForm(updateTodoForm);
         // Todoを更新し、更新結果を返す
@@ -52,9 +59,13 @@ public class TodoService {
     /**
      * Todoを削除する
      */
-    public Long deleteTodo(Long id) throws EmptyResultDataAccessException {
+    public Long deleteTodo(Long id) throws RuntimeException {
+        // ログイン中のユーザーIDを取得
+        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Todo deleteTodo = todoRepository.findByIdAndUserId(id, loginUserId)
+                .orElseThrow(() -> new RuntimeException("削除対象のTodoが見つかりませんでした。"));
         // Todo削除
-        todoRepository.deleteById(id);
+        todoRepository.delete(deleteTodo);
         // 削除したTodoのIDを返す
         return id;
     }

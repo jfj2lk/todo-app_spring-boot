@@ -3,7 +3,8 @@ package app.model;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import jakarta.validation.constraints.NotBlank;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class Todo {
     @Id
     private Long id;
-
+    private Long userId;
     @NotBlank
     private String name;
     private String desc;
@@ -25,10 +26,11 @@ public class Todo {
     private Timestamp updatedAt;
 
     /**
-     * 指定した名前、説明を持つTodoオブジェクトを作成する
+     * 指定したユーザーID、名前、説明を持つTodoオブジェクトを作成する
      */
-    public Todo(String name, String desc) {
+    public Todo(Long userId, String name, String desc) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        this.userId = userId;
         this.name = name;
         this.desc = desc;
         this.createdAt = now;
@@ -38,8 +40,9 @@ public class Todo {
     /**
      * Todo追加フォームの値でTodoオブジェクトを作成する
      */
-    public Todo(AddTodoForm addTodoForm) {
+    public Todo(AddTodoForm addTodoForm, Long loginUserId) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        this.userId = loginUserId;
         this.name = addTodoForm.getName();
         this.desc = addTodoForm.getDesc();
         this.createdAt = now;
