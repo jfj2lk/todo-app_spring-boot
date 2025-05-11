@@ -14,10 +14,10 @@ public class TestTodoSeeder {
     private final TodoRepository todoRepository;
     // テスト時に作成するTodoの情報
     private final List<Todo> seedTodos = List.of(
-            new Todo(1L, 1L, "name1", "desc1", null, null),
-            new Todo(2L, 1L, "name2", "desc2", null, null),
-            new Todo(3L, 2L, "name3", "desc3", null, null),
-            new Todo(4L, 2L, "name4", "desc4", null, null));
+            new Todo(1L, 1L, true, "name1", "desc1", null, null),
+            new Todo(2L, 1L, false, "name2", "desc2", null, null),
+            new Todo(3L, 2L, true, "name3", "desc3", null, null),
+            new Todo(4L, 2L, false, "name4", "desc4", null, null));
 
     /**
      * テスト用のTodoの初期データを作成する
