@@ -1,5 +1,7 @@
 package app.seeder;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import app.model.Todo;
@@ -16,9 +18,10 @@ public class TodoSeeder {
      * Todoの初期データをシードする
      */
     public void seedInitialTodo() {
-        final Todo todo1 = new Todo(1L, "todo1", "desc");
-        final Todo todo2 = new Todo(2L, "todo2", "desc");
-        todoRepository.save(todo1);
-        todoRepository.save(todo2);
+        List<Todo> saveTodos = List.of(
+                new Todo(1L, "todo1", "desc"),
+                new Todo(1L, true, "todo2", "desc"),
+                new Todo(2L, "todo2", "desc"));
+        todoRepository.saveAll(saveTodos);
     }
 }
