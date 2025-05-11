@@ -9,11 +9,16 @@ const TodoList = (props: {
 }) => {
   // 編集中のTodoのID
   const [editingId, setEditingId] = useState<number | null>(null);
+  // 未完了状態のTodos
+  const inCompleteTodos = props.todos.filter((todo) => todo.isCompleted);
+  // 完了状態のTodos
+  const completedTodos = props.todos.filter((todo) => !todo.isCompleted);
 
   return (
     <div>
+      <h2>inComplete</h2>
       <ul>
-        {props.todos.map((todo) => (
+        {inCompleteTodos.map((todo) => (
           <li key={todo.id}>
             {/* Todoが選択中の場合に、更新欄と削除ボタンを表示する */}
             {todo.id === editingId ? (
@@ -40,6 +45,15 @@ const TodoList = (props: {
                 {todo.name} : {todo.desc ?? "-"}
               </div>
             )}
+          </li>
+        ))}
+      </ul>
+
+      <h2>complete</h2>
+      <ul>
+        {completedTodos.map((todo) => (
+          <li key={todo.id}>
+            {todo.name} : {todo.desc ?? "-"}
           </li>
         ))}
       </ul>
