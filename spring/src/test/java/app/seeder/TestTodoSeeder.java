@@ -26,7 +26,8 @@ public class TestTodoSeeder {
         // 元のオブジェクトの値が変更されないように、保存用のリストを作成する
         List<Todo> saveTodos = seedTodos
                 .stream()
-                .map(seedTodo -> new Todo(seedTodo.getUserId(), seedTodo.getName(), seedTodo.getDesc()))
+                .map(seedTodo -> new Todo(seedTodo.getUserId(), seedTodo.getIsCompleted(), seedTodo.getName(),
+                        seedTodo.getDesc()))
                 .toList();
         todoRepository.saveAll(saveTodos);
     }

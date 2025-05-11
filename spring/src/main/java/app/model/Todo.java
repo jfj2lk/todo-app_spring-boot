@@ -24,18 +24,6 @@ public class Todo {
     private Timestamp updatedAt;
 
     /**
-     * 指定したユーザーID、名前、説明を持つTodoオブジェクトを作成する
-     */
-    public Todo(Long userId, String name, String desc) {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        this.userId = userId;
-        this.name = name;
-        this.desc = desc;
-        this.createdAt = now;
-        this.updatedAt = now;
-    }
-
-    /**
      * 指定したユーザーID、完了フラグ、名前、説明を持つTodoオブジェクトを作成する
      */
     public Todo(Long userId, Boolean isCompleted, String name, String desc) {
@@ -54,6 +42,7 @@ public class Todo {
     public Todo(AddTodoForm addTodoForm, Long loginUserId) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         this.userId = loginUserId;
+        this.isCompleted = false;
         this.name = addTodoForm.getName();
         this.desc = addTodoForm.getDesc();
         this.createdAt = now;
