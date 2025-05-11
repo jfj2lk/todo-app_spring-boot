@@ -14,11 +14,11 @@ public class TestUtils {
     private final AuthService userService;
 
     /**
-     * ユーザーID1のJWTを作成する。
+     * 指定されたユーザーIDのJWTを作成する。
      */
-    public String createJwt() {
+    public String createJwt(Long userId) {
         User user = new User("user1", "email1", userService.encryptPassword("password1"));
-        user.setId(1L);
+        user.setId(userId);
         return jwtService.generateJwt(user);
     }
 
