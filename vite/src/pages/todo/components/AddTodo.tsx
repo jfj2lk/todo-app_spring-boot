@@ -8,12 +8,14 @@ const AddTodo = (props: {
 }) => {
   const [todoName, setTodoName] = useState<string>("");
   const [todoDesc, setTodoDesc] = useState<string>("");
+  const [todoPriority, setTodoPriority] = useState<number>(4);
 
   // Todo追加
   const handleAddTodo = async () => {
     const json = await apiRequest<Todo>("/api/todos", "POST", {
       name: todoName,
       desc: todoDesc,
+      priority: todoPriority,
     });
     props.todoDispatch({ type: "added", data: json.data });
     setTodoName("");
@@ -43,6 +45,17 @@ const AddTodo = (props: {
           value={todoDesc}
           onChange={(e) => {
             setTodoDesc(e.target.value);
+          }}
+        />
+
+        {/* 優先度入力欄 */}
+        <input
+          type="number"
+          min={1}
+          max={4}
+          value={todoPriority}
+          onChange={(e) => {
+            setTodoPriority(parseInt(e.target.value));
           }}
         />
 

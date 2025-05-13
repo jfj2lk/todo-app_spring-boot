@@ -1,6 +1,9 @@
 package app.form.todo;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,4 +19,9 @@ public class AddTodoForm {
 
     @Size(max = 255, message = "descは255文字以内で入力してください")
     private String desc;
+
+    @NotNull(message = "priorityは必須です")
+    @Min(value = 1, message = "priorityは1以上にしてください")
+    @Max(value = 4, message = "priorityは4以下にしてください")
+    private Integer priority;
 }
