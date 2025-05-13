@@ -53,7 +53,8 @@ public class Todo {
         this.userId = loginUserId;
         this.isCompleted = false;
         this.name = addTodoForm.getName();
-        this.desc = addTodoForm.getDesc();
+        // 説明の値がブランクの場合はnullを、それ以外の場合は説明の値を設定する
+        this.desc = addTodoForm.getDesc().isBlank() ? null : addTodoForm.getDesc();
         this.priority = addTodoForm.getPriority();
         this.dueDate = addTodoForm.getDueDate();
         this.dueTime = addTodoForm.getDueTime();
@@ -67,7 +68,8 @@ public class Todo {
     public void updateWithForm(UpdateTodoForm updateTodoForm) {
         LocalDateTime now = LocalDateTime.now();
         this.name = updateTodoForm.getName();
-        this.desc = updateTodoForm.getDesc();
+        // 説明の値がブランクの場合はnullを、それ以外の場合は説明の値を設定する
+        this.desc = updateTodoForm.getDesc().isBlank() ? null : updateTodoForm.getDesc();
         this.priority = updateTodoForm.getPriority();
         this.dueDate = updateTodoForm.getDueDate();
         this.dueTime = updateTodoForm.getDueTime();
