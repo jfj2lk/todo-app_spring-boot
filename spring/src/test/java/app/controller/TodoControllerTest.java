@@ -88,6 +88,7 @@ class TodoControllerTest {
                 .andExpectAll(
                         jsonPath("$.data[0].id").value(expectedTodo.getId()),
                         jsonPath("$.data[0].userId").value(expectedTodo.getUserId()),
+                        jsonPath("$.data[0].isCompleted").value(expectedTodo.getIsCompleted()),
                         jsonPath("$.data[0].name").value(expectedTodo.getName()),
                         jsonPath("$.data[0].desc").value(expectedTodo.getDesc()),
                         jsonPath("$.data[0].createdAt").exists(),
@@ -119,6 +120,7 @@ class TodoControllerTest {
                 .andExpectAll(
                         jsonPath("$.data.id").value(addTodoId),
                         jsonPath("$.data.userId").value(this.operatorForUserId1),
+                        jsonPath("$.data.isCompleted").value("false"),
                         jsonPath("$.data.name").value(addTodoForm.getName()),
                         jsonPath("$.data.desc").value(addTodoForm.getDesc()),
                         jsonPath("$.data.createdAt").exists(),
