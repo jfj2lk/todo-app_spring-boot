@@ -53,8 +53,9 @@ const TodoList = (props: {
               // Todoをクリックした場合、そのTodoを選択状態にする
               <div onClick={() => setEditingId(todo.id)}>
                 <button onClick={() => toggleComplete(todo.id)}>〇</button>
-                name: {todo.name}, description: {todo.desc ?? "-"}, priority:{" "}
-                {todo.priority}
+                name: {todo.name}, description: {todo.desc}, priority:{" "}
+                {todo.priority}, dueDate: {todo.dueDate}, dueTime:{" "}
+                {todo.dueTime}
               </div>
             )}
           </li>
@@ -67,7 +68,7 @@ const TodoList = (props: {
           <li key={todo.id}>
             <button onClick={() => toggleComplete(todo.id)}>〇</button>
             name: {todo.name}, description: {todo.desc ?? "-"}, priority:{" "}
-            {todo.priority}
+            {todo.priority}, dueDate: {todo.dueDate}, dueTime: {todo.dueTime}
           </li>
         ))}
       </ul>
