@@ -17,6 +17,7 @@ CREATE TABLE todo (
     name VARCHAR(255) NOT NULL,
     desc VARCHAR(255),
     priority INT NOT NULL DEFAULT 4 CHECK (priority BETWEEN 1 AND 4),
+    due_date_time TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES "user"(id)
