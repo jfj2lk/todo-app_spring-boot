@@ -9,6 +9,8 @@ const AddTodo = (props: {
   const [todoName, setTodoName] = useState<string>("");
   const [todoDesc, setTodoDesc] = useState<string>("");
   const [todoPriority, setTodoPriority] = useState<number>(4);
+  const [todoDueDate, setTodoDueDate] = useState<string>("");
+  const [todoDueTime, setTodoDueTime] = useState<string>("");
 
   // Todo追加
   const handleAddTodo = async () => {
@@ -16,6 +18,8 @@ const AddTodo = (props: {
       name: todoName,
       desc: todoDesc,
       priority: todoPriority,
+      dueDate: todoDueDate,
+      dueTime: todoDueTime,
     });
     props.todoDispatch({ type: "added", data: json.data });
     setTodoName("");
@@ -56,6 +60,24 @@ const AddTodo = (props: {
           value={todoPriority}
           onChange={(e) => {
             setTodoPriority(parseInt(e.target.value));
+          }}
+        />
+
+        {/* 期限日付入力欄 */}
+        <input
+          type="date"
+          value={todoDueDate}
+          onChange={(e) => {
+            setTodoDueDate(e.target.value);
+          }}
+        />
+
+        {/* 期限時刻入力欄 */}
+        <input
+          type="time"
+          value={todoDueTime}
+          onChange={(e) => {
+            setTodoDueTime(e.target.value);
           }}
         />
 
