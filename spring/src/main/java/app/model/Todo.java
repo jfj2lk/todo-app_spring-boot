@@ -1,6 +1,5 @@
 package app.model;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 
@@ -21,15 +20,16 @@ public class Todo {
     private String name;
     private String desc;
     private Integer priority;
-    private Timestamp dueDateTime;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private LocalDateTime dueDateTime;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     /**
      * 指定可能なプロパティ（ユーザーID、完了フラグ、名前、説明、優先度、期限日時）を全て指定したTodoオブジェクトを作成する。
      */
-    public Todo(Long userId, Boolean isCompleted, String name, String desc, Integer priority, Timestamp dueDateTime) {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+    public Todo(Long userId, Boolean isCompleted, String name, String desc, Integer priority,
+            LocalDateTime dueDateTime) {
+        LocalDateTime now = LocalDateTime.now();
         this.userId = userId;
         this.isCompleted = isCompleted;
         this.name = name;
@@ -44,7 +44,7 @@ public class Todo {
      * Todo追加フォームの値でTodoオブジェクトを作成する
      */
     public Todo(AddTodoForm addTodoForm, Long loginUserId) {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
         this.userId = loginUserId;
         this.isCompleted = false;
         this.name = addTodoForm.getName();
@@ -58,7 +58,7 @@ public class Todo {
      * Todo更新フォームの値でプロパティの値を更新する
      */
     public void updateWithForm(UpdateTodoForm updateTodoForm) {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
         this.name = updateTodoForm.getName();
         this.desc = updateTodoForm.getDesc();
         this.priority = updateTodoForm.getPriority();
