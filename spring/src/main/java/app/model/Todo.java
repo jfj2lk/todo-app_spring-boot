@@ -21,13 +21,14 @@ public class Todo {
     private String name;
     private String desc;
     private Integer priority;
+    private Timestamp dueDateTime;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
     /**
-     * 指定可能なプロパティ（ユーザーID、完了フラグ、名前、説明、優先度）を全て指定したTodoオブジェクトを作成する。
+     * 指定可能なプロパティ（ユーザーID、完了フラグ、名前、説明、優先度、期限日時）を全て指定したTodoオブジェクトを作成する。
      */
-    public Todo(Long userId, Boolean isCompleted, String name, String desc, Integer priority) {
+    public Todo(Long userId, Boolean isCompleted, String name, String desc, Integer priority, Timestamp dueDateTime) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         this.userId = userId;
         this.isCompleted = isCompleted;
@@ -36,6 +37,7 @@ public class Todo {
         this.priority = priority;
         this.createdAt = now;
         this.updatedAt = now;
+        this.dueDateTime = dueDateTime;
     }
 
     /**
