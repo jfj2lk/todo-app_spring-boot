@@ -3,7 +3,11 @@ package app.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.time.OffsetDateTime;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -103,7 +107,9 @@ class TodoControllerTest {
         // Todo追加後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todo追加用のフォームを作成
-        AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3", 1);
+        AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3", 1, LocalDate.now(), LocalTime.now());
+        log.info("-----------------------------------------------------------------");
+        log.info(addTodoForm.getDueTime().toString());
         // Todo追加用のフォームのJSON形式を作成
         String addTodoFormJson = this.testUtils.toJson(addTodoForm);
 
@@ -140,7 +146,8 @@ class TodoControllerTest {
         // Todo更新後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size();
         // Todo更新用のフォームを作成
-        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4);
+        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4, LocalDate.now(),
+                LocalTime.now().withNano(0));
         // Todo更新用のフォームのJSON形式
         String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
 
@@ -169,10 +176,10 @@ class TodoControllerTest {
                         // 更新日時が作成日時よりも後になっているか
                         result -> {
                             String responseBody = result.getResponse().getContentAsString();
-                            OffsetDateTime createdAt = OffsetDateTime
+                            LocalDateTime createdAt = LocalDateTime
                                     .parse(JsonPath.read(responseBody,
                                             "$.data.createdAt"));
-                            OffsetDateTime updatedAt = OffsetDateTime
+                            LocalDateTime updatedAt = LocalDateTime
                                     .parse(JsonPath.read(responseBody,
                                             "$.data.updatedAt"));
                             assertTrue(updatedAt.isAfter(createdAt));
@@ -188,7 +195,8 @@ class TodoControllerTest {
         // 更新するTodoのID
         long updateTodoId = 3L;
         // Todo更新用のフォームを作成
-        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4);
+        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4, LocalDate.now(),
+                LocalTime.now());
         // Todo更新用のフォームのJSON形式
         String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
 

@@ -2,6 +2,9 @@ package app.utils;
 
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import app.auth.JwtService;
 import app.model.User;
 import app.service.AuthService;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class TestUtils {
     private final JwtService jwtService;
     private final AuthService userService;
+    private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     /**
      * 指定されたユーザーIDのJWTを作成する。
@@ -26,7 +30,6 @@ public class TestUtils {
      * オブジェクトをJSON文字列に変換する。
      */
     public String toJson(Object object) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(object);
     }
 }

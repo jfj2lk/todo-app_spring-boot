@@ -12,6 +12,8 @@ const UpdateTodo = (props: {
   const [todoName, setTodoName] = useState<string>(props.todo.name);
   const [todoDesc, setTodoDesc] = useState<string>(props.todo.desc);
   const [todoPriority, setTodoPriority] = useState<number>(props.todo.priority);
+  const [todoDueDate, setTodoDueDate] = useState<string>(props.todo.dueDate);
+  const [todoDueTime, setTodoDueTime] = useState<string>(props.todo.dueTime);
   // 編集中の入力欄の要素
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -21,6 +23,8 @@ const UpdateTodo = (props: {
       name: todoName,
       desc: todoDesc,
       priority: todoPriority,
+      dueDate: todoDueDate,
+      dueTime: todoDueTime,
     });
     props.todoDispatch({ type: "updated", data: json.data });
     props.setEditingId(null);
@@ -68,6 +72,24 @@ const UpdateTodo = (props: {
           value={todoPriority}
           onChange={(e) => {
             setTodoPriority(parseInt(e.target.value));
+          }}
+        />
+
+        {/* 期限日付入力欄 */}
+        <input
+          type="date"
+          value={todoDueDate}
+          onChange={(e) => {
+            setTodoDueDate(e.target.value);
+          }}
+        />
+
+        {/* 期限時刻入力欄 */}
+        <input
+          type="time"
+          value={todoDueTime}
+          onChange={(e) => {
+            setTodoDueTime(e.target.value);
           }}
         />
 

@@ -1,5 +1,8 @@
 package app.form.todo;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -24,4 +27,8 @@ public class UpdateTodoForm {
     @Min(value = 1, message = "priorityは1以上にしてください")
     @Max(value = 4, message = "priorityは4以下にしてください")
     private Integer priority;
+
+    private LocalDate dueDate;
+
+    private LocalTime dueTime;
 }
