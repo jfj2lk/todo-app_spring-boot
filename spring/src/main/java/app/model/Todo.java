@@ -59,6 +59,7 @@ public class Todo {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         this.name = updateTodoForm.getName();
         this.desc = updateTodoForm.getDesc();
+        this.priority = updateTodoForm.getPriority();
         this.updatedAt = now;
     }
 }
