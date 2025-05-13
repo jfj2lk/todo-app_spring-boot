@@ -14,10 +14,10 @@ public class TestTodoSeeder {
     private final TodoRepository todoRepository;
     // テスト時に作成するTodoの情報
     private final List<Todo> seedTodos = List.of(
-            new Todo(1L, 1L, true, "name1", "desc1", null, null),
-            new Todo(2L, 1L, false, "name2", "desc2", null, null),
-            new Todo(3L, 2L, true, "name3", "desc3", null, null),
-            new Todo(4L, 2L, false, "name4", "desc4", null, null));
+            new Todo(1L, 1L, true, "name1", "desc1", 1, null, null),
+            new Todo(2L, 1L, false, "name2", "desc2", 2, null, null),
+            new Todo(3L, 2L, true, "name3", "desc3", 3, null, null),
+            new Todo(4L, 2L, false, "name4", "desc4", 4, null, null));
 
     /**
      * テスト用のTodoの初期データを作成する
@@ -27,7 +27,7 @@ public class TestTodoSeeder {
         List<Todo> saveTodos = seedTodos
                 .stream()
                 .map(seedTodo -> new Todo(seedTodo.getUserId(), seedTodo.getIsCompleted(), seedTodo.getName(),
-                        seedTodo.getDesc()))
+                        seedTodo.getDesc(), seedTodo.getPriority()))
                 .toList();
         todoRepository.saveAll(saveTodos);
     }

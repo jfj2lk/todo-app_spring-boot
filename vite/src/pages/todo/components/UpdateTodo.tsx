@@ -11,6 +11,7 @@ const UpdateTodo = (props: {
 }) => {
   const [todoName, setTodoName] = useState<string>(props.todo.name);
   const [todoDesc, setTodoDesc] = useState<string>(props.todo.desc);
+  const [todoPriority, setTodoPriority] = useState<number>(props.todo.priority);
   // 編集中の入力欄の要素
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -19,6 +20,7 @@ const UpdateTodo = (props: {
     const json = await apiRequest<Todo>(`/api/todos/${updateTodoId}`, "PATCH", {
       name: todoName,
       desc: todoDesc,
+      priority: todoPriority,
     });
     props.todoDispatch({ type: "updated", data: json.data });
     props.setEditingId(null);
@@ -55,6 +57,17 @@ const UpdateTodo = (props: {
           value={todoDesc}
           onChange={(e) => {
             setTodoDesc(e.target.value);
+          }}
+        />
+
+        {/* 優先度入力欄 */}
+        <input
+          type="number"
+          min={1}
+          max={4}
+          value={todoPriority}
+          onChange={(e) => {
+            setTodoPriority(parseInt(e.target.value));
           }}
         />
 

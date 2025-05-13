@@ -91,6 +91,7 @@ class TodoControllerTest {
                         jsonPath("$.data[0].isCompleted").value(expectedTodo.getIsCompleted()),
                         jsonPath("$.data[0].name").value(expectedTodo.getName()),
                         jsonPath("$.data[0].desc").value(expectedTodo.getDesc()),
+                        jsonPath("$.data[0].priority").value(expectedTodo.getPriority()),
                         jsonPath("$.data[0].createdAt").exists(),
                         jsonPath("$.data[0].updatedAt").exists());
     }
@@ -102,7 +103,7 @@ class TodoControllerTest {
         // Todo追加後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todo追加用のフォームを作成
-        AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3");
+        AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3", 1);
         // Todo追加用のフォームのJSON形式を作成
         String addTodoFormJson = this.testUtils.toJson(addTodoForm);
 
@@ -123,6 +124,7 @@ class TodoControllerTest {
                         jsonPath("$.data.isCompleted").value("false"),
                         jsonPath("$.data.name").value(addTodoForm.getName()),
                         jsonPath("$.data.desc").value(addTodoForm.getDesc()),
+                        jsonPath("$.data.priority").value(addTodoForm.getPriority()),
                         jsonPath("$.data.createdAt").exists(),
                         jsonPath("$.data.updatedAt").exists());
 
@@ -138,7 +140,7 @@ class TodoControllerTest {
         // Todo更新後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size();
         // Todo更新用のフォームを作成
-        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update");
+        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4);
         // Todo更新用のフォームのJSON形式
         String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
 
@@ -161,6 +163,7 @@ class TodoControllerTest {
                         jsonPath("$.data.userId").value(this.operatorForUserId1),
                         jsonPath("$.data.name").value(updateTodoForm.getName()),
                         jsonPath("$.data.desc").value(updateTodoForm.getDesc()),
+                        jsonPath("$.data.priority").value(updateTodoForm.getPriority()),
                         jsonPath("$.data.createdAt").exists(),
                         jsonPath("$.data.updatedAt").exists(),
                         // 更新日時が作成日時よりも後になっているか
@@ -185,7 +188,7 @@ class TodoControllerTest {
         // 更新するTodoのID
         long updateTodoId = 3L;
         // Todo更新用のフォームを作成
-        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update");
+        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4);
         // Todo更新用のフォームのJSON形式
         String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
 
@@ -269,6 +272,7 @@ class TodoControllerTest {
                         jsonPath("$.data.isCompleted").value("true"),
                         jsonPath("$.data.name").value(expectedTodo.getName()),
                         jsonPath("$.data.desc").value(expectedTodo.getDesc()),
+                        jsonPath("$.data.priority").value(expectedTodo.getPriority()),
                         jsonPath("$.data.createdAt").exists(),
                         jsonPath("$.data.updatedAt").exists());
     }
@@ -294,6 +298,7 @@ class TodoControllerTest {
                         jsonPath("$.data.isCompleted").value("false"),
                         jsonPath("$.data.name").value(expectedTodo.getName()),
                         jsonPath("$.data.desc").value(expectedTodo.getDesc()),
+                        jsonPath("$.data.priority").value(expectedTodo.getPriority()),
                         jsonPath("$.data.createdAt").exists(),
                         jsonPath("$.data.updatedAt").exists());
     }

@@ -20,18 +20,20 @@ public class Todo {
     private Boolean isCompleted;
     private String name;
     private String desc;
+    private Integer priority;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
     /**
-     * 指定したユーザーID、完了フラグ、名前、説明を持つTodoオブジェクトを作成する
+     * 指定可能なプロパティ（ユーザーID、完了フラグ、名前、説明、優先度）を全て指定したTodoオブジェクトを作成する。
      */
-    public Todo(Long userId, Boolean isCompleted, String name, String desc) {
+    public Todo(Long userId, Boolean isCompleted, String name, String desc, Integer priority) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         this.userId = userId;
         this.isCompleted = isCompleted;
         this.name = name;
         this.desc = desc;
+        this.priority = priority;
         this.createdAt = now;
         this.updatedAt = now;
     }
@@ -45,6 +47,7 @@ public class Todo {
         this.isCompleted = false;
         this.name = addTodoForm.getName();
         this.desc = addTodoForm.getDesc();
+        this.priority = addTodoForm.getPriority();
         this.createdAt = now;
         this.updatedAt = now;
     }
@@ -56,6 +59,7 @@ public class Todo {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         this.name = updateTodoForm.getName();
         this.desc = updateTodoForm.getDesc();
+        this.priority = updateTodoForm.getPriority();
         this.updatedAt = now;
     }
 }
