@@ -11,9 +11,9 @@ const TodoList = (props: {
   // 編集中のTodoのID
   const [editingId, setEditingId] = useState<number | null>(null);
   // 未完了状態のTodos
-  const inCompleteTodos = props.todos.filter((todo) => todo.isCompleted);
+  const inCompleteTodos = props.todos.filter((todo) => !todo.isCompleted);
   // 完了状態のTodos
-  const completedTodos = props.todos.filter((todo) => !todo.isCompleted);
+  const completedTodos = props.todos.filter((todo) => todo.isCompleted);
 
   // Todoの完了・未完了状態を変更するAPIリクエストを送信
   const toggleComplete = async (todoId: number) => {
@@ -53,7 +53,8 @@ const TodoList = (props: {
               // Todoをクリックした場合、そのTodoを選択状態にする
               <div onClick={() => setEditingId(todo.id)}>
                 <button onClick={() => toggleComplete(todo.id)}>〇</button>
-                {todo.name} : {todo.desc ?? "-"}
+                name: {todo.name}, description: {todo.desc ?? "-"}, priority:{" "}
+                {todo.priority}
               </div>
             )}
           </li>
@@ -65,7 +66,8 @@ const TodoList = (props: {
         {completedTodos.map((todo) => (
           <li key={todo.id}>
             <button onClick={() => toggleComplete(todo.id)}>〇</button>
-            {todo.name} : {todo.desc ?? "-"}
+            name: {todo.name}, description: {todo.desc ?? "-"}, priority:{" "}
+            {todo.priority}
           </li>
         ))}
       </ul>
