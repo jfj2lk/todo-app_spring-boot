@@ -4,6 +4,7 @@ export type Todo = {
   isCompleted: boolean;
   name: string;
   desc: string;
+  priority: number;
   createdAt: any;
   updatedAt: any;
 };
