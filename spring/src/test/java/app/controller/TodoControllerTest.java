@@ -88,6 +88,7 @@ class TodoControllerTest {
                 .andExpectAll(
                         jsonPath("$.data[0].id").value(expectedTodo.getId()),
                         jsonPath("$.data[0].userId").value(expectedTodo.getUserId()),
+                        jsonPath("$.data[0].isCompleted").value(expectedTodo.getIsCompleted()),
                         jsonPath("$.data[0].name").value(expectedTodo.getName()),
                         jsonPath("$.data[0].desc").value(expectedTodo.getDesc()),
                         jsonPath("$.data[0].createdAt").exists(),
@@ -119,6 +120,7 @@ class TodoControllerTest {
                 .andExpectAll(
                         jsonPath("$.data.id").value(addTodoId),
                         jsonPath("$.data.userId").value(this.operatorForUserId1),
+                        jsonPath("$.data.isCompleted").value("false"),
                         jsonPath("$.data.name").value(addTodoForm.getName()),
                         jsonPath("$.data.desc").value(addTodoForm.getDesc()),
                         jsonPath("$.data.createdAt").exists(),
@@ -244,5 +246,55 @@ class TodoControllerTest {
                         status().isInternalServerError(),
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("$.message").value("削除対象のTodoが見つかりませんでした。"));
+    }
+
+    @Test
+    void Todoを完了状態にする() throws Exception {
+        // 完了状態にするTodoのID
+        int completeTodoId = 2;
+        Todo expectedTodo = this.testTodoSeeder.getSeedTodos().get(completeTodoId - 1);
+
+        // Todo完了
+        mockMvc
+                .perform(patch("/api/todos/" + completeTodoId + "/toggleComplete")
+                        .header("Authorization", "Bearer " + this.jwtForUserId1))
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                // レスポンスの完了状態にしたTodoの形式が正しいか
+                .andExpectAll(
+                        jsonPath("$.data.id").value(expectedTodo.getId()),
+                        jsonPath("$.data.userId").value(expectedTodo.getUserId()),
+                        jsonPath("$.data.isCompleted").value("true"),
+                        jsonPath("$.data.name").value(expectedTodo.getName()),
+                        jsonPath("$.data.desc").value(expectedTodo.getDesc()),
+                        jsonPath("$.data.createdAt").exists(),
+                        jsonPath("$.data.updatedAt").exists());
+    }
+
+    @Test
+    void Todoを未完了状態にする() throws Exception {
+        // 完了状態にするTodoのID
+        int completeTodoId = 1;
+        Todo expectedTodo = this.testTodoSeeder.getSeedTodos().get(completeTodoId - 1);
+
+        // Todo完了
+        mockMvc
+                .perform(patch("/api/todos/" + completeTodoId + "/toggleComplete")
+                        .header("Authorization", "Bearer " + this.jwtForUserId1))
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                // レスポンスの完了状態にしたTodoの形式が正しいか
+                .andExpectAll(
+                        jsonPath("$.data.id").value(expectedTodo.getId()),
+                        jsonPath("$.data.userId").value(expectedTodo.getUserId()),
+                        jsonPath("$.data.isCompleted").value("false"),
+                        jsonPath("$.data.name").value(expectedTodo.getName()),
+                        jsonPath("$.data.desc").value(expectedTodo.getDesc()),
+                        jsonPath("$.data.createdAt").exists(),
+                        jsonPath("$.data.updatedAt").exists());
     }
 }

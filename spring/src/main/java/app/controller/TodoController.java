@@ -62,4 +62,12 @@ public class TodoController {
         Long deletedTodoId = todoService.deleteTodo(id);
         return ResponseEntity.ok(Map.of("data", deletedTodoId));
     }
+
+    // Todo完了・未完了状態切り替え
+    @PatchMapping("/todos/{id}/toggleComplete")
+    public ResponseEntity<Map<String, Object>> toggleCompleteTodo(
+            @PathVariable("id") Long id) {
+        Todo updateTodo = todoService.toggleCompleteTodo(id);
+        return ResponseEntity.ok(Map.of("data", updateTodo));
+    }
 }
