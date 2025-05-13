@@ -247,4 +247,31 @@ class TodoControllerTest {
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("$.message").value("削除対象のTodoが見つかりませんでした。"));
     }
+
+    @Test
+    void Todoを完了状態にする() throws Exception {
+        // 完了状態にするTodoのID
+        int completeTodoId = 2;
+        Todo expectedTodo = this.testTodoSeeder.getSeedTodos().get(completeTodoId - 1);
+
+        // Todo完了
+        mockMvc
+                .perform(patch("/api/todos/" + completeTodoId + "/toggleComplete")
+                        .header("Authorization", "Bearer " + this.jwtForUserId1))
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                // レスポンスの完了状態にしたTodoの形式が正しいか
+                .andExpectAll(
+                        jsonPath("$.data.id").value(expectedTodo.getId()),
+                        jsonPath("$.data.userId").value(expectedTodo.getUserId()),
+                        jsonPath("$.data.isCompleted").value("true"),
+                        jsonPath("$.data.name").value(expectedTodo.getName()),
+                        jsonPath("$.data.desc").value(expectedTodo.getDesc()),
+                        jsonPath("$.data.createdAt").exists(),
+                        jsonPath("$.data.updatedAt").exists());
+    }
+
+    // TODO: Todoを未完了状態にするテストの作成。
 }
