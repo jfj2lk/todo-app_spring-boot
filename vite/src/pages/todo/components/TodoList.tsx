@@ -1,5 +1,5 @@
 import { Todo, TodoReducerActions } from "@/types/todo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeleteTodo from "./DeleteTodo";
 import UpdateTodo from "./UpdateTodo";
 import { apiRequest } from "@/utils/api";
@@ -10,10 +10,29 @@ const TodoList = (props: {
 }) => {
   // 編集中のTodoのID
   const [editingId, setEditingId] = useState<number | null>(null);
+  // 並び替え済みのTodos
+  const [sortTodos, setSortTodos] = useState<Todo[]>([]);
   // 未完了状態のTodos
-  const inCompleteTodos = props.todos.filter((todo) => !todo.isCompleted);
+  const inCompleteTodos = sortTodos.filter((todo) => !todo.isCompleted);
   // 完了状態のTodos
-  const completedTodos = props.todos.filter((todo) => todo.isCompleted);
+  const completedTodos = sortTodos.filter((todo) => todo.isCompleted);
+  // 並び替え要素
+  const [sortKey, setSortKey] = useState<string>("createdAt");
+  // 並び変え順
+  const [sortOrder, setSortOrder] = useState<string>("ascending");
+
+  useEffect(() => {
+    // Todosの要素を、並び替え要素と並び変え順の値で並び替える
+    const sortedTodos = [...props.todos].sort((a, b) => {
+      const valA = a[sortKey];
+      const valB = b[sortKey];
+      if (valA < valB) return sortOrder === "ascending" ? -1 : 1;
+      if (valA > valB) return sortOrder === "ascending" ? 1 : -1;
+      return 0;
+    });
+
+    setSortTodos(sortedTodos);
+  }, [props.todos, sortKey, sortOrder]);
 
   // Todoの完了・未完了状態を変更するAPIリクエストを送信
   const toggleComplete = async (todoId: number) => {
@@ -32,7 +51,13 @@ const TodoList = (props: {
       <div className="flex">
         <div>
           <p>並び替え</p>
-          <select name="sort">
+          <select
+            name="sort"
+            value={sortKey}
+            onChange={(e) => {
+              setSortKey(e.target.value);
+            }}
+          >
             <option value="createdAt">作成日</option>
             <option value="dueDateTime">期限</option>
             <option value="priority">優先度</option>
@@ -40,7 +65,13 @@ const TodoList = (props: {
         </div>
         <div>
           <p>順序</p>
-          <select name="order">
+          <select
+            name="order"
+            value={sortOrder}
+            onChange={(e) => {
+              setSortOrder(e.target.value);
+            }}
+          >
             <option value="ascending">昇順</option>
             <option value="descending">降順</option>
           </select>
