@@ -24,8 +24,29 @@ const TodoList = (props: {
     props.todoDispatch({ type: "updated", data: json.data });
   };
 
+  // Todoを優先度で並び替える
+
   return (
     <div>
+      {/* 並び替えメニュー */}
+      <div className="flex">
+        <div>
+          <p>並び替え</p>
+          <select name="sort">
+            <option value="createdAt">作成日</option>
+            <option value="dueDateTime">期限</option>
+            <option value="priority">優先度</option>
+          </select>
+        </div>
+        <div>
+          <p>順序</p>
+          <select name="order">
+            <option value="ascending">昇順</option>
+            <option value="descending">降順</option>
+          </select>
+        </div>
+      </div>
+
       <h2>inComplete</h2>
       <ul>
         {inCompleteTodos.map((todo) => (
