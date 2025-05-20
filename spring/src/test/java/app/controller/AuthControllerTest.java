@@ -89,6 +89,7 @@ public class AuthControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("新規登録しました。"))
                 .andReturn().getResponse().getContentAsString();
 
         // レスポンスのJWTの形式が正しいか確認
@@ -137,6 +138,7 @@ public class AuthControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("ログインしました。"))
                 .andReturn().getResponse().getContentAsString();
 
         // レスポンスのJWTの形式が正しいか確認
