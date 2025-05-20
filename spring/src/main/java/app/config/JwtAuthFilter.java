@@ -19,8 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-
-    private final JwtConstants jwtInfo;
+    private final JwtConstants jwtConstants;
     private final JwtUtils jwtService;
 
     @Override
@@ -72,7 +71,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // リクエストURIを取得
         String requestUri = request.getRequestURI();
         // リクエストURIが許可リストのURLに含まれているかの判定結果を返す
-        return Arrays.asList(jwtInfo.permitAllUrls)
+        return Arrays.asList(jwtConstants.permitAllUrls)
                 .stream().anyMatch(requestUri::startsWith);
     }
 
