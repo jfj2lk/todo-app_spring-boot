@@ -10,6 +10,7 @@ import app.utils.PasswordUtils;
 import lombok.AllArgsConstructor;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
@@ -18,7 +19,6 @@ public class AuthService {
     /**
      * 新規登録処理。
      */
-    @Transactional
     public User signup(SignUpForm signUpForm) throws RuntimeException {
         // 同じメールアドレスのUserが既に存在する場合は例外を投げる
         userRepository.findByEmail(signUpForm.getEmail()).ifPresent(user -> {
