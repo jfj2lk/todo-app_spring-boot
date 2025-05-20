@@ -1,4 +1,5 @@
 import { ApiResponse, HttpMethod, RequestBody } from "@/types/api";
+import toast from "react-hot-toast";
 
 const apiRequest = async <T>(
   url: string,
@@ -27,9 +28,17 @@ const apiRequest = async <T>(
     const res = await fetch(url, options);
     const json: ApiResponse<T> = await res.json();
 
-    // エラーレスポンスの場合は例外を投げる
+    // レスポンスメッセージが存在する場合は、その種類に応じてトースト表示する
+    if (json.message) {
+      if (res.ok) {
+        toast.success(json.message);
+      } else {
+        toast.error(json.message);
+      }
+    }
+
+    // バリデーションエラーメッセージを整形する
     if (!res.ok) {
-      // エラーメッセージを整形
       const errorMessages = json.errors?.map((error) => {
         return "\n・" + error.defaultMessage;
       });
