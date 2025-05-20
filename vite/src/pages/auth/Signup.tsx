@@ -22,7 +22,6 @@ const Signup = () => {
     if (json.accessToken) {
       localStorage.setItem("accessToken", json.accessToken);
     }
-    console.log("新規登録成功！");
   };
 
   return (

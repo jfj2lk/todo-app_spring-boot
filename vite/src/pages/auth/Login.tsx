@@ -16,7 +16,6 @@ const Login = () => {
     if (json.accessToken) {
       localStorage.setItem("accessToken", json.accessToken);
     }
-    console.log("ログイン成功！");
   };
 
   return (
