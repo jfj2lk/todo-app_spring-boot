@@ -11,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import app.constants.JwtConstants.JwtValidateResult;
 import app.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,31 +20,22 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtUtils {
-    /**
-     * フィールド
-     */
     // 署名鍵のパス
     private String signInKeyPath = "secret/hs256.key";
     // HMAC用の署名鍵
-    private SecretKey hmacSignInKey;
+    private SecretKey hmacSignInKey = createHmacSignInKey();
+    // 有効期限
+    private Long expirationDate = createExpirationDate();
 
     /**
-     * コンストラクタ。
-     */
-    public JwtUtils() {
-        this.hmacSignInKey = createHmacSignInKey();
-    }
-
-    /**
-     * JWTの生成。
+     * JWTの作成。
      */
     // TODO:UserDetail実装に変える。
     public String generateJwt(User user) {
         return Jwts
                 .builder()
                 .subject(String.valueOf(user.getId()))
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + createExpirationDate()))
+                .expiration(new Date(System.currentTimeMillis() + this.expirationDate))
                 .signWith(this.hmacSignInKey)
                 .compact();
     }
@@ -53,7 +43,7 @@ public class JwtUtils {
     /**
      * JWTの検証。
      */
-    public JwtValidateResult validateJwt(String jwt) {
+    public void validateJwt(String jwt) {
         try {
             Claims claims = Jwts
                     .parser()
@@ -62,11 +52,10 @@ public class JwtUtils {
                     .parseSignedClaims(jwt).getPayload();
             // 検証に成功した場合は認証情報を設定する
             setAuthInfo(claims);
-            return JwtValidateResult.SUCCESS;
         } catch (ExpiredJwtException e) {
-            return JwtValidateResult.EXPIRED;
-        } catch (Exception e) {
-            return JwtValidateResult.INVALID;
+            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), "JWTの有効期限が切れています。");
+        } catch (RuntimeException e) {
+            throw new RuntimeException("JWTの検証中にエラーが発生しました。");
         }
     }
 
@@ -84,7 +73,7 @@ public class JwtUtils {
     /**
      * 署名鍵ファイルの値をバイトとして取得。
      */
-    public byte[] getSignInKeyBytes() {
+    public byte[] getSignInKeyBytes() throws RuntimeException {
         try {
             // ファイルからBASE64エンコードされた、署名鍵の値を取得
             ClassPathResource resource = new ClassPathResource(signInKeyPath);
@@ -100,7 +89,7 @@ public class JwtUtils {
     /**
      * HMAC形式の署名鍵を作成する。
      */
-    public SecretKey createHmacSignInKey() {
+    public SecretKey createHmacSignInKey() throws RuntimeException {
         // 署名鍵のバイト値
         byte[] signInKeyBytes = getSignInKeyBytes();
         return Keys.hmacShaKeyFor(signInKeyBytes);
@@ -115,7 +104,7 @@ public class JwtUtils {
         // 1時間の分数
         final long HOURS_IN_MINUTES = 60;
 
-        // 1秒のミリ秒数
+        // 1秒のミリ秒
         final long SECONDS_IN_MILLIS = 1000;
         // 1分のミリ秒
         final long MINUTE_IN_MILLIS = SECONDS_IN_MILLIS * MINUTES_IN_SECONDS;
