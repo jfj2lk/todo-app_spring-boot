@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 @Component
 @AllArgsConstructor
 public class TodoSeeder {
-
     private final TodoRepository todoRepository;
 
     /**
