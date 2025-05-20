@@ -4,14 +4,13 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import app.auth.JwtService;
 import app.model.User;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class TestUtils {
-    private final JwtService jwtService;
+    private final JwtUtils jwtService;
     private final PasswordUtils passwordUtils;
     private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 

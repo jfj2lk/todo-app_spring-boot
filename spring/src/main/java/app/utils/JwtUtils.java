@@ -1,4 +1,4 @@
-package app.auth;
+package app.utils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +20,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Service
-public class JwtService {
+public class JwtUtils {
     /**
      * フィールド
      */
@@ -32,7 +32,7 @@ public class JwtService {
     /**
      * コンストラクタ。
      */
-    public JwtService() {
+    public JwtUtils() {
         this.hmacSignInKey = createHmacSignInKey();
     }
 
@@ -76,8 +76,8 @@ public class JwtService {
     public void setAuthInfo(Claims claims) {
         String subject = claims.getSubject();
         List<SimpleGrantedAuthority> authorities = List.of();
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(subject, null, authorities);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(subject, null,
+                authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

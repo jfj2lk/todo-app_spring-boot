@@ -3,11 +3,11 @@ package app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.auth.JwtService;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
 import app.service.AuthService;
+import app.utils.JwtUtils;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class AuthController {
 
     private AuthService authService;
-    private JwtService jwtService;
+    private JwtUtils jwtService;
 
     /**
      * 新規登録する。
