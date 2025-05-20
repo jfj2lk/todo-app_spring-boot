@@ -35,7 +35,9 @@ public class AuthController {
         // JWTトークン発行
         String jwt = jwtService.generateJwt(signedUpUser);
         return ResponseEntity.ok()
-                .body(Map.of("accessToken", jwt));
+                .body(Map.ofEntries(
+                        Map.entry("accessToken", jwt),
+                        Map.entry("message", "新規登録しました。")));
     }
 
     /**
@@ -47,7 +49,9 @@ public class AuthController {
         // JWTトークン発行
         String jwt = jwtService.generateJwt(loginUser);
         return ResponseEntity.ok()
-                .body(Map.of("accessToken", jwt));
+                .body(Map.ofEntries(
+                        Map.entry("accessToken", jwt),
+                        Map.entry("message", "ログインしました。")));
     }
 
 }
