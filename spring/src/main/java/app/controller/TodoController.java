@@ -29,14 +29,13 @@ public class TodoController {
     @GetMapping("/todos")
     public ResponseEntity<Map<String, Iterable<Todo>>> getAllTodos() {
         // DBから全てのTodoを取得し、その結果を返す
-        Iterable<Todo> todos = todoService.getAllTodos();
-        return ResponseEntity.ok().body(Map.of("data", todos));
+        Iterable<Todo> allTodos = todoService.getAllTodos();
+        return ResponseEntity.ok().body(Map.of("data", allTodos));
     }
 
     // Todo追加
     @PostMapping("/todos")
-    public ResponseEntity<Map<String, Todo>> addTodo(
-            @RequestBody @Validated AddTodoForm addTodoForm) {
+    public ResponseEntity<Map<String, Todo>> addTodo(@RequestBody @Validated AddTodoForm addTodoForm) {
         // DBにフォームから送信されたTodoデータを保存し、その結果を返す
         Todo addedTodo = todoService.addTodo(addTodoForm);
         return ResponseEntity.ok().body(Map.of("data", addedTodo));
@@ -46,27 +45,26 @@ public class TodoController {
     // Todo更新
     @PatchMapping("/todos/{id}")
     public ResponseEntity<Map<String, Todo>> updateTodo(
-            @PathVariable("id") Long id,
+            @PathVariable("id") Long todoId,
             @RequestBody @Validated UpdateTodoForm updateTodoForm) {
         // フォームから送られたTodoデータで更新し、その結果を返す
-        Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
+        Todo updatedTodo = todoService.updateTodo(todoId, updateTodoForm);
         return ResponseEntity.ok().body(Map.of("data", updatedTodo));
     }
 
     // Todo削除
     @DeleteMapping("/todos/{id}")
-    public ResponseEntity<Map<String, Long>> deleteTodo(
-            @PathVariable("id") Long id) {
+    public ResponseEntity<Map<String, Long>> deleteTodo(@PathVariable("id") Long todoId) {
         // パスパラメータのIDのTodoを削除
-        Long deletedTodoId = todoService.deleteTodo(id);
+        Long deletedTodoId = todoService.deleteTodo(todoId);
         return ResponseEntity.ok(Map.of("data", deletedTodoId));
     }
 
     // Todo完了・未完了状態切り替え
     @PatchMapping("/todos/{id}/toggleComplete")
-    public ResponseEntity<Map<String, Object>> toggleCompleteTodo(
-            @PathVariable("id") Long id) {
-        Todo updateTodo = todoService.toggleCompleteTodo(id);
-        return ResponseEntity.ok(Map.of("data", updateTodo));
+    public ResponseEntity<Map<String, Object>> toggleCompleteTodo(@PathVariable("id") Long todoId) {
+        // Todoの完了・未完了状態を切り返し、更新する
+        Todo updatedTodo = todoService.toggleCompletedTodo(todoId);
+        return ResponseEntity.ok(Map.of("data", updatedTodo));
     }
 }
