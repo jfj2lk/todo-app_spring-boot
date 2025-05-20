@@ -1,4 +1,4 @@
-package app.annotation;
+package app.archive.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,9 +8,9 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-@Target({ ElementType.PARAMETER })
-@Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = CheckTodoExistsValidator.class)
+// @Target({ ElementType.PARAMETER })
+// @Retention(RetentionPolicy.RUNTIME)
+// @Constraint(validatedBy = CheckTodoExistsValidator.class)
 public @interface CheckTodoExists {
 
     String message() default "指定されたTodoが見つかりません";

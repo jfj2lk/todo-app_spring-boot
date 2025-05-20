@@ -1,4 +1,4 @@
-package app.annotation;
+package app.archive.annotation;
 
 import org.springframework.stereotype.Component;
 
@@ -7,8 +7,8 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 
-@Component
-@RequiredArgsConstructor
+// @Component
+// @RequiredArgsConstructor
 public class CheckTodoExistsValidator implements ConstraintValidator<CheckTodoExists, Long> {
 
     private final TodoRepository todoRepository;

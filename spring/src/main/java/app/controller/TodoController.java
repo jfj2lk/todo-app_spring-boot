@@ -1,6 +1,5 @@
 package app.controller;
 
-import app.annotation.CheckTodoExists;
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
@@ -47,7 +46,7 @@ public class TodoController {
     // Todo更新
     @PatchMapping("/todos/{id}")
     public ResponseEntity<Map<String, Todo>> updateTodo(
-            @CheckTodoExists @PathVariable("id") Long id,
+            @PathVariable("id") Long id,
             @Validated @RequestBody UpdateTodoForm updateTodoForm) {
         // フォームから送られたTodoデータで更新し、その結果を返す
         Todo updatedTodo = todoService.updateTodo(id, updateTodoForm);
@@ -57,7 +56,7 @@ public class TodoController {
     // Todo削除
     @DeleteMapping("/todos/{id}")
     public ResponseEntity<Map<String, Long>> deleteTodo(
-            @CheckTodoExists @PathVariable("id") Long id) {
+            @PathVariable("id") Long id) {
         // パスパラメータのIDのTodoを削除
         Long deletedTodoId = todoService.deleteTodo(id);
         return ResponseEntity.ok(Map.of("data", deletedTodoId));
