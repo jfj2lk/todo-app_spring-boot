@@ -26,11 +26,11 @@ public class AuthController {
     private JwtService jwtService;
 
     /**
-     * ユーザーを追加する
+     * 新規登録する。
      */
     @PostMapping("/auth/signup")
     public ResponseEntity<Map<String, Object>> signup(
-            @Validated @RequestBody SignUpForm signUpForm) {
+            @RequestBody @Validated SignUpForm signUpForm) {
         final User signedUpUser = userService.signup(signUpForm);
         // JWTトークン発行
         String jwt = jwtService.generateJwt(signedUpUser);
@@ -44,7 +44,7 @@ public class AuthController {
      * ログインする
      */
     @PostMapping("/auth/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginForm loginForm) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody @Validated LoginForm loginForm) {
         final User loginUser = userService.login(loginForm);
         // JWTトークン発行
         String jwt = jwtService.generateJwt(loginUser);
