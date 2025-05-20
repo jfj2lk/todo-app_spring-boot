@@ -12,43 +12,40 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class AuthService {
-
     private final UserRepository userRepository;
     private final PasswordUtils passwordUtils;
 
     /**
-     * Userを追加する
+     * 新規登録処理。
      */
     @Transactional
-    public User signup(SignUpForm addUserForm) throws RuntimeException {
-        // 同じメールアドレスのUserが存在する場合は例外を投げる
-        boolean existEmail = userRepository.findByEmail(addUserForm.getEmail()).isPresent();
-        if (existEmail) {
-            throw new RuntimeException("既に存在するメールアドレスです");
-        }
-
+    public User signup(SignUpForm signUpForm) throws RuntimeException {
+        // 同じメールアドレスのUserが既に存在する場合は例外を投げる
+        userRepository.findByEmail(signUpForm.getEmail()).ifPresent(user -> {
+            throw new RuntimeException("既に存在するメールアドレスです。");
+        });
         // フォームの値でUserオブジェクトを作成
-        User addUser = new User(addUserForm);
+        User signUpUser = new User(signUpForm);
         // パスワード暗号化
-        String rawPassword = addUser.getPassword();
-        String encodedPassword = passwordUtils.encode(rawPassword);
-        addUser.setPassword(encodedPassword);
+        signUpUser.setPassword(passwordUtils.encode(signUpUser.getPassword()));
+
         // Userを追加し、結果を返す
-        return userRepository.save(addUser);
+        return userRepository.save(signUpUser);
     }
 
     /**
-     * ログイン処理
+     * ログイン処理。
      */
     public User login(LoginForm loginForm) throws RuntimeException {
         // メールアドレスが一致するユーザーを取得
         User user = userRepository.findByEmail(loginForm.getEmail())
                 .orElseThrow(() -> new RuntimeException("メールアドレスかパスワードが間違っています。"));
         // パスワードが一致するかチェック
-        boolean isPasswordMatch = passwordUtils.matches(loginForm.getPassword(), user.getPassword());
-        if (!isPasswordMatch) {
+        if (!passwordUtils.matches(loginForm.getPassword(), user.getPassword())) {
             throw new RuntimeException("メールアドレスかパスワードが間違っています。");
         }
+
+        // メールアドレスが一致するUserを返す
         return user;
     }
 }
