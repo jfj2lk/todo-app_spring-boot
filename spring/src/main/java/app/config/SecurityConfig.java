@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtConstants jwtInfo;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
