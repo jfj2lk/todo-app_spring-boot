@@ -4,51 +4,49 @@ import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
 import app.repository.TodoRepository;
+import app.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class TodoService {
-
     private TodoRepository todoRepository;
+    private SecurityUtils securityUtils;
 
     /**
-     * 全てのTodoをDBから取得する
+     * 全てのTodoをDBから取得する。
      */
-    @Transactional
     public Iterable<Todo> getAllTodos() {
         // ログイン中のユーザーIDを取得
-        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Long currentUserId = securityUtils.getCurrentUserId();
         // 全てのTodo取得
-        return todoRepository.findAllByUserId(loginUserId);
+        return todoRepository.findAllByUserId(currentUserId);
     }
 
     /**
-     * Todoを追加する
+     * Todoを追加する。
      */
-    @Transactional
     public Todo addTodo(AddTodoForm addTodoForm) {
         // ログイン中のユーザーIDを取得
-        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Long currentUserId = securityUtils.getCurrentUserId();
         // フォームの値でTodoオブジェクトを作成する
-        Todo addTodo = new Todo(addTodoForm, loginUserId);
+        Todo addTodo = new Todo(addTodoForm, currentUserId);
         // Todoを追加し、追加結果を返す
         return todoRepository.save(addTodo);
     }
 
     /**
-     * Todoを更新する
+     * Todoを更新する。
      */
-    @Transactional
-    public Todo updateTodo(Long id, UpdateTodoForm updateTodoForm)
+    public Todo updateTodo(Long todoId, UpdateTodoForm updateTodoForm)
             throws RuntimeException {
         // ログイン中のユーザーIDを取得
-        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Long currentUserId = securityUtils.getCurrentUserId();
         // 更新対象のTodoをDBから取得
-        Todo updateTodo = todoRepository.findByIdAndUserId(id, loginUserId)
+        Todo updateTodo = todoRepository.findByIdAndUserId(todoId, currentUserId)
                 .orElseThrow(() -> new RuntimeException("更新対象のTodoが見つかりませんでした。"));
         // フォームの値でTodoオブジェクトを更新する
         updateTodo.updateWithForm(updateTodoForm);
@@ -57,35 +55,31 @@ public class TodoService {
     }
 
     /**
-     * Todoを削除する
+     * Todoを削除する。
      */
-    public Long deleteTodo(Long id) throws RuntimeException {
+    public Long deleteTodo(Long todoId) throws RuntimeException {
         // ログイン中のユーザーIDを取得
-        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        Todo deleteTodo = todoRepository.findByIdAndUserId(id, loginUserId)
+        Long currentUserId = securityUtils.getCurrentUserId();
+        // 削除対象のTodoをDBから取得
+        Todo deleteTodo = todoRepository.findByIdAndUserId(todoId, currentUserId)
                 .orElseThrow(() -> new RuntimeException("削除対象のTodoが見つかりませんでした。"));
         // Todo削除
         todoRepository.delete(deleteTodo);
         // 削除したTodoのIDを返す
-        return id;
+        return todoId;
     }
 
     /**
-     * Todo完了・未完了状態切り替え
+     * Todo完了・未完了状態切り替え。
      */
-    public Todo toggleCompleteTodo(Long todoId) {
+    public Todo toggleCompletedTodo(Long todoId) {
         // ログイン中のユーザーIDを取得
-        Long loginUserId = Long.valueOf((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        Todo updateTodo = todoRepository.findByIdAndUserId(
-                todoId, loginUserId)
+        Long currentUserId = securityUtils.getCurrentUserId();
+        // 更新対象のTodoをDBから取得
+        Todo updateTodo = todoRepository.findByIdAndUserId(todoId, currentUserId)
                 .orElseThrow(() -> new RuntimeException("更新対象のTodoが見つかりませんでした。"));
-        // isCompletedの値がtrueならfalse、falseならtrueの値をセットする
-        if (updateTodo.getIsCompleted()) {
-            updateTodo.setIsCompleted(false);
-        } else {
-            updateTodo.setIsCompleted(true);
-        }
-
+        // isCompletedの値を反転してセットする
+        updateTodo.setIsCompleted(!updateTodo.getIsCompleted());
         // todoを更新し、更新後の値を返す
         return todoRepository.save(updateTodo);
     }

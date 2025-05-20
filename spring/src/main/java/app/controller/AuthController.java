@@ -3,11 +3,11 @@ package app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.auth.JwtService;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
 import app.service.AuthService;
+import app.utils.JwtUtils;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;
@@ -22,36 +22,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 @AllArgsConstructor
 public class AuthController {
 
-    private AuthService userService;
-    private JwtService jwtService;
+    private AuthService authService;
+    private JwtUtils jwtService;
 
     /**
-     * ユーザーを追加する
+     * 新規登録する。
      */
     @PostMapping("/auth/signup")
-    public ResponseEntity<Map<String, Object>> signup(
-            @Validated @RequestBody SignUpForm signUpForm) {
-        final User signedUpUser = userService.signup(signUpForm);
+    public ResponseEntity<Map<String, String>> signup(@RequestBody @Validated SignUpForm signUpForm) {
+        // 新規登録処理を行い、DBに追加されたUser情報を取得する
+        final User signedUpUser = authService.signup(signUpForm);
         // JWTトークン発行
-        String jwt = jwtService.generateJwt(signedUpUser);
-        return ResponseEntity.ok()
-                .body(Map.ofEntries(
-                        Map.entry("accessToken", jwt),
-                        Map.entry("message", "新規登録しました。")));
+        final String jwt = jwtService.generateJwt(signedUpUser);
+
+        return ResponseEntity.ok().body(Map.ofEntries(
+                Map.entry("accessToken", jwt),
+                Map.entry("message", "新規登録しました。")));
     }
 
     /**
-     * ログインする
+     * ログインする。
      */
     @PostMapping("/auth/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginForm loginForm) {
-        final User loginUser = userService.login(loginForm);
+    public ResponseEntity<Map<String, String>> login(@RequestBody @Validated LoginForm loginForm) {
+        // ログイン処理を行い、DBに保存されているUser情報を取得する
+        final User loginUser = authService.login(loginForm);
         // JWTトークン発行
-        String jwt = jwtService.generateJwt(loginUser);
-        return ResponseEntity.ok()
-                .body(Map.ofEntries(
-                        Map.entry("accessToken", jwt),
-                        Map.entry("message", "ログインしました。")));
+        final String jwt = jwtService.generateJwt(loginUser);
+
+        return ResponseEntity.ok().body(Map.ofEntries(
+                Map.entry("accessToken", jwt),
+                Map.entry("message", "ログインしました。")));
     }
 
 }

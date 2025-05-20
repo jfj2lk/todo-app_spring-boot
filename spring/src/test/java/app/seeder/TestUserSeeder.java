@@ -1,11 +1,10 @@
 package app.seeder;
 
 import java.util.List;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import app.model.User;
 import app.repository.UserRepository;
+import app.utils.PasswordUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -14,8 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TestUserSeeder {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder =
-            PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    private final PasswordUtils passwordUtils;
     // テスト時に作成するUserの情報
     private final List<User> seedUsers = List.of(
             new User("a", "a@a", "a"),
@@ -28,7 +26,7 @@ public class TestUserSeeder {
         // 元のオブジェクトの情報が変更されないように、保存用のUser情報を作成
         List<User> saveSeedUsers = seedUsers.stream()
                 .map(seedUser -> new User(seedUser.getName(), seedUser.getEmail(),
-                        passwordEncoder.encode(seedUser.getPassword())))
+                        passwordUtils.encode(seedUser.getPassword())))
                 .toList();
         userRepository.saveAll(saveSeedUsers);
     }

@@ -7,24 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import com.jayway.jsonpath.JsonPath;
-import app.auth.JwtService;
-import app.constants.JwtConstants.JwtValidateResult;
+
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
 import app.repository.UserRepository;
 import app.seeder.TestTodoSeeder;
 import app.seeder.TestUserSeeder;
+import app.utils.JwtUtils;
+import app.utils.PasswordUtils;
 import app.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,19 +46,19 @@ public class AuthControllerTest {
     private final TestUtils testUtils;
     private final TestTodoSeeder testTodoSeeder;
     private final TestUserSeeder testUserSeeder;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final PasswordUtils passwordUtils;
+    private final JwtUtils jwtService;
 
     @Autowired
     AuthControllerTest(MockMvc mockMvc, UserRepository userRepository,
             TestUtils testUtils, TestTodoSeeder testTodoSeeder,
-            TestUserSeeder testUserSeeder, JwtService jwtService) {
+            TestUserSeeder testUserSeeder, PasswordUtils passwordUtils, JwtUtils jwtService) {
         this.mockMvc = mockMvc;
         this.userRepository = userRepository;
         this.testUtils = testUtils;
         this.testTodoSeeder = testTodoSeeder;
         this.testUserSeeder = testUserSeeder;
-        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        this.passwordUtils = passwordUtils;
         this.jwtService = jwtService;
     }
 
@@ -94,8 +94,7 @@ public class AuthControllerTest {
 
         // レスポンスのJWTの形式が正しいか確認
         String jwt = JsonPath.read(responseContents, "$.accessToken");
-        JwtValidateResult jwtValidateResult = this.jwtService.validateJwt(jwt);
-        assertEquals(JwtValidateResult.SUCCESS, jwtValidateResult, "レスポンスのJWTの形式が正しいことを確認");
+        assertDoesNotThrow(() -> this.jwtService.validateJwt(jwt), "レスポンスのJWTの形式が正しいことを確認");
 
         // 新規登録したユーザーがDBに追加されているか確認
         Optional<User> signedUpUserOptional = userRepository.findByEmail("c@c");
@@ -107,7 +106,7 @@ public class AuthControllerTest {
                 () -> assertEquals(expectedSignUpUserId, signedUpUser.getId()),
                 () -> assertEquals(signUpForm.getName(), signedUpUser.getName()),
                 () -> assertEquals(signUpForm.getEmail(), signedUpUser.getEmail()),
-                () -> assertTrue(this.passwordEncoder.matches(
+                () -> assertTrue(this.passwordUtils.matches(
                         signUpForm.getPassword(),
                         signedUpUser.getPassword())),
                 () -> assertNotNull(signedUpUser.getCreatedAt()),
@@ -143,15 +142,14 @@ public class AuthControllerTest {
 
         // レスポンスのJWTの形式が正しいか確認
         String jwt = JsonPath.read(responseContents, "$.accessToken");
-        JwtValidateResult jwtValidateResult = this.jwtService.validateJwt(jwt);
-        assertEquals(JwtValidateResult.SUCCESS, jwtValidateResult, "レスポンスのJWTの形式が正しいことを確認");
+        assertDoesNotThrow(() -> this.jwtService.validateJwt(jwt), "レスポンスのJWTの形式が正しいことを確認");
 
         // 新規登録したユーザーの形式が正しいか確認
         User loggedinUser = userRepository.findByEmail("a@a").get();
         assertAll(
                 () -> assertEquals(expectedLoginUserId, loggedinUser.getId()),
                 () -> assertEquals(loginForm.getEmail(), loggedinUser.getEmail()),
-                () -> assertTrue(this.passwordEncoder.matches(
+                () -> assertTrue(this.passwordUtils.matches(
                         loginForm.getPassword(),
                         loggedinUser.getPassword())),
                 () -> assertNotNull(loggedinUser.getCreatedAt()),
