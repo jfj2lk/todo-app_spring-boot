@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import com.jayway.jsonpath.JsonPath;
 
-import app.constants.JwtConstants.JwtValidateResult;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
@@ -26,6 +25,7 @@ import app.utils.JwtUtils;
 import app.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -95,8 +95,7 @@ public class AuthControllerTest {
 
                 // レスポンスのJWTの形式が正しいか確認
                 String jwt = JsonPath.read(responseContents, "$.accessToken");
-                JwtValidateResult jwtValidateResult = this.jwtService.validateJwt(jwt);
-                assertEquals(JwtValidateResult.SUCCESS, jwtValidateResult, "レスポンスのJWTの形式が正しいことを確認");
+                assertDoesNotThrow(() -> this.jwtService.validateJwt(jwt), "レスポンスのJWTの形式が正しいことを確認");
 
                 // 新規登録したユーザーがDBに追加されているか確認
                 Optional<User> signedUpUserOptional = userRepository.findByEmail("c@c");
@@ -144,8 +143,7 @@ public class AuthControllerTest {
 
                 // レスポンスのJWTの形式が正しいか確認
                 String jwt = JsonPath.read(responseContents, "$.accessToken");
-                JwtValidateResult jwtValidateResult = this.jwtService.validateJwt(jwt);
-                assertEquals(JwtValidateResult.SUCCESS, jwtValidateResult, "レスポンスのJWTの形式が正しいことを確認");
+                assertDoesNotThrow(() -> this.jwtService.validateJwt(jwt), "レスポンスのJWTの形式が正しいことを確認");
 
                 // 新規登録したユーザーの形式が正しいか確認
                 User loggedinUser = userRepository.findByEmail("a@a").get();
