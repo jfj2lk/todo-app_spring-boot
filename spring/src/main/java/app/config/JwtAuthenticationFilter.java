@@ -1,10 +1,9 @@
-package app.auth;
+package app.config;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 import app.constants.JwtConstants;
 import app.constants.JwtConstants.JwtValidateResult;
 import app.utils.JwtUtils;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.lang.Arrays;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
