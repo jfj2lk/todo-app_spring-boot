@@ -13,8 +13,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
-    private final JwtConstants jwtInfo;
+    private final JwtConstants jwtConstants;
     private final JwtAuthFilter jwtAuthenticationFilter;
 
     @Bean
@@ -27,7 +26,7 @@ public class SecurityConfig {
                 // 許可URL以外にアクセス制限をかける
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers(jwtInfo.permitAllUrls).permitAll()
+                                .requestMatchers(jwtConstants.permitAllUrls).permitAll()
                                 .anyRequest().authenticated())
                 // JWT認証を追加
                 .addFilterBefore(jwtAuthenticationFilter,
