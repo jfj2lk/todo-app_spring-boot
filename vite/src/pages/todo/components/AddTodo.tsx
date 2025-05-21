@@ -6,24 +6,24 @@ const AddTodo = (props: {
   todos: Todo[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
 }) => {
-  const [todoName, setTodoName] = useState<string>("");
-  const [todoDesc, setTodoDesc] = useState<string>("");
-  const [todoPriority, setTodoPriority] = useState<number>(4);
-  const [todoDueDate, setTodoDueDate] = useState<string>("");
-  const [todoDueTime, setTodoDueTime] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [desc, setDesc] = useState<string>("");
+  const [priority, setPriority] = useState<number>(4);
+  const [dueDate, setDueDate] = useState<string>("");
+  const [dueTime, setDueTime] = useState<string>("");
 
   // Todo追加
   const handleAddTodo = async () => {
     const json = await apiRequest<Todo>("/api/todos", "POST", {
-      name: todoName,
-      desc: todoDesc,
-      priority: todoPriority,
-      dueDate: todoDueDate,
-      dueTime: todoDueTime,
+      name,
+      desc,
+      priority,
+      dueDate,
+      dueTime,
     });
     props.todoDispatch({ type: "added", data: json.data });
-    setTodoName("");
-    setTodoDesc("");
+    setName("");
+    setDesc("");
   };
 
   return (
@@ -37,18 +37,18 @@ const AddTodo = (props: {
         {/* 名前入力欄 */}
         <input
           type="text"
-          value={todoName}
+          value={name}
           onChange={(e) => {
-            setTodoName(e.target.value);
+            setName(e.target.value);
           }}
         />
 
         {/* 詳細入力欄 */}
         <input
           type="text"
-          value={todoDesc}
+          value={desc}
           onChange={(e) => {
-            setTodoDesc(e.target.value);
+            setDesc(e.target.value);
           }}
         />
 
@@ -57,27 +57,27 @@ const AddTodo = (props: {
           type="number"
           min={1}
           max={4}
-          value={todoPriority}
+          value={priority}
           onChange={(e) => {
-            setTodoPriority(parseInt(e.target.value));
+            setPriority(parseInt(e.target.value));
           }}
         />
 
         {/* 期限日付入力欄 */}
         <input
           type="date"
-          value={todoDueDate}
+          value={dueDate}
           onChange={(e) => {
-            setTodoDueDate(e.target.value);
+            setDueDate(e.target.value);
           }}
         />
 
         {/* 期限時刻入力欄 */}
         <input
           type="time"
-          value={todoDueTime}
+          value={dueTime}
           onChange={(e) => {
-            setTodoDueTime(e.target.value);
+            setDueTime(e.target.value);
           }}
         />
 
