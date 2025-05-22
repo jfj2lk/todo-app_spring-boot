@@ -1,8 +1,10 @@
 import { User } from "@/types/user";
 import { apiRequest } from "@/utils/api";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   // 入力欄の値のstate
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -15,6 +17,7 @@ const Login = () => {
     });
     if (json.accessToken) {
       localStorage.setItem("accessToken", json.accessToken);
+      navigate("/todos");
     }
   };
 
