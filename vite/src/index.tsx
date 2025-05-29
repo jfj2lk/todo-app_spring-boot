@@ -9,6 +9,7 @@ import Login from "./pages/auth/Login";
 import Todos from "./pages/todo/Todos";
 import Layout from "@/layout";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import MarketingLayout from "@/components/MarketingLayout";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -16,7 +17,9 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
+            <Route path="" element={<MarketingLayout />}>
             <Route index element={<Home />} />
+            </Route>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route
