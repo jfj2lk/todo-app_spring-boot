@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { MantineProvider } from "@mantine/core";
-import "@/global.css";
-import Home from "@/pages/home/Home";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "@/index.css";
+import Home from "@/pages/home/Home";
 import Signup from "./pages/auth/Signup";
 import Login from "./pages/auth/Login";
 import Todos from "./pages/todo/Todos";
@@ -31,5 +31,5 @@ createRoot(document.getElementById("root")!).render(
         </Routes>
       </BrowserRouter>
     </MantineProvider>
-  </StrictMode>
+  </StrictMode>,
 );
