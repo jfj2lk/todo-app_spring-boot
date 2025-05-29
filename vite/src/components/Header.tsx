@@ -9,7 +9,7 @@ const items: { label: string; link: string }[] = [
 
 const Header = () => {
   return (
-    <header className="fixed top-0 right-0 left-0 z-10 flex items-center justify-between bg-white px-6 py-4 shadow">
+    <header className="sticky top-0 z-10 flex items-center justify-between bg-white px-6 py-4 shadow">
       {/* ヘッダーロゴ */}
       <div>
         <Link to={"/"} className="flex items-center gap-3">
