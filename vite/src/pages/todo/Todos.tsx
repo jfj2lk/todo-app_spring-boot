@@ -18,11 +18,8 @@ const Todos = () => {
 
   return (
     <div>
-      <h1>Todo</h1>
-
       {/* Todo追加欄 */}
       <AddTodo todos={todos} todoDispatch={todoDispatch} />
-
       {/* Todo一覧 */}
       <TodoList todos={todos} todoDispatch={todoDispatch} />
     </div>
