@@ -24,7 +24,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-lvh items-center justify-center bg-gray-100">
+    <div className="flex flex-1 items-center justify-center bg-gray-100">
       <form
         onSubmit={(e) => {
           e.preventDefault();

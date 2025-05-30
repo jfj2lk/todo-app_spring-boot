@@ -4,9 +4,9 @@ import { Outlet } from "react-router-dom";
 
 const MarketingLayout = () => {
   return (
-    <div>
+    <div className="flex h-screen flex-col">
       <Header />
-      <main>
+      <main className="flex flex-1 flex-col">
         <Outlet />
       </main>
       <Footer />

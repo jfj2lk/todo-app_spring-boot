@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { User } from "@/types/user";
 import { apiRequest } from "@/utils/api";
 import { useState } from "react";
@@ -31,7 +30,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex h-lvh items-center justify-center bg-gray-100">
+    <div className="flex flex-1 items-center justify-center bg-gray-100">
       <form
         onSubmit={(e) => {
           e.preventDefault();
