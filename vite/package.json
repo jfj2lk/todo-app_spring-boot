@@ -17,6 +17,7 @@
     "@mantine/hooks": "^8.0.1",
     "@mantine/notifications": "^8.0.1",
     "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-popover": "^1.1.14",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.6",
     "class-variance-authority": "^0.7.1",
