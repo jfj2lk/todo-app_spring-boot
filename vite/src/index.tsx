@@ -10,26 +10,26 @@ import Todos from "./pages/todo/Todos";
 import Layout from "@/layout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import MarketingLayout from "@/components/MarketingLayout";
+import AppLayout from "@/components/AppLayout";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <MantineProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route path="" element={<Layout />}>
+            {/* マーケティングページ */}
             <Route path="" element={<MarketingLayout />}>
-              <Route index element={<Home />} />
+              <Route path="/" element={<Home />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
             </Route>
-            <Route
-              path="/todos"
-              element={
-                <ProtectedRoute>
-                <Todos />
-                </ProtectedRoute>
-              }
-            />
+            {/* アプリページ */}
+            <Route path="" element={<ProtectedRoute />}>
+              <Route path="" element={<AppLayout />}>
+                <Route path="/todos" element={<Todos />} />
+              </Route>
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
