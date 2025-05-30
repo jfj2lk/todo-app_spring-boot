@@ -18,15 +18,15 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route path="" element={<MarketingLayout />}>
-            <Route index element={<Home />} />
+              <Route index element={<Home />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/login" element={<Login />} />
             </Route>
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
             <Route
               path="/todos"
               element={
                 <ProtectedRoute>
-                  <Todos />
+                <Todos />
                 </ProtectedRoute>
               }
             />
