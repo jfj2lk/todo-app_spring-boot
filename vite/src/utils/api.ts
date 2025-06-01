@@ -34,6 +34,11 @@ const apiRequest = async <T>(
         toast.success(json.message);
       } else {
         toast.error(json.message);
+
+        // 401エラーの場合はホーム画面に遷移させる
+        if (res.status === 401) {
+          location.href = "/";
+        }
       }
     }
 
@@ -50,9 +55,6 @@ const apiRequest = async <T>(
     // レスポンスのJSONを呼び出し元へ返す
     return json;
   } catch (error) {
-    // 401エラーの場合は指定のページに遷移させる。
-    location.href = "/";
-
     // 例外メッセージの設定
     throw Error(
       [
