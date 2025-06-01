@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 const apiRequest = async <T>(
   url: string,
   method: HttpMethod = "GET",
-  body: RequestBody = null
+  body: RequestBody = null,
 ): Promise<ApiResponse<T>> => {
   try {
     // ローカルストレージの値取得
@@ -43,13 +43,16 @@ const apiRequest = async <T>(
         return "\n・" + error.defaultMessage;
       });
       throw Error(
-        [`${json.message}`, `Validation Error: ${errorMessages}`].join("\n\n")
+        [`${json.message}`, `Validation Error: ${errorMessages}`].join("\n\n"),
       );
     }
 
     // レスポンスのJSONを呼び出し元へ返す
     return json;
   } catch (error) {
+    // 401エラーの場合は指定のページに遷移させる。
+    location.href = "/";
+
     // 例外メッセージの設定
     throw Error(
       [
@@ -57,7 +60,7 @@ const apiRequest = async <T>(
         "APIリクエストでエラーが発生しました。",
         `URL:${url}`,
         `${error}`,
-      ].join("\n\n")
+      ].join("\n\n"),
     );
   }
 };
