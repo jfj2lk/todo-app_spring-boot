@@ -17,11 +17,14 @@ const Todos = () => {
   }, []);
 
   return (
-    <div>
-      {/* Todo追加欄 */}
-      <AddTodo todos={todos} todoDispatch={todoDispatch} />
-      {/* Todo一覧 */}
-      <TodoList todos={todos} todoDispatch={todoDispatch} />
+    <div className="h-screen">
+      <h2 className="px-7 py-4 text-2xl font-bold shadow">リスト名</h2>
+      <div className="px-7 py-5">
+        {/* Todo追加欄 */}
+        <AddTodo todos={todos} todoDispatch={todoDispatch} />
+        {/* Todo一覧 */}
+        <TodoList todos={todos} todoDispatch={todoDispatch} />
+      </div>
     </div>
   );
 };

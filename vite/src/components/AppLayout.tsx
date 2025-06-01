@@ -5,7 +5,7 @@ const AppLayout = () => {
   return (
     <div className="flex h-screen">
       <SideMenu />
-      <main>
+      <main className="flex-1">
         <Outlet />
       </main>
     </div>
