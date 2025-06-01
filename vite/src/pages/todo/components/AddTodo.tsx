@@ -31,12 +31,12 @@ const AddTodo = (props: {
   return (
     <div>
       {!isAdding ? (
-        <div
-          className="mb-2 flex cursor-pointer gap-2 rounded bg-gray-300 px-4 py-2"
+        <button
+          className="mb-2 flex w-full cursor-pointer gap-2 rounded bg-gray-300 px-4 py-2"
           onClick={() => setIsAdding(true)}
         >
           <Plus /> <p>タスクの追加</p>
-        </div>
+        </button>
       ) : (
         <form
           onSubmit={(e) => {
@@ -66,41 +66,42 @@ const AddTodo = (props: {
             placeholder="説明"
             className="mb-2 w-full rounded border p-2"
           />
+          <div className="flex gap-2.5">
+            {/* 優先度入力欄 */}
+            <input
+              type="number"
+              min={1}
+              max={4}
+              value={priority}
+              onChange={(e) => {
+                setPriority(parseInt(e.target.value));
+              }}
+              placeholder="優先度"
+              className="rounded border p-2"
+            />
 
-          {/* 優先度入力欄 */}
-          <input
-            type="number"
-            min={1}
-            max={4}
-            value={priority}
-            onChange={(e) => {
-              setPriority(parseInt(e.target.value));
-            }}
-            placeholder="優先度"
-            className="rounded border p-2"
-          />
+            {/* 期限日付入力欄 */}
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => {
+                setDueDate(e.target.value);
+              }}
+              placeholder="期限日付"
+              className="rounded border p-2"
+            />
 
-          {/* 期限日付入力欄 */}
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => {
-              setDueDate(e.target.value);
-            }}
-            placeholder="期限日付"
-            className="rounded border p-2"
-          />
-
-          {/* 期限時刻入力欄 */}
-          <input
-            type="time"
-            value={dueTime}
-            onChange={(e) => {
-              setDueTime(e.target.value);
-            }}
-            placeholder="期限時刻"
-            className="rounded border p-2"
-          />
+            {/* 期限時刻入力欄 */}
+            <input
+              type="time"
+              value={dueTime}
+              onChange={(e) => {
+                setDueTime(e.target.value);
+              }}
+              placeholder="期限時刻"
+              className="rounded border p-2"
+            />
+          </div>
 
           <div className="flex justify-end space-x-2">
             <button
