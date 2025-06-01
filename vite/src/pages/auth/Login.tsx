@@ -54,7 +54,7 @@ const Login = () => {
           placeholder="パスワード"
         />
 
-        <Button>新規登録</Button>
+        <Button>ログイン</Button>
       </form>
     </div>
   );
