@@ -38,6 +38,8 @@ const apiRequest = async <T>(
     if (!res.ok) {
       // 401 の場合はリダイレクト
       if (res.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userInfo");
         location.href = "/";
       }
 
