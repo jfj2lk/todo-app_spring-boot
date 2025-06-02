@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import DeleteTodo from "./DeleteTodo";
 import UpdateTodo from "./UpdateTodo";
 import { apiRequest } from "@/utils/api";
+import Todo from "./Todo";
 
 const TodoList = (props: {
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
 }) => {
-  // 編集中のTodoのID
-  const [editingId, setEditingId] = useState<number | null>(null);
+  // 選択中のTodoのID
+  const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
   // 並び替え済みのTodos
   const [sortTodos, setSortTodos] = useState<TodoType[]>([]);
   // 未完了状態のTodos
@@ -24,26 +25,14 @@ const TodoList = (props: {
   useEffect(() => {
     // Todosの要素を、並び替え要素と並び変え順の値で並び替える
     const sortedTodos = [...props.todos].sort((a, b) => {
-      const valA = a[sortKey];
-      const valB = b[sortKey];
+      const valA = a[sortKey as keyof TodoType];
+      const valB = b[sortKey as keyof TodoType];
       if (valA < valB) return sortOrder === "ascending" ? -1 : 1;
       if (valA > valB) return sortOrder === "ascending" ? 1 : -1;
       return 0;
     });
-
     setSortTodos(sortedTodos);
   }, [props.todos, sortKey, sortOrder]);
-
-  // Todoの完了・未完了状態を変更するAPIリクエストを送信
-  const toggleComplete = async (todoId: number) => {
-    const json = await apiRequest<TodoType>(
-      `/api/todos/${todoId}/toggleComplete`,
-      "PATCH",
-    );
-    props.todoDispatch({ type: "updated", data: json.data });
-  };
-
-  // Todoを優先度で並び替える
 
   return (
     <div>
@@ -78,53 +67,33 @@ const TodoList = (props: {
         </div>
       </div>
 
-      <h2>inComplete</h2>
+      <h2>未完了</h2>
+      <hr />
       <ul>
         {inCompleteTodos.map((todo) => (
           <li key={todo.id}>
-            {/* Todoが選択中の場合に、更新欄と削除ボタンを表示する */}
-            {todo.id === editingId ? (
-              <div className="flex">
-                {/* Todo更新欄 */}
-                <UpdateTodo
-                  todo={todo}
-                  todos={props.todos}
-                  todoDispatch={props.todoDispatch}
-                  editingId={editingId}
-                  setEditingId={setEditingId}
-                />
-
-                {/* Todo削除ボタン */}
-                <DeleteTodo
-                  todo={todo}
-                  todos={props.todos}
-                  todoDispatch={props.todoDispatch}
-                />
-              </div>
-            ) : (
-              // Todo内容表示
-              // Todoをクリックした場合、そのTodoを選択状態にする
-              <div onClick={() => setEditingId(todo.id)}>
-                <button onClick={() => toggleComplete(todo.id)}>〇</button>
-                name: {todo.name}, description: {todo.desc}, priority:{" "}
-                {todo.priority}, dueDate: {todo.dueDate}, dueTime:{" "}
-                {todo.dueTime}
-              </div>
-            )}
+            <Todo
+              todo={todo}
+              todoDispatch={props.todoDispatch}
+              selectedTodoId={selectedTodoId}
+              setSelectedTodoId={setSelectedTodoId}
+            />
           </li>
         ))}
       </ul>
 
-      <h2>complete</h2>
+      <h2>完了</h2>
+      <hr />
       <ul>
         {completedTodos.map((todo) => (
           // Todo内容表示
           <li key={todo.id}>
-            <div>
-              <button onClick={() => toggleComplete(todo.id)}>〇</button>
-              name: {todo.name}, description: {todo.desc}, priority:{" "}
-              {todo.priority}, dueDate: {todo.dueDate}, dueTime: {todo.dueTime}
-            </div>
+            <Todo
+              todo={todo}
+              todoDispatch={props.todoDispatch}
+              selectedTodoId={selectedTodoId}
+              setSelectedTodoId={setSelectedTodoId}
+            />
           </li>
         ))}
       </ul>
