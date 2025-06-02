@@ -1,5 +1,5 @@
 import { todosReducer } from "@/state/todosReducer";
-import { Todo } from "@/types/todo";
+import { TodoType } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 import { useEffect, useReducer } from "react";
 import AddTodo from "./components/AddTodo";
@@ -11,7 +11,7 @@ const Todos = () => {
   // Todos取得
   useEffect(() => {
     (async () => {
-      const json = await apiRequest<Todo[]>("/api/todos");
+      const json = await apiRequest<TodoType[]>("/api/todos");
       todoDispatch({ type: "initialized", data: json.data });
     })();
   }, []);

@@ -1,10 +1,10 @@
-import { Todo, TodoReducerActions } from "@/types/todo";
+import { TodoType, TodoReducerActions } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
 const AddTodo = (props: {
-  todos: Todo[];
+  todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
 }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -16,7 +16,7 @@ const AddTodo = (props: {
 
   // Todo追加
   const handleAddTodo = async () => {
-    const json = await apiRequest<Todo>("/api/todos", "POST", {
+    const json = await apiRequest<TodoType>("/api/todos", "POST", {
       name,
       desc,
       priority,

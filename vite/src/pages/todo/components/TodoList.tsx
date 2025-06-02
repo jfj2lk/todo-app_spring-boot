@@ -1,17 +1,17 @@
-import { Todo, TodoReducerActions } from "@/types/todo";
+import { TodoType, TodoReducerActions } from "@/types/todo";
 import { useEffect, useState } from "react";
 import DeleteTodo from "./DeleteTodo";
 import UpdateTodo from "./UpdateTodo";
 import { apiRequest } from "@/utils/api";
 
 const TodoList = (props: {
-  todos: Todo[];
+  todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
 }) => {
   // 編集中のTodoのID
   const [editingId, setEditingId] = useState<number | null>(null);
   // 並び替え済みのTodos
-  const [sortTodos, setSortTodos] = useState<Todo[]>([]);
+  const [sortTodos, setSortTodos] = useState<TodoType[]>([]);
   // 未完了状態のTodos
   const inCompleteTodos = sortTodos.filter((todo) => !todo.isCompleted);
   // 完了状態のTodos
@@ -36,9 +36,9 @@ const TodoList = (props: {
 
   // Todoの完了・未完了状態を変更するAPIリクエストを送信
   const toggleComplete = async (todoId: number) => {
-    const json = await apiRequest<Todo>(
+    const json = await apiRequest<TodoType>(
       `/api/todos/${todoId}/toggleComplete`,
-      "PATCH"
+      "PATCH",
     );
     props.todoDispatch({ type: "updated", data: json.data });
   };
