@@ -69,13 +69,14 @@ const TodoList = (props: {
 
       <h2>未完了</h2>
       <hr />
-      <ul>
+      <ul className="flex flex-col gap-2">
         {inCompleteTodos.map((todo) => (
           <li key={todo.id}>
             <Todo
               todo={todo}
               todos={props.todos}
               todoDispatch={props.todoDispatch}
+              selectedTodo={props.selectedTodo}
               setSelectedTodo={props.setSelectedTodo}
             />
           </li>
@@ -84,7 +85,7 @@ const TodoList = (props: {
 
       <h2>完了</h2>
       <hr />
-      <ul>
+      <ul className="flex flex-col gap-2">
         {completedTodos.map((todo) => (
           // Todo内容表示
           <li key={todo.id}>
@@ -92,6 +93,7 @@ const TodoList = (props: {
               todo={todo}
               todos={props.todos}
               todoDispatch={props.todoDispatch}
+              selectedTodo={props.selectedTodo}
               setSelectedTodo={props.setSelectedTodo}
             />
           </li>

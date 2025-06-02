@@ -23,7 +23,7 @@ const Todos = () => {
     <div className="flex min-h-screen flex-col">
       <h2 className="px-7 py-4 text-2xl font-bold shadow">リスト名</h2>
       <div className="flex flex-1 px-7 py-5">
-        <div className="w-[60%]">
+        <div className="w-[60%] pr-7">
           {/* Todo追加欄 */}
           <AddTodo todos={todos} todoDispatch={todoDispatch} />
           {/* Todo一覧 */}
