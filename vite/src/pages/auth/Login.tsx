@@ -19,8 +19,11 @@ const Login = () => {
     });
     if (json.accessToken) {
       localStorage.setItem("accessToken", json.accessToken);
-      navigate("/todos");
     }
+    if (json.userInfo) {
+      localStorage.setItem("userInfo", JSON.stringify(json.userInfo));
+    }
+    navigate("/todos");
   };
 
   return (
