@@ -35,7 +35,7 @@ const TodoList = (props: {
   }, [props.todos, sortKey, sortOrder]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       {/* 並び替えメニュー */}
       <div className="flex">
         <div>
@@ -67,8 +67,7 @@ const TodoList = (props: {
         </div>
       </div>
 
-      <h2>未完了</h2>
-      <hr />
+      <h2 className="font-semibold">未完了</h2>
       <ul className="flex flex-col gap-2">
         {inCompleteTodos.map((todo) => (
           <li key={todo.id}>
@@ -83,8 +82,7 @@ const TodoList = (props: {
         ))}
       </ul>
 
-      <h2>完了</h2>
-      <hr />
+      <h2 className="font-semibold">完了</h2>
       <ul className="flex flex-col gap-2">
         {completedTodos.map((todo) => (
           // Todo内容表示
