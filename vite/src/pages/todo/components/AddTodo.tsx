@@ -26,6 +26,7 @@ const AddTodo = (props: {
     props.todoDispatch({ type: "added", data: json.data });
     setName("");
     setDesc("");
+    setIsAdding(false);
   };
 
   return (

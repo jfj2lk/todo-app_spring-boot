@@ -8,9 +8,9 @@ import Todo from "./Todo";
 const TodoList = (props: {
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
+  selectedTodo: TodoType | null;
+  setSelectedTodo: React.Dispatch<React.SetStateAction<TodoType | null>>;
 }) => {
-  // 選択中のTodoのID
-  const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
   // 並び替え済みのTodos
   const [sortTodos, setSortTodos] = useState<TodoType[]>([]);
   // 未完了状態のTodos
@@ -74,9 +74,9 @@ const TodoList = (props: {
           <li key={todo.id}>
             <Todo
               todo={todo}
+              todos={props.todos}
               todoDispatch={props.todoDispatch}
-              selectedTodoId={selectedTodoId}
-              setSelectedTodoId={setSelectedTodoId}
+              setSelectedTodo={props.setSelectedTodo}
             />
           </li>
         ))}
@@ -90,9 +90,9 @@ const TodoList = (props: {
           <li key={todo.id}>
             <Todo
               todo={todo}
+              todos={props.todos}
               todoDispatch={props.todoDispatch}
-              selectedTodoId={selectedTodoId}
-              setSelectedTodoId={setSelectedTodoId}
+              setSelectedTodo={props.setSelectedTodo}
             />
           </li>
         ))}

@@ -9,8 +9,7 @@ const Todo = (props: {
   todo: TodoType;
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
-  selectedTodoId: number | null;
-  setSelectedTodoId: React.Dispatch<React.SetStateAction<number | null>>;
+  setSelectedTodo: React.Dispatch<React.SetStateAction<TodoType | null>>;
 }) => {
   // Todoの完了・未完了状態を変更するAPIリクエストを送信
   const toggleComplete = async (todoId: number) => {
@@ -22,36 +21,17 @@ const Todo = (props: {
   };
 
   return (
-    <>
-      {props.todo.id !== props.selectedTodoId ? (
-        // Todo内容表示
-        <div className="flex items-center gap-2">
-          <button onClick={() => toggleComplete(props.todo.id)}>
-            <Circle className="h-4 w-4" />
-          </button>
-          <button onClick={() => props.setSelectedTodoId(props.todo.id)}>
-            {props.todo.name}
-          </button>
-        </div>
-      ) : (
-        <div className="flex">
-          {/* Todo更新欄 */}
-          <UpdateTodo
-            todo={props.todo}
-            todos={props.todos}
-            todoDispatch={props.todoDispatch}
-            editingId={props.selectedTodoId}
-            setEditingId={props.setSelectedTodoId}
-          />
-
-          <DeleteTodo
-            todo={props.todo}
-            todos={props.todos}
-            todoDispatch={props.todoDispatch}
-          />
-        </div>
-      )}
-    </>
+    <div className="flex items-center gap-2">
+      <button onClick={() => toggleComplete(props.todo.id)}>
+        <Circle className="h-4 w-4" />
+      </button>
+      <button
+        onClick={() => props.setSelectedTodo(props.todo)}
+        className="w-full text-left"
+      >
+        {props.todo.name}
+      </button>
+    </div>
   );
 };
 
