@@ -41,53 +41,57 @@ const Todos = () => {
   }, [sortKey, sortOrder]);
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <h2 className="px-7 py-4 text-2xl font-bold shadow">リスト名</h2>
-      <div className="flex flex-1 px-7 py-5">
-        <div className="w-[60%] pr-7">
-          <div className="flex justify-between gap-4 pr-2">
-            {/* Todo追加欄 */}
-            <AddTodo todos={todos} todoDispatch={todoDispatch} />
-            <Popover>
-              <PopoverTrigger asChild>
-                <Ellipsis />
-              </PopoverTrigger>
-              <PopoverContent className="w-60">
-                {/* 並び替えメニュー */}
-                <div className="flex flex-col gap-2">
-                  <div className="flex justify-between">
-                    <p>並び替え</p>
-                    <select
-                      name="sort"
-                      value={sortKey}
-                      onChange={(e) => {
-                        setSortKey(e.target.value);
-                      }}
-                      className="rounded border-2 border-gray-200 p-1"
-                    >
-                      <option value="createdAt">作成日</option>
-                      <option value="dueDateTime">期限</option>
-                      <option value="priority">優先度</option>
-                    </select>
-                  </div>
-                  <div className="flex justify-between">
-                    <p>順序</p>
-                    <select
-                      name="order"
-                      value={sortOrder}
-                      onChange={(e) => {
-                        setSortOrder(e.target.value);
-                      }}
-                      className="rounded border-2 border-gray-200 p-1"
-                    >
-                      <option value="ascending">昇順</option>
-                      <option value="descending">降順</option>
-                    </select>
-                  </div>
+    <div className="flex min-h-screen">
+      {/* コンテンツ */}
+      <div className="flex w-[60%] flex-col">
+        <div className="flex items-center justify-between px-7 py-4 text-2xl font-bold shadow">
+          <h2>リスト名</h2>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Ellipsis />
+            </PopoverTrigger>
+            <PopoverContent className="w-60">
+              {/* 並び替えメニュー */}
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between">
+                  <p>並び替え</p>
+                  <select
+                    name="sort"
+                    value={sortKey}
+                    onChange={(e) => {
+                      setSortKey(e.target.value);
+                    }}
+                    className="rounded border-2 border-gray-200 p-1"
+                  >
+                    <option value="createdAt">作成日</option>
+                    <option value="dueDateTime">期限</option>
+                    <option value="priority">優先度</option>
+                  </select>
                 </div>
-              </PopoverContent>
-            </Popover>
-          </div>
+                <div className="flex justify-between">
+                  <p>順序</p>
+                  <select
+                    name="order"
+                    value={sortOrder}
+                    onChange={(e) => {
+                      setSortOrder(e.target.value);
+                    }}
+                    className="rounded border-2 border-gray-200 p-1"
+                  >
+                    <option value="ascending">昇順</option>
+                    <option value="descending">降順</option>
+                  </select>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* インラインコンテンツ */}
+        <div className="flex-1 px-7 py-5">
+          {/* Todo追加欄 */}
+          <AddTodo todos={todos} todoDispatch={todoDispatch} />
+
           {/* Todo一覧 */}
           <TodoList
             todos={todos}
@@ -96,15 +100,16 @@ const Todos = () => {
             setSelectedTodo={setSelectedTodo}
           />
         </div>
-        {/* Todo詳細 */}
-        {selectedTodo && (
-          <TodoDetail
-            key={selectedTodo.id}
-            todo={selectedTodo}
-            todoDispatch={todoDispatch}
-          />
-        )}
       </div>
+
+      {/* Todo詳細 */}
+      {selectedTodo && (
+        <TodoDetail
+          key={selectedTodo.id}
+          todo={selectedTodo}
+          todoDispatch={todoDispatch}
+        />
+      )}
     </div>
   );
 };
