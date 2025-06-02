@@ -1,9 +1,7 @@
 import { TodoReducerActions, TodoType } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 import { Circle } from "lucide-react";
-import React, { useState } from "react";
-import UpdateTodo from "./UpdateTodo";
-import DeleteTodo from "./DeleteTodo";
+import React from "react";
 
 const Todo = (props: {
   todo: TodoType;

@@ -1,8 +1,4 @@
 import { TodoType, TodoReducerActions } from "@/types/todo";
-import { useEffect, useState } from "react";
-import DeleteTodo from "./DeleteTodo";
-import UpdateTodo from "./UpdateTodo";
-import { apiRequest } from "@/utils/api";
 import Todo from "./Todo";
 
 const TodoList = (props: {
