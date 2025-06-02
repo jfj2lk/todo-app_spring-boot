@@ -36,7 +36,11 @@ const Todos = () => {
         </div>
         {/* Todo詳細 */}
         {selectedTodo && (
-          <TodoDetail todo={selectedTodo} todoDispatch={todoDispatch} />
+          <TodoDetail
+            key={selectedTodo.id}
+            todo={selectedTodo}
+            todoDispatch={todoDispatch}
+          />
         )}
       </div>
     </div>
