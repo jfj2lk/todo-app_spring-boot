@@ -30,7 +30,7 @@ const AddTodo = (props: {
   };
 
   return (
-    <div>
+    <div className="flex-1">
       {!isAdding ? (
         <button
           className="mb-2 flex w-full cursor-pointer gap-2 rounded bg-gray-300 px-4 py-2"
