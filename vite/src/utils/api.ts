@@ -4,12 +4,13 @@ import toast from "react-hot-toast";
 const apiRequest = async <T>(
   url: string,
   method: HttpMethod = "GET",
-  body: RequestBody = null
+  body: RequestBody = null,
 ): Promise<ApiResponse<T>> => {
   try {
-    // ローカルストレージの値取得
+    // アクセストークン取得
     const accessToken = localStorage.getItem("accessToken");
-    // APIリクエストオプションの設定
+
+    // リクエストオプションの作成
     const options: RequestInit = {
       headers: {
         Accept: "application/json",
@@ -24,41 +25,31 @@ const apiRequest = async <T>(
       }),
     };
 
-    // APIリクエスト & レスポンス取得
+    // リクエスト実行
     const res = await fetch(url, options);
     const json: ApiResponse<T> = await res.json();
 
-    // レスポンスメッセージが存在する場合は、その種類に応じてトースト表示する
+    // レスポンスメッセージ表示
     if (json.message) {
-      if (res.ok) {
-        toast.success(json.message);
-      } else {
-        toast.error(json.message);
-      }
+      res.ok ? toast.success(json.message) : toast.error(json.message);
     }
 
-    // バリデーションエラーメッセージを整形する
+    // エラーハンドリング
     if (!res.ok) {
-      const errorMessages = json.errors?.map((error) => {
-        return "\n・" + error.defaultMessage;
-      });
-      throw Error(
-        [`${json.message}`, `Validation Error: ${errorMessages}`].join("\n\n")
-      );
+      // 401 の場合はリダイレクト
+      if (res.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userInfo");
+        location.href = "/";
+      }
+
+      throw Error("APIリクエストでエラーが発生しました。");
     }
 
     // レスポンスのJSONを呼び出し元へ返す
     return json;
-  } catch (error) {
-    // 例外メッセージの設定
-    throw Error(
-      [
-        "",
-        "APIリクエストでエラーが発生しました。",
-        `URL:${url}`,
-        `${error}`,
-      ].join("\n\n")
-    );
+  } catch (e) {
+    throw Error(String(e));
   }
 };
 

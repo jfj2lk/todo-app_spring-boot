@@ -10,4 +10,5 @@ export type ApiResponse<T> = {
   message?: string;
   accessToken?: string;
   errors?: [{ defaultMessage?: string }];
+  userInfo?: { id: number; name: string; email: string };
 };

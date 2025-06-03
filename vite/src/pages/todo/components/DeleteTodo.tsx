@@ -1,14 +1,17 @@
-import { Todo, TodoReducerActions } from "@/types/todo";
+import { TodoType, TodoReducerActions } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 
 const DeleteTodo = (props: {
-  todo: Todo;
-  todos: Todo[];
+  todo: TodoType;
+  todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
 }) => {
   // Todo削除
   const handleDeleteTodo = async (deleteTodoId: number) => {
-    const json = await apiRequest<Todo>(`/api/todos/${deleteTodoId}`, "DELETE");
+    const json = await apiRequest<TodoType>(
+      `/api/todos/${deleteTodoId}`,
+      "DELETE",
+    );
     props.todoDispatch({ type: "deleted", id: json.data });
   };
 

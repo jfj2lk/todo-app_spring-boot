@@ -1,6 +1,9 @@
-import { Todo, TodoReducerActions } from "@/types/todo";
+import { TodoType, TodoReducerActions } from "@/types/todo";
 
-const todosReducer = (todos: Todo[], action: TodoReducerActions): Todo[] => {
+const todosReducer = (
+  todos: TodoType[],
+  action: TodoReducerActions,
+): TodoType[] => {
   switch (action.type) {
     case "initialized": {
       return action.data;
@@ -12,7 +15,7 @@ const todosReducer = (todos: Todo[], action: TodoReducerActions): Todo[] => {
 
     case "updated": {
       return todos.map((todo) =>
-        todo.id === action.data.id ? action.data : todo
+        todo.id === action.data.id ? action.data : todo,
       );
     }
 

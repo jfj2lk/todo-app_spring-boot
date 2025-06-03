@@ -3,6 +3,7 @@ package app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.dto.UserResponseDto;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
@@ -29,30 +30,36 @@ public class AuthController {
      * 新規登録する。
      */
     @PostMapping("/auth/signup")
-    public ResponseEntity<Map<String, String>> signup(@RequestBody @Validated SignUpForm signUpForm) {
+    public ResponseEntity<Map<String, Object>> signup(@RequestBody @Validated SignUpForm signUpForm) {
         // 新規登録処理を行い、DBに追加されたUser情報を取得する
         final User signedUpUser = authService.signup(signUpForm);
         // JWTトークン発行
         final String jwt = jwtService.generateJwt(signedUpUser);
+        // レスポンス用のユーザーDTOを作成
+        final UserResponseDto userInfo = new UserResponseDto(signedUpUser.getId(), signedUpUser.getName(), signedUpUser.getEmail());
 
         return ResponseEntity.ok().body(Map.ofEntries(
                 Map.entry("accessToken", jwt),
-                Map.entry("message", "新規登録しました。")));
+                Map.entry("message", "新規登録しました。"),
+                Map.entry("userInfo", userInfo)));
     }
 
     /**
      * ログインする。
      */
     @PostMapping("/auth/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody @Validated LoginForm loginForm) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody @Validated LoginForm loginForm) {
         // ログイン処理を行い、DBに保存されているUser情報を取得する
         final User loginUser = authService.login(loginForm);
         // JWTトークン発行
         final String jwt = jwtService.generateJwt(loginUser);
+                // レスポンス用のユーザーDTOを作成
+        final UserResponseDto userInfo = new UserResponseDto(loginUser.getId(), loginUser.getName(), loginUser.getEmail());
 
         return ResponseEntity.ok().body(Map.ofEntries(
                 Map.entry("accessToken", jwt),
-                Map.entry("message", "ログインしました。")));
+                Map.entry("message", "ログインしました。"),
+                Map.entry("userInfo", userInfo)));
     }
 
 }

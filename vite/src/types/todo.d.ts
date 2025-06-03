@@ -1,5 +1,5 @@
 // Todoモデル
-export type Todo = {
+export type TodoType = {
   id: number;
   isCompleted: boolean;
   name: string;
