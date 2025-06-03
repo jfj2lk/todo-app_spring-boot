@@ -1,6 +1,7 @@
 package app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -113,6 +114,24 @@ public class LabelControllerTest {
             jsonPath("$.data.updatedAt").exists());
 
     // レコードの件数が変わっていないことを確認
+    assertEquals(expectedTotalLabelCount, this.labelRepository.count());
+  }
+
+  @Test
+  void Labelを削除() throws Exception {
+    // 削除するLabelのID
+    long deleteLabelId = 1L;
+    // Label削除後の期待するLabelの数
+    long expectedTotalLabelCount = this.labelRepository.count() - 1;
+
+    mockMvc.perform(delete("/api/labels/" + deleteLabelId)
+        .header("Authorization", "Bearer " + this.jwt))
+        .andExpectAll(
+            status().isOk(),
+            content().contentType(MediaType.APPLICATION_JSON),
+            jsonPath("$.data").value(deleteLabelId));
+
+    // レコードが1件分減っていることを確認
     assertEquals(expectedTotalLabelCount, this.labelRepository.count());
   }
 }
