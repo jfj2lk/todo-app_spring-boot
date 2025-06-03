@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import org.h2.command.dml.Update;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
