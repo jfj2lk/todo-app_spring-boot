@@ -3,6 +3,7 @@ package app.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import app.form.label.AddLabelForm;
 import app.model.Label;
 import app.repository.LabelRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,5 +19,13 @@ public class LabelService {
    */
   public Iterable<Label> getAllLabels() {
     return labelRepository.findAll();
+  }
+
+  /**
+   * Labelを追加する。
+   */
+  public Label addLabel(AddLabelForm addLabelForm) {
+    Label addLabel = new Label(addLabelForm);
+    return labelRepository.save(addLabel);
   }
 }
