@@ -41,4 +41,14 @@ public class LabelService {
     updateLabel.updateWithForm(updateLabelForm);
     return labelRepository.save(updateLabel);
   }
+
+  /**
+   * Labelを削除する。
+   */
+  public Long deleteLabel(Long deleteLabelId) throws RuntimeException {
+    Label deleteLabel = labelRepository.findById(deleteLabelId)
+        .orElseThrow(() -> new RuntimeException("更新対象のLabelが見つかりませんでした。"));
+    labelRepository.delete(deleteLabel);
+    return deleteLabelId;
+  }
 }

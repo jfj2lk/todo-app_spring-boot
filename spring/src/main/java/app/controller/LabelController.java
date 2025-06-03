@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,5 +47,12 @@ public class LabelController {
       @RequestBody @Validated UpdateLabelForm UpdateLabelForm) {
     Label updatedLabel = labelService.updateLabel(labelId, UpdateLabelForm);
     return ResponseEntity.ok().body(Map.of("data", updatedLabel));
+  }
+
+  // Label削除
+  @DeleteMapping("/labels/{id}")
+  public ResponseEntity<Map<String, Long>> deleteLabel(@PathVariable("id") Long labelId) {
+    Long deletedLabelId = labelService.deleteLabel(labelId);
+    return ResponseEntity.ok().body(Map.of("data", deletedLabelId));
   }
 }
