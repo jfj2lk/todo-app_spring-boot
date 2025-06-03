@@ -14,6 +14,7 @@ import org.h2.command.dml.Update;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,12 +41,11 @@ public class LabelController {
   }
 
   // Label更新
-  @PostMapping("/labels/{id}")
+  @PatchMapping("/labels/{id}")
   public ResponseEntity<Map<String, Label>> updateLabel(
       @PathVariable("id") Long labelId,
       @RequestBody @Validated UpdateLabelForm UpdateLabelForm) {
     Label updatedLabel = labelService.updateLabel(labelId, UpdateLabelForm);
     return ResponseEntity.ok().body(Map.of("data", updatedLabel));
   }
-
 }

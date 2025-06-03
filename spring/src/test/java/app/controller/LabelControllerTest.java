@@ -2,6 +2,7 @@ package app.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -99,7 +100,7 @@ public class LabelControllerTest {
     UpdateLabelForm updateLabelForm = new UpdateLabelForm("updateLabel");
     String updateLabelFormJson = this.testUtils.toJson(updateLabelForm);
 
-    mockMvc.perform(post("/api/labels/" + updateLabelId)
+    mockMvc.perform(patch("/api/labels/" + updateLabelId)
         .header("Authorization", "Bearer " + this.jwt)
         .contentType(MediaType.APPLICATION_JSON)
         .content(updateLabelFormJson))
