@@ -6,7 +6,7 @@ export type RequestBody = object | null;
 
 // レスポンスのJSONオブジェクト
 export type ApiResponse<T> = {
-  data?: T;
+  data: T extends void ? never : T;
   message?: string;
   accessToken?: string;
   errors?: [{ defaultMessage?: string }];
