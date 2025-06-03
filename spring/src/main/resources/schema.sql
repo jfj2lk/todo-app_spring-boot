@@ -32,7 +32,7 @@ CREATE TABLE label (
 );
 
 CREATE TABLE todo_label (
-    PRIMARY KEY (todo_id, label_id),
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     todo_id BIGINT NOT NULL,
     label_id BIGINT NOT NULL,
     FOREIGN KEY (todo_id) REFERENCES todo(id) ON DELETE CASCADE,
