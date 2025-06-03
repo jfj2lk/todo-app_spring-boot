@@ -9,7 +9,8 @@ import {
 } from "./ui/dropdown-menu";
 
 const menus = [
-  { label: "ラベル管理", link: "#" },
+  { label: "タスク管理", link: "/todos" },
+  { label: "ラベル管理", link: "/labels" },
   { label: "リスト管理", link: "#" },
 ];
 
