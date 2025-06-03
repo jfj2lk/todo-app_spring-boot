@@ -38,4 +38,14 @@ public class LabelController {
     Label addedLabel = labelService.addLabel(addLabelForm);
     return ResponseEntity.ok().body(Map.of("data", addedLabel));
   }
+
+  // Label更新
+  @PostMapping("/labels/{id}")
+  public ResponseEntity<Map<String, Label>> updateLabel(
+      @PathVariable("id") Long labelId,
+      @RequestBody @Validated UpdateLabelForm UpdateLabelForm) {
+    Label updatedLabel = labelService.updateLabel(labelId, UpdateLabelForm);
+    return ResponseEntity.ok().body(Map.of("data", updatedLabel));
+  }
+
 }

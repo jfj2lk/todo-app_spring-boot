@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import app.form.label.AddLabelForm;
+import app.form.label.UpdateLabelForm;
 import app.model.Label;
 import app.repository.LabelRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +28,17 @@ public class LabelService {
   public Label addLabel(AddLabelForm addLabelForm) {
     Label addLabel = new Label(addLabelForm);
     return labelRepository.save(addLabel);
+  }
+
+  /**
+   * Labelを更新する。
+   */
+  public Label updateLabel(Long updateLabelId, UpdateLabelForm updateLabelForm)
+      throws RuntimeException {
+    Label updateLabel = labelRepository.findById(updateLabelId)
+        .orElseThrow(() -> new RuntimeException("更新対象のLabelが見つかりませんでした。"));
+    // フォームの値でLabelの値を更新する
+    updateLabel.updateWithForm(updateLabelForm);
+    return labelRepository.save(updateLabel);
   }
 }
