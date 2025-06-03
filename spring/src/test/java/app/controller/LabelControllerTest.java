@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import app.form.label.AddLabelForm;
+import app.form.label.UpdateLabelForm;
 import app.model.Label;
 import app.repository.LabelRepository;
 import app.utils.TestUtils;
@@ -84,6 +85,33 @@ public class LabelControllerTest {
             jsonPath("$.data.updatedAt").exists());
 
     // レコードが1件分増えていることを確認
+    assertEquals(expectedTotalLabelCount, this.labelRepository.count());
+  }
+
+  @Test
+  void Labelを更新() throws Exception {
+    // 更新するLabelのID
+    long updateLabelId = 1L;
+    // Label更新後の期待するLabelの数
+    long expectedTotalLabelCount = this.labelRepository.count();
+
+    // Label更新用のフォームを作成
+    UpdateLabelForm updateLabelForm = new UpdateLabelForm("updateLabel");
+    String updateLabelFormJson = this.testUtils.toJson(updateLabelForm);
+
+    mockMvc.perform(post("/api/labels/" + updateLabelId)
+        .header("Authorization", "Bearer " + this.jwt)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(updateLabelFormJson))
+        .andExpectAll(
+            status().isOk(),
+            content().contentType(MediaType.APPLICATION_JSON),
+            jsonPath("$.data.id").value(updateLabelId),
+            jsonPath("$.data.name").value(updateLabelForm.getName()),
+            jsonPath("$.data.createdAt").exists(),
+            jsonPath("$.data.updatedAt").exists());
+
+    // レコードの件数が変わっていないことを確認
     assertEquals(expectedTotalLabelCount, this.labelRepository.count());
   }
 }
