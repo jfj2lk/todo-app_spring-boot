@@ -9,10 +9,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Label } from "@/types/label";
+import { LabelType } from "@/types/label";
 
 interface LabelItemProps {
-  label: Label;
+  label: LabelType;
   onEdit: () => void;
   onDelete: () => void;
 }

@@ -1,11 +1,11 @@
 "use client";
 
-import { Label } from "@/types/label";
+import { LabelType } from "@/types/label";
 import { LabelItem } from "./LabelItem";
 
 interface LabelListProps {
-  labels: Label[];
-  onEditLabel: (label: Label) => void;
+  labels: LabelType[];
+  onEditLabel: (label: LabelType) => void;
   onDeleteLabel: (labelId: number) => void;
 }
 

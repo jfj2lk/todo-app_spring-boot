@@ -1,4 +1,4 @@
-export type Label = {
+export type LabelType = {
   id: number;
   name: string;
   createdAt: string;

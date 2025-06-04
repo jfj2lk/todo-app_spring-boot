@@ -11,9 +11,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Ellipsis } from "lucide-react";
+import { LabelType } from "@/types/label";
 
 const Todos = () => {
   const [todos, todoDispatch] = useReducer(todosReducer, []);
+  const [labels, setLabels] = useState<LabelType[]>([]);
   // 選択中のTodoのID
   const [selectedTodo, setSelectedTodo] = useState<TodoType | null>(null);
   // 並び替え要素
@@ -23,8 +25,11 @@ const Todos = () => {
   // Todos取得
   useEffect(() => {
     (async () => {
-      const json = await apiRequest<TodoType[]>("/api/todos");
-      todoDispatch({ type: "initialized", data: json.data });
+      const todoJson = await apiRequest<TodoType[]>("/api/todos");
+      todoDispatch({ type: "initialized", data: todoJson.data });
+
+      const labelJson = await apiRequest<LabelType[]>("/api/labels");
+      setLabels(labelJson.data);
     })();
   }, []);
 
@@ -90,7 +95,7 @@ const Todos = () => {
         {/* インラインコンテンツ */}
         <div className="flex-1 px-7 py-5">
           {/* Todo追加欄 */}
-          <AddTodo todos={todos} todoDispatch={todoDispatch} />
+          <AddTodo todos={todos} todoDispatch={todoDispatch} labels={labels} />
 
           {/* Todo一覧 */}
           <TodoList
@@ -108,6 +113,7 @@ const Todos = () => {
           key={selectedTodo.id}
           todo={selectedTodo}
           todoDispatch={todoDispatch}
+          labels={labels}
         />
       )}
     </div>

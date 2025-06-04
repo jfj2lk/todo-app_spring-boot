@@ -6,20 +6,20 @@ import { Button } from "@/components/ui/button";
 import { LabelList } from "./LabelList";
 import { LabelModal } from "./LabelModal";
 import { apiRequest } from "@/utils/api";
-import { Label } from "@/types/label";
+import { LabelType } from "@/types/label";
 
 const Labels = () => {
-  const [labels, setLabels] = useState<Label[]>([]);
+  const [labels, setLabels] = useState<LabelType[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingLabel, setEditingLabel] = useState<Label | null>(null);
+  const [editingLabel, setEditingLabel] = useState<LabelType | null>(null);
 
   const onAddLabel = () => {
     setEditingLabel(null);
     setIsModalOpen(true);
   };
 
-  const onEditLabel = (label: Label) => {
+  const onEditLabel = (label: LabelType) => {
     setEditingLabel(label);
     setIsModalOpen(true);
   };
@@ -31,7 +31,7 @@ const Labels = () => {
 
   // Label追加
   const handleAddLabel = async (addLabel: { name: string }) => {
-    const json = await apiRequest<Label>("/api/labels", "POST", addLabel);
+    const json = await apiRequest<LabelType>("/api/labels", "POST", addLabel);
     setLabels([...labels, json.data]);
 
     setIsModalOpen(false);
@@ -43,7 +43,7 @@ const Labels = () => {
     updateLabelId: number,
     updateLabel: { name: string },
   ) => {
-    const json = await apiRequest<Label>(
+    const json = await apiRequest<LabelType>(
       `/api/labels/${updateLabelId}`,
       "PATCH",
       updateLabel,
@@ -68,7 +68,7 @@ const Labels = () => {
   // 全てのLabelを取得し、stateを初期化する
   useEffect(() => {
     (async () => {
-      const json = await apiRequest<Label[]>("/api/labels");
+      const json = await apiRequest<LabelType[]>("/api/labels");
       setLabels(json.data);
     })();
   }, []);
