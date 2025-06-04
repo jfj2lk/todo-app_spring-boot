@@ -31,4 +31,6 @@ public class AddTodoForm {
     private LocalDate dueDate;
 
     private LocalTime dueTime;
+
+    private Long labelId;
 }
