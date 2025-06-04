@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -114,7 +116,7 @@ class TodoControllerTest {
         // 追加するTodoのID
         long addTodoId = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todoに関連付けるLabelのID
-        List<Long> associatedLabelIds = List.of(1L, 2L);
+        Set<Long> associatedLabelIds = Set.of(1L, 2L);
         // Todo追加後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todo追加用のフォームを作成
@@ -160,7 +162,7 @@ class TodoControllerTest {
         // 更新するTodoのID
         long updateTodoId = 1L;
         // Todoに関連付けるLabelのID
-        List<Long> associatedLabelIds = List.of(3L, 4L);
+        Set<Long> associatedLabelIds = Set.of(3L, 4L);
         // Todo更新後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size();
         // Todo更新用のフォームを作成

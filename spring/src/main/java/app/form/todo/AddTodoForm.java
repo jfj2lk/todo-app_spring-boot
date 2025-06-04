@@ -2,7 +2,7 @@ package app.form.todo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.Set;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -33,5 +33,5 @@ public class AddTodoForm {
 
     private LocalTime dueTime;
 
-    private List<Long> labelIds;
+    private Set<Long> labelIds;
 }

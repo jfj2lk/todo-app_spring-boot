@@ -12,6 +12,7 @@ import app.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class TodoService {
         Todo addedTodo = todoRepository.save(addTodo);
 
         // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
-        List<Long> labelIds = addTodoForm.getLabelIds();
+        Set<Long> labelIds = addTodoForm.getLabelIds();
         if (labelIds != null && !labelIds.isEmpty()) {
             saveTodoLabelRelation(addedTodo.getId(), labelIds);
         }
@@ -73,7 +74,7 @@ public class TodoService {
         Todo updatedTodo = todoRepository.save(updateTodo);
 
         // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
-        List<Long> labelIds = updateTodoForm.getLabelIds();
+        Set<Long> labelIds = updateTodoForm.getLabelIds();
         if (labelIds != null && !labelIds.isEmpty()) {
             saveTodoLabelRelation(updateTodo.getId(), updateTodoForm.getLabelIds());
         }
@@ -114,7 +115,7 @@ public class TodoService {
     /**
      * 指定したTodoとLabelの関連を保存する
      */
-    public void saveTodoLabelRelation(Long todoId, List<Long> newLabelIds) {
+    public void saveTodoLabelRelation(Long todoId, Set<Long> newLabelIds) {
         // 指定されたLabelIdsの内、実際にDBに存在するLabelのIDを取得
         List<Long> existingLabels = StreamSupport
                 .stream(labelRepository.findAllById(newLabelIds).spliterator(), false)
