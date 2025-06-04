@@ -2,19 +2,26 @@ package app.service;
 
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
+import app.model.Label;
 import app.model.Todo;
+import app.model.TodoLabel;
+import app.repository.LabelRepository;
+import app.repository.TodoLabelRepository;
 import app.repository.TodoRepository;
 import app.utils.SecurityUtils;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TodoService {
-    private TodoRepository todoRepository;
-    private SecurityUtils securityUtils;
+    private final TodoRepository todoRepository;
+    private final SecurityUtils securityUtils;
+    private final LabelRepository labelRepository;
+    private final TodoLabelRepository todoLabelRepository;
 
     /**
      * 全てのTodoをDBから取得する。
@@ -34,8 +41,28 @@ public class TodoService {
         Long currentUserId = securityUtils.getCurrentUserId();
         // フォームの値でTodoオブジェクトを作成する
         Todo addTodo = new Todo(addTodoForm, currentUserId);
-        // Todoを追加し、追加結果を返す
-        return todoRepository.save(addTodo);
+        // Todo追加
+        Todo addedTodo = todoRepository.save(addTodo);
+
+        // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
+        if (addTodoForm.getLabelId() != null) {
+            saveTodoLabelRelation(addedTodo.getId(), addTodoForm.getLabelId());
+        }
+
+        // 追加されたTodo情報を返す
+        return addedTodo;
+    }
+
+    /**
+     * 指定したTodoとLabelの関連を保存する
+     */
+    public void saveTodoLabelRelation(Long todoId, Long labelId) {
+        // 指定されたIDのラベルが存在するか確認
+        labelRepository.findById(labelId)
+                .orElseThrow(() -> new RuntimeException("指定されたラベルが見つかりません。"));
+        // 中間テーブルのレコードを作成
+        TodoLabel todoLabel = new TodoLabel(todoId, labelId);
+        todoLabelRepository.save(todoLabel);
     }
 
     /**
