@@ -24,7 +24,10 @@ import com.jayway.jsonpath.JsonPath;
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
+import app.model.TodoLabel;
+import app.repository.TodoLabelRepository;
 import app.repository.TodoRepository;
+import app.seeder.TestLabelSeeder;
 import app.seeder.TestTodoSeeder;
 import app.seeder.TestUserSeeder;
 import app.utils.TestUtils;
@@ -43,22 +46,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 class TodoControllerTest {
     private final MockMvc mockMvc;
     private final TodoRepository todoRepository;
+    private final TodoLabelRepository todoLabelRepository;
     private final TestUtils testUtils;
-    private final TestTodoSeeder testTodoSeeder;
     private final TestUserSeeder testUserSeeder;
+    private final TestTodoSeeder testTodoSeeder;
+    private final TestLabelSeeder testLabelSeeder;
     // Todo操作を行うユーザーのID
     private final Long operatorForUserId1 = 1L;
     private final String jwtForUserId1;
 
     @Autowired
     TodoControllerTest(MockMvc mockMvc, TodoRepository todoRepository,
-            TestUtils testUtils, TestTodoSeeder testTodoSeeder,
-            TestUserSeeder testUserSeeder) {
+            TodoLabelRepository todoLabelRepository, TestUtils testUtils,
+            TestUserSeeder testUserSeeder, TestTodoSeeder testTodoSeeder,
+            TestLabelSeeder testLabelSeeder) {
         this.mockMvc = mockMvc;
         this.todoRepository = todoRepository;
+        this.todoLabelRepository = todoLabelRepository;
         this.testUtils = testUtils;
-        this.testTodoSeeder = testTodoSeeder;
         this.testUserSeeder = testUserSeeder;
+        this.testTodoSeeder = testTodoSeeder;
+        this.testLabelSeeder = testLabelSeeder;
         this.jwtForUserId1 = this.testUtils.createJwt(this.operatorForUserId1);
     }
 
@@ -67,6 +75,7 @@ class TodoControllerTest {
         // 初期データを作成
         this.testUserSeeder.seedInitialUser();
         this.testTodoSeeder.seedInitialTodo();
+        this.testLabelSeeder.seedInitialLabel();
     }
 
     @Test
@@ -104,12 +113,13 @@ class TodoControllerTest {
     void Todoを追加() throws Exception {
         // 追加するTodoのID
         long addTodoId = this.testTodoSeeder.getSeedTodos().size() + 1;
+        // Todoに関連付けるLabelのID
+        long associatedLabelId = 1L;
         // Todo追加後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todo追加用のフォームを作成
-        AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3", 1, LocalDate.now(), LocalTime.now());
-        log.info("-----------------------------------------------------------------");
-        log.info(addTodoForm.getDueTime().toString());
+        AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3", 1, LocalDate.now(), LocalTime.now(),
+                associatedLabelId);
         // Todo追加用のフォームのJSON形式を作成
         String addTodoFormJson = this.testUtils.toJson(addTodoForm);
 
@@ -137,6 +147,11 @@ class TodoControllerTest {
         // 全てのTodoの件数を取得
         long actualTotalTodoCount = this.todoRepository.count();
         assertEquals(expectedTotalTodoCount, actualTotalTodoCount, "Todoが1件分追加されていることを確認");
+
+        // TodoとLabelの関連付けが保存されているか確認
+        TodoLabel todoLabel = todoLabelRepository.findById(1L).get();
+        assertEquals(todoLabel.getTodoId(), addTodoId);
+        assertEquals(todoLabel.getLabelId(), associatedLabelId);
     }
 
     @Test
