@@ -28,7 +28,7 @@ public class Label {
   }
 
   /**
-   * Labelフォームの値でLabelオブジェクトを作成する。
+   * Label追加フォームの値でLabelオブジェクトを作成する。
    */
   public Label(AddLabelForm addLabelForm) {
     LocalDateTime now = LocalDateTime.now();
@@ -38,12 +38,11 @@ public class Label {
   }
 
   /**
-   * Labelフォームの値でLabelオブジェクトを作成する。
+   * Label更新フォームの値でLabelオブジェクトを更新する。
    */
   public void updateWithForm(UpdateLabelForm updateLabelForm) {
     LocalDateTime now = LocalDateTime.now();
     this.name = updateLabelForm.getName();
-    this.createdAt = now;
     this.updatedAt = now;
   }
 }
