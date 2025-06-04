@@ -48,8 +48,9 @@ public class TodoService {
         Todo addedTodo = todoRepository.save(addTodo);
 
         // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
-        if (addTodoForm.getLabelIds() != null) {
-            saveTodoLabelRelation(addedTodo.getId(), addTodoForm.getLabelIds());
+        List<Long> labelIds = addTodoForm.getLabelIds();
+        if (labelIds != null && !labelIds.isEmpty()) {
+            saveTodoLabelRelation(addedTodo.getId(), labelIds);
         }
 
         // 追加されたTodo情報を返す
@@ -72,7 +73,8 @@ public class TodoService {
         Todo updatedTodo = todoRepository.save(updateTodo);
 
         // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
-        if (updateTodoForm.getLabelIds() != null) {
+        List<Long> labelIds = updateTodoForm.getLabelIds();
+        if (labelIds != null && !labelIds.isEmpty()) {
             saveTodoLabelRelation(updateTodo.getId(), updateTodoForm.getLabelIds());
         }
 
