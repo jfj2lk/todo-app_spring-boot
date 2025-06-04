@@ -11,6 +11,9 @@ import app.repository.TodoRepository;
 import app.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+import java.util.stream.StreamSupport;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,24 +48,12 @@ public class TodoService {
         Todo addedTodo = todoRepository.save(addTodo);
 
         // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
-        if (addTodoForm.getLabelId() != null) {
-            saveTodoLabelRelation(addedTodo.getId(), addTodoForm.getLabelId());
+        if (addTodoForm.getLabelIds() != null) {
+            saveTodoLabelRelation(addedTodo.getId(), addTodoForm.getLabelIds());
         }
 
         // 追加されたTodo情報を返す
         return addedTodo;
-    }
-
-    /**
-     * 指定したTodoとLabelの関連を保存する
-     */
-    public void saveTodoLabelRelation(Long todoId, Long labelId) {
-        // 指定されたIDのラベルが存在するか確認
-        labelRepository.findById(labelId)
-                .orElseThrow(() -> new RuntimeException("指定されたラベルが見つかりません。"));
-        // 中間テーブルのレコードを作成
-        TodoLabel todoLabel = new TodoLabel(todoId, labelId);
-        todoLabelRepository.save(todoLabel);
     }
 
     /**
@@ -77,8 +68,15 @@ public class TodoService {
                 .orElseThrow(() -> new RuntimeException("更新対象のTodoが見つかりませんでした。"));
         // フォームの値でTodoオブジェクトを更新する
         updateTodo.updateWithForm(updateTodoForm);
-        // Todoを更新し、更新結果を返す
-        return todoRepository.save(updateTodo);
+        // Todo更新
+        Todo updatedTodo = todoRepository.save(updateTodo);
+
+        // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
+        if (updateTodoForm.getLabelIds() != null) {
+            saveTodoLabelRelation(updateTodo.getId(), updateTodoForm.getLabelIds());
+        }
+
+        return updatedTodo;
     }
 
     /**
@@ -109,5 +107,51 @@ public class TodoService {
         updateTodo.setIsCompleted(!updateTodo.getIsCompleted());
         // todoを更新し、更新後の値を返す
         return todoRepository.save(updateTodo);
+    }
+
+    /**
+     * 指定したTodoとLabelの関連を保存する
+     */
+    public void saveTodoLabelRelation(Long todoId, List<Long> newLabelIds) {
+        // 指定されたLabelIdsの内、実際にDBに存在するLabelのIDを取得
+        List<Long> existingLabels = StreamSupport
+                .stream(labelRepository.findAllById(newLabelIds).spliterator(), false)
+                .map(Label::getId)
+                .toList();
+        // 指定されたLabelIdsのLabelが全て存在しなかった場合
+        if (!existingLabels.containsAll(newLabelIds)) {
+            List<Long> notFoundIds = newLabelIds.stream()
+                    .filter(newLabelId -> !existingLabels.contains(newLabelId))
+                    .toList();
+            throw new RuntimeException("指定されたラベルが見つかりません。" + notFoundIds);
+        }
+
+        // 指定されたTodoIdに紐づく中間レコードのIDを全て取得
+        List<TodoLabel> todoLabelsForTodoId = todoLabelRepository.findAllByTodoId(todoId);
+
+        // 指定されたTodoIdに紐づく中間レコードの全てのLabelのIDを取得
+        List<Long> currentLabelIds = todoLabelsForTodoId.stream()
+                .map(TodoLabel::getLabelId).toList();
+
+        // 新たに追加する中間レコード
+        List<TodoLabel> todoLabelsForAdd = newLabelIds.stream()
+                // 新しいラベルの内、現在のラベルに含まれていないものを抽出する
+                .filter(newLabelId -> !currentLabelIds.contains(newLabelId))
+                .map(addLabelId -> new TodoLabel(todoId, addLabelId))
+                .toList();
+
+        // 削除する中間レコードのIDのリストを作成
+        List<TodoLabel> todoLabelsForDelete = todoLabelsForTodoId.stream()
+                // 現在のラベルの内、新しいラベルに含まれていないものを抽出する
+                .filter(todoLabelForTodoId -> !newLabelIds.contains(todoLabelForTodoId.getLabelId()))
+                .toList();
+
+        // 保存と削除を実行
+        if (!todoLabelsForAdd.isEmpty()) {
+            todoLabelRepository.saveAll(todoLabelsForAdd);
+        }
+        if (!todoLabelsForDelete.isEmpty()) {
+            todoLabelRepository.deleteAll(todoLabelsForDelete);
+        }
     }
 }
