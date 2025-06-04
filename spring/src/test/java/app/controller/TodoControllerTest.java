@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -114,12 +114,12 @@ class TodoControllerTest {
         // 追加するTodoのID
         long addTodoId = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todoに関連付けるLabelのID
-        long associatedLabelId = 1L;
+        List<Long> associatedLabelIds = List.of(1L, 2L);
         // Todo追加後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size() + 1;
         // Todo追加用のフォームを作成
         AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3", 1, LocalDate.now(), LocalTime.now(),
-                associatedLabelId);
+                associatedLabelIds);
         // Todo追加用のフォームのJSON形式を作成
         String addTodoFormJson = this.testUtils.toJson(addTodoForm);
 
@@ -149,20 +149,23 @@ class TodoControllerTest {
         assertEquals(expectedTotalTodoCount, actualTotalTodoCount, "Todoが1件分追加されていることを確認");
 
         // TodoとLabelの関連付けが保存されているか確認
-        TodoLabel todoLabel = todoLabelRepository.findById(1L).get();
-        assertEquals(todoLabel.getTodoId(), addTodoId);
-        assertEquals(todoLabel.getLabelId(), associatedLabelId);
+        List<Long> todoLabels = todoLabelRepository.findAllByTodoId(addTodoId).stream()
+                .map(TodoLabel::getLabelId)
+                .toList();
+        assertTrue(todoLabels.containsAll(associatedLabelIds));
     }
 
     @Test
     void Todoを更新_成功() throws Exception {
         // 更新するTodoのID
         long updateTodoId = 1L;
+        // Todoに関連付けるLabelのID
+        List<Long> associatedLabelIds = List.of(3L, 4L);
         // Todo更新後の全てのTodoの数
         int expectedTotalTodoCount = this.testTodoSeeder.getSeedTodos().size();
         // Todo更新用のフォームを作成
         UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4, LocalDate.now(),
-                LocalTime.now().withNano(0));
+                LocalTime.now(), associatedLabelIds);
         // Todo更新用のフォームのJSON形式
         String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
 
@@ -203,6 +206,12 @@ class TodoControllerTest {
         // 全てのTodoの件数を取得
         long actualTotalTodoCount = this.todoRepository.count();
         assertEquals(expectedTotalTodoCount, actualTotalTodoCount, "Todoの件数が変わっていないことを確認");
+
+        // TodoとLabelの関連付けが保存されているか確認
+        List<Long> todoLabels = todoLabelRepository.findAllByTodoId(updateTodoId).stream()
+                .map(TodoLabel::getLabelId)
+                .toList();
+        assertTrue(todoLabels.containsAll(associatedLabelIds));
     }
 
     @Test
@@ -211,7 +220,7 @@ class TodoControllerTest {
         long updateTodoId = 3L;
         // Todo更新用のフォームを作成
         UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4, LocalDate.now(),
-                LocalTime.now());
+                LocalTime.now(), List.of(3L, 4L));
         // Todo更新用のフォームのJSON形式
         String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
 
