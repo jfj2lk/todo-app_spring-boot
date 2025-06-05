@@ -32,7 +32,7 @@ public class Todo {
     private LocalDateTime updatedAt;
 
     @MappedCollection(idColumn = "TODO_ID", keyColumn = "LABEL_ID")
-    private Set<TodoLabel> lists = new HashSet<>();
+    private Set<TodoLabel> todoLabels = new HashSet<>();
 
     /**
      * 指定可能なプロパティ（ユーザーID、完了フラグ、名前、説明、優先度、期限日時）を全て指定したTodoオブジェクトを作成する。
