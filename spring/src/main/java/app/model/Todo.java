@@ -36,20 +36,22 @@ public class Todo {
     private Set<TodoLabel> todoLabels = new HashSet<>();
 
     /**
-     * 指定可能なプロパティ（ユーザーID、完了フラグ、名前、説明、優先度、期限日時）を全て指定したTodoオブジェクトを作成する。
+     * 自動で値が設定されるフィールド以外の値でTodoオブジェクトを作成する
      */
     public Todo(Long userId, Boolean isCompleted, String name, String desc, Integer priority,
-            LocalDate dueDate, LocalTime dueTime) {
+            LocalDate dueDate, LocalTime dueTime, Set<TodoLabel> todoLabels) {
         LocalDateTime now = LocalDateTime.now();
         this.userId = userId;
         this.isCompleted = isCompleted;
         this.name = name;
         this.desc = desc;
         this.priority = priority;
-        this.createdAt = now;
-        this.updatedAt = now;
         this.dueDate = dueDate;
         this.dueTime = dueTime;
+        this.createdAt = now;
+        this.updatedAt = now;
+
+        this.todoLabels = todoLabels;
     }
 
     /**
