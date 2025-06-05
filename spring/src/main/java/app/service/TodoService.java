@@ -50,7 +50,7 @@ public class TodoService {
 
         // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
         Set<Long> labelIds = addTodoForm.getLabelIds();
-        if (labelIds != null && !labelIds.isEmpty()) {
+        if (labelIds != null) {
             saveTodoLabelRelation(addedTodo.getId(), labelIds);
         }
 
@@ -75,7 +75,7 @@ public class TodoService {
 
         // フォームにlabelIdが含まれている場合は、中間テーブルに保存する
         Set<Long> labelIds = updateTodoForm.getLabelIds();
-        if (labelIds != null && !labelIds.isEmpty()) {
+        if (labelIds != null) {
             saveTodoLabelRelation(updateTodo.getId(), updateTodoForm.getLabelIds());
         }
 
