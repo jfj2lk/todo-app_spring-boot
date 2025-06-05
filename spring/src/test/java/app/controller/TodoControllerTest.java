@@ -222,7 +222,7 @@ class TodoControllerTest {
         long updateTodoId = 3L;
         // Todo更新用のフォームを作成
         UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4, LocalDate.now(),
-                LocalTime.now(), List.of(3L, 4L));
+                LocalTime.now(), Set.of(3L, 4L));
         // Todo更新用のフォームのJSON形式
         String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
 

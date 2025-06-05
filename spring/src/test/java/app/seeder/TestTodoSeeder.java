@@ -3,6 +3,8 @@ package app.seeder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 import app.model.Todo;
 import app.repository.TodoRepository;
@@ -18,10 +20,10 @@ public class TestTodoSeeder {
 	LocalTime nowTime = LocalTime.now();
 	// テスト時に作成するTodoの情報
 	private final List<Todo> seedTodos = List.of(
-			new Todo(1L, 1L, true, "name1", "desc1", 1, nowDate, nowTime, null, null),
-			new Todo(2L, 1L, false, "name2", "desc2", 2, nowDate, nowTime, null, null),
-			new Todo(3L, 2L, true, "name3", "desc3", 3, nowDate, nowTime, null, null),
-			new Todo(4L, 2L, false, "name4", "desc4", 4, nowDate, nowTime, null, null));
+			new Todo(1L, 1L, true, "name1", "desc1", 1, nowDate, nowTime, null, null, Set.of()),
+			new Todo(2L, 1L, false, "name2", "desc2", 2, nowDate, nowTime, null, null, Set.of()),
+			new Todo(3L, 2L, true, "name3", "desc3", 3, nowDate, nowTime, null, null, Set.of()),
+			new Todo(4L, 2L, false, "name4", "desc4", 4, nowDate, nowTime, null, null, Set.of()));
 
 	/**
 	 * テスト用のTodoの初期データを作成する
