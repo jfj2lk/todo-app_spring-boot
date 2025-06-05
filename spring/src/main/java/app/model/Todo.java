@@ -3,8 +3,11 @@ package app.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
@@ -27,6 +30,9 @@ public class Todo {
     private LocalTime dueTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @MappedCollection(idColumn = "TODO_ID", keyColumn = "LABEL_ID")
+    private Set<TodoLabel> lists = new HashSet<>();
 
     /**
      * 指定可能なプロパティ（ユーザーID、完了フラグ、名前、説明、優先度、期限日時）を全て指定したTodoオブジェクトを作成する。
