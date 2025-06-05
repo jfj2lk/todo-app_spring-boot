@@ -112,6 +112,7 @@ const Todos = () => {
         <TodoDetail
           key={selectedTodo.id}
           todo={selectedTodo}
+          setSelectedTodo={setSelectedTodo}
           todoDispatch={todoDispatch}
           labels={labels}
         />
