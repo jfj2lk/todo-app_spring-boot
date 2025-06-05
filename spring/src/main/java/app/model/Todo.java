@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
@@ -65,6 +66,9 @@ public class Todo {
         this.dueTime = addTodoForm.getDueTime();
         this.createdAt = now;
         this.updatedAt = now;
+        this.todoLabels = addTodoForm.getLabelIds().stream()
+                .map(TodoLabel::new)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -78,5 +82,8 @@ public class Todo {
         this.dueDate = updateTodoForm.getDueDate();
         this.dueTime = updateTodoForm.getDueTime();
         this.updatedAt = now;
+        this.todoLabels = updateTodoForm.getLabelIds().stream()
+                .map(TodoLabel::new)
+                .collect(Collectors.toSet());
     }
 }
