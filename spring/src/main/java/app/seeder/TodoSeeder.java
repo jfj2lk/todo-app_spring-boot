@@ -35,13 +35,13 @@ public class TodoSeeder {
 
                 // Todoの初期データ作成
                 List<Todo> todos = List.of(
-                                new Todo(null, 1L, true, "todo1", "desc1", 1, nowDate, nowTime, null, null,
+                                new Todo(1L, true, "todo1", "desc1", 1, nowDate, nowTime,
                                                 Set.of(new TodoLabel(1L))),
-                                new Todo(null, 1L, false, "todo2", "desc2", 2, nowDate, nowTime, null, null,
+                                new Todo(1L, false, "todo2", "desc2", 2, nowDate, nowTime,
                                                 Set.of(new TodoLabel(1L), new TodoLabel(2L))),
-                                new Todo(null, 2L, true, "todo3", "desc3", 3, nowDate, nowTime, null, null,
+                                new Todo(2L, true, "todo3", "desc3", 3, nowDate, nowTime,
                                                 Set.of(new TodoLabel(1L))),
-                                new Todo(null, 2L, false, "todo4", "desc4", 4, nowDate, nowTime, null, null,
+                                new Todo(2L, false, "todo4", "desc4", 4, nowDate, nowTime,
                                                 Set.of(new TodoLabel(1L), new TodoLabel(2L))));
                 todoRepository.saveAll(todos);
         }
