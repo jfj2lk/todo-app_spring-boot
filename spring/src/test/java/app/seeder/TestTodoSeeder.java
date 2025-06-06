@@ -30,13 +30,13 @@ public class TestTodoSeeder {
         // Todoの初期データ作成
         todos = List.of(
                 new Todo(1L, true, "todo1", "desc1", 1, nowDate, nowTime,
-                        Set.of(new TodoLabel(1L))),
-                new Todo(1L, false, "todo2", "desc2", 2, nowDate, nowTime,
                         Set.of(new TodoLabel(1L), new TodoLabel(2L))),
-                new Todo(2L, true, "todo3", "desc3", 3, nowDate, nowTime,
+                new Todo(1L, false, "todo2", "desc2", 2, nowDate, nowTime,
                         Set.of(new TodoLabel(1L))),
+                new Todo(2L, true, "todo3", "desc3", 3, nowDate, nowTime,
+                        Set.of(new TodoLabel(1L), new TodoLabel(2L))),
                 new Todo(2L, false, "todo4", "desc4", 4, nowDate, nowTime,
-                        Set.of(new TodoLabel(1L), new TodoLabel(2L))));
+                        Set.of(new TodoLabel(1L))));
 
         todoRepository.saveAll(todos);
     }
