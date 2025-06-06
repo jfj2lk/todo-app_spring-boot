@@ -3,7 +3,7 @@ package app.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +33,7 @@ public class Todo {
     private LocalDateTime updatedAt;
 
     @MappedCollection(idColumn = "TODO_ID", keyColumn = "LABEL_ID")
-    private Set<TodoLabel> todoLabels = new HashSet<>();
+    private Set<TodoLabel> todoLabels = new LinkedHashSet<>();
 
     /**
      * 自動で値が設定されるフィールド以外の値でTodoオブジェクトを作成する
