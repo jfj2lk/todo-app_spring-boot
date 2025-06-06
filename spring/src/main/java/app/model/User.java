@@ -27,15 +27,15 @@ public class User {
     @NotBlank
     private String password;
 
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     /**
      * 指定した名前、メールアドレス、パスワードを持つUserを作成する
      */
     public User(String name, String email, String password) {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
         this.name = name;
         this.email = email;
         this.password = password;
@@ -47,7 +47,7 @@ public class User {
      * サインアップフォームの値でUserを作成する
      */
     public User(SignUpForm signUpForm) {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
         this.name = signUpForm.getName();
         this.email = signUpForm.getEmail();
         this.password = signUpForm.getPassword();
