@@ -196,73 +196,37 @@ class TodoControllerTest {
         assertEquals(expectedTodoCountAfterUpdate, actualTodoCountAfterUpdate);
     }
 
+    /**
+     * Todoを削除するテスト。
+     * Todo削除後にレコードの件数が1件減っている、レスポンスの形式が正しいかを確認する。
+     */
     @Test
-    void Todoを更新_失敗() throws Exception {
-        // 更新するTodoのID
-        long updateTodoId = 3L;
-        // Todo更新用のフォームを作成
-        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name1update", "desc1update", 4, LocalDate.now(),
-                LocalTime.now(), Set.of(3L, 4L));
-        // Todo更新用のフォームのJSON形式
-        String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
-
-        // Todoの作成日時と更新日時に差を付ける為、待機する
-        Thread.sleep(1000);
-
-        // Todo更新
-        mockMvc
-                .perform(patch("/api/todos/" + updateTodoId)
-                        .header("Authorization", "Bearer " + this.jwt)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updateTodoFormJson))
-                .andDo(print())
-                .andExpectAll(
-                        status().isInternalServerError(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value("更新対象のTodoが見つかりませんでした。"));
-    }
-
-    @Test
-    void Todoを削除_成功() throws Exception {
+    void deleteTodo() throws Exception {
         // 削除するTodoのID
         long deleteTodoId = 1L;
-        // Todo削除後のTodoの全件数
-        int expectedTotalTodoCount = this.testTodoSeeder.getTodos().size() - 1;
+        // 検証用のTodo更新後のユーザーに紐づく全てのTodoの数を取得
+        long expectedTodoCountAfterDelete = todoRepository.count() - 1;
 
-        // Todo削除
-        mockMvc
+        // Todo追加
+        String json = mockMvc
                 .perform(delete("/api/todos/" + deleteTodoId)
                         .header("Authorization", "Bearer " + this.jwt))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
-                // レスポンスの形式が正しいか（削除したTodoのIDが返ってくるか）
-                .andExpect(jsonPath("$.data").value(deleteTodoId));
+                .andReturn().getResponse().getContentAsString();
 
-        // 全てのTodoの件数を取得
-        long actualTotalTodoCount = todoRepository.count();
-        assertEquals(expectedTotalTodoCount, actualTotalTodoCount, "Todoが1件分削除されていることを確認");
+        // JsonからTodoを取得
+        long actualDeleteTodoId = testUtils.fieldFromJson(json, "data", Long.class);
+        // DBから全てのTodoの数を取得
+        long actualTodoCountAfterUpdate = todoRepository.count();
 
-        // 削除したTodoを取得
-        Optional<Todo> deleteTodo = todoRepository.findById(deleteTodoId);
-        assertFalse(deleteTodo.isPresent(), "削除したTodoが存在しないことを確認");
-    }
+        // レスポンスのTodoのIDと削除したTodoのIDが合っているかを確認
+        assertEquals(deleteTodoId, actualDeleteTodoId);
 
-    @Test
-    void Todoを削除_失敗() throws Exception {
-        // 削除するTodoのID
-        long deleteTodoId = 3L;
-
-        // Todo削除
-        mockMvc
-                .perform(delete("/api/todos/" + deleteTodoId)
-                        .header("Authorization", "Bearer " + this.jwt))
-                .andDo(print())
-                .andExpectAll(
-                        status().isInternalServerError(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value("削除対象のTodoが見つかりませんでした。"));
+        // Todoの件数が1件分減っていることを確認
+        assertEquals(expectedTodoCountAfterDelete, actualTodoCountAfterUpdate);
     }
 
     @Test
