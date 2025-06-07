@@ -36,6 +36,7 @@ const AddTodo = (props: {
       dueTime,
       labelIds,
     });
+    console.log(json.data);
     props.todoDispatch({ type: "added", data: json.data });
     setName("");
     setDesc("");
@@ -119,7 +120,7 @@ const AddTodo = (props: {
 
             {/* ラベル入力欄 */}
             <Popover>
-              <PopoverTrigger>
+              <PopoverTrigger asChild>
                 <Button type="button" variant={"outline"}>
                   <Plus />
                   <span>ラベル</span>

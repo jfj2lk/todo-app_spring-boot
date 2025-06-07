@@ -27,6 +27,7 @@ const Todos = () => {
     (async () => {
       const todoJson = await apiRequest<TodoType[]>("/api/todos");
       todoDispatch({ type: "initialized", data: todoJson.data });
+      console.log(todoJson.data);
 
       const labelJson = await apiRequest<LabelType[]>("/api/labels");
       setLabels(labelJson.data);

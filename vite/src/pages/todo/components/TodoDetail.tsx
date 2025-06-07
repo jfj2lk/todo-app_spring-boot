@@ -19,12 +19,16 @@ const TodoDetail = (props: {
   labels: LabelType[];
   setSelectedTodo: React.Dispatch<React.SetStateAction<TodoType | null>>;
 }) => {
+  const labelIdsFromTodo: number[] = props.todo.todoLabels.map(
+    (todoLabel) => todoLabel.labelId,
+  );
+
   const [name, setName] = useState<string>(props.todo.name);
   const [desc, setDesc] = useState<string>(props.todo.desc);
   const [priority, setPriority] = useState<number>(props.todo.priority);
   const [dueDate, setDueDate] = useState<string>(props.todo.dueDate);
   const [dueTime, setDueTime] = useState<string>(props.todo.dueTime);
-  const [labelIds, setLabelIds] = useState<number[]>([]);
+  const [labelIds, setLabelIds] = useState<number[]>(labelIdsFromTodo);
 
   // Todo更新
   const handleUpdateTodo = async (updateTodoId: number) => {
@@ -120,7 +124,7 @@ const TodoDetail = (props: {
 
           {/* ラベル入力欄 */}
           <Popover>
-            <PopoverTrigger className="self-start">
+            <PopoverTrigger className="self-start" asChild>
               <Button type="button" variant={"outline"}>
                 <Plus />
                 <span>ラベル</span>

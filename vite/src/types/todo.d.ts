@@ -1,3 +1,8 @@
+// TodoとLabelの中間テーブルのレコード
+export type TodoLabel = {
+  labelId: number;
+};
+
 // Todoモデル
 export type TodoType = {
   id: number;
@@ -9,6 +14,7 @@ export type TodoType = {
   dueTime: string;
   createdAt: any;
   updatedAt: any;
+  todoLabels: TodoLabel[];
 };
 
 // リデューサのアクションタイプ
