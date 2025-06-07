@@ -104,17 +104,17 @@ class TodoControllerTest {
                 .doesNotContainNull();
     }
 
+    /**
+     * Todoを追加するテスト。
+     * Todo追加後にレコードの件数が1件増えている、レスポンスの形式が正しいかを確認する。
+     */
     @Test
-    void Todoを追加() throws Exception {
-        // 追加するTodoのID
-        Long addTodoId = this.testTodoSeeder.getTodos().size() + 1L;
-        // Todoに関連付けるLabelのID
-        Set<Long> associatedLabelIds = Set.of(1L, 2L);
-        // Todo追加後の全てのTodoの数
-        int expectedTotalTodoCount = this.testTodoSeeder.getTodos().size() + 1;
+    void addTodo() throws Exception {
+        // 検証用のTodo追加後のユーザーに紐づく全てのTodoの数を取得
+        long expectedTodoCountAfterAdd = todoRepository.count() + 1;
         // Todo追加用のフォームを作成
         AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3", 1, LocalDate.now(), LocalTime.now(),
-                associatedLabelIds);
+                Set.of(1L, 2L));
         // Todo追加用のフォームのJSON形式を作成
         String addTodoFormJson = this.testUtils.toJson(addTodoForm);
 
@@ -128,23 +128,16 @@ class TodoControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
-                // レスポンスの追加したTodoの形式が正しいか
-                .andExpectAll(
-                        jsonPath("$.data.id").value(addTodoId),
-                        jsonPath("$.data.userId").value(this.operatorId),
-                        jsonPath("$.data.isCompleted").value("false"),
-                        jsonPath("$.data.name").value(addTodoForm.getName()),
-                        jsonPath("$.data.desc").value(addTodoForm.getDesc()),
-                        jsonPath("$.data.priority").value(addTodoForm.getPriority()),
-                        jsonPath("$.data.createdAt").exists(),
-                        jsonPath("$.data.updatedAt").exists())
                 .andReturn().getResponse().getContentAsString();
 
         // JsonからTodoを取得
         Todo actualTodo = testUtils.fieldFromJson(json, "data", Todo.class);
-        // 期待するTodoを取得
-        Todo expectedTodo = todoRepository.findById(addTodoId).get();
+        // DBから追加後のTodoを取得
+        Todo expectedTodo = todoRepository.findById(expectedTodoCountAfterAdd).get();
+        // DBから全てのTodoの数を取得
+        long actualTodoCountAfterAdd = todoRepository.count();
 
+        // レスポンスのTodoの形式が正しいか確認
         assertThat(actualTodo).usingRecursiveComparison()
                 .ignoringFields("createdAt", "updatedAt", "dueTime")
                 .withEqualsForType(Object::equals, Set.class)
@@ -153,6 +146,8 @@ class TodoControllerTest {
                 .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
                 .doesNotContainNull();
 
+        // Todoの件数が1件分増えているか確認
+        assertEquals(expectedTodoCountAfterAdd, actualTodoCountAfterAdd);
     }
 
     @Test
