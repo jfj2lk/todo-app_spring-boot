@@ -25,6 +25,8 @@ import app.form.label.AddLabelForm;
 import app.form.label.UpdateLabelForm;
 import app.model.Label;
 import app.repository.LabelRepository;
+import app.seeder.TestLabelSeeder;
+import app.seeder.TestUserSeeder;
 import app.utils.TestUtils;
 
 @ActiveProfiles("test")
@@ -35,6 +37,10 @@ public class LabelControllerTest {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
+  private TestUserSeeder testUserSeeder;
+  @Autowired
+  private TestLabelSeeder testLabelSeeder;
+  @Autowired
   private LabelRepository labelRepository;
   @Autowired
   private TestUtils testUtils;
@@ -42,23 +48,30 @@ public class LabelControllerTest {
   private String jwt;
 
   @BeforeEach
-  void setUpAll() {
+  void setUpEach() {
     jwt = this.testUtils.createJwt(1L);
-
-    List<Label> labels = List.of(new Label("label1"), new Label("label2"));
+    testUserSeeder.seedInitialUser();
+    List<Label> labels = List.of(new Label(1L, "label1"), new Label(1L, "label2"));
     labelRepository.saveAll(labels);
   }
 
   @Test
   void 全てのLabelを取得() throws Exception {
+    // ユーザーに紐づく全てのLabelを取得
+    List<Label> allLabelsForUser = testUtils.toList(labelRepository.findAllByUserId(1L));
+    // 検証用のユーザーに紐づく全てのLabelの数を取得
+    long expectedLabelCountForUser = allLabelsForUser.size();
+    // 検証用のLabelを取得
+    Label expectedLabel = allLabelsForUser.get(0);
+
     mockMvc.perform(get("/api/labels")
         .header("Authorization", "Bearer " + this.jwt))
         .andExpectAll(
             status().isOk(),
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.data.length()").value(2),
-            jsonPath("$.data.[0].id").value(1),
-            jsonPath("$.data.[0].name").value("label1"),
+            jsonPath("$.data.length()").value(expectedLabelCountForUser),
+            jsonPath("$.data.[0].id").value(expectedLabel.getId()),
+            jsonPath("$.data.[0].name").value(expectedLabel.getName()),
             jsonPath("$.data.[0].createdAt").exists(),
             jsonPath("$.data.[0].updatedAt").exists());
   }

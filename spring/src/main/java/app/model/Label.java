@@ -16,12 +16,14 @@ import lombok.NoArgsConstructor;
 public class Label {
   @Id
   private Long id;
+  private Long userId;
   private String name;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
-  public Label(String name) {
+  public Label(Long userId, String name) {
     LocalDateTime now = LocalDateTime.now();
+    this.userId = userId;
     this.name = name;
     this.createdAt = now;
     this.updatedAt = now;
@@ -30,8 +32,9 @@ public class Label {
   /**
    * Label追加フォームの値でLabelオブジェクトを作成する。
    */
-  public Label(AddLabelForm addLabelForm) {
+  public Label(AddLabelForm addLabelForm, Long userId) {
     LocalDateTime now = LocalDateTime.now();
+    this.userId = userId;
     this.name = addLabelForm.getName();
     this.createdAt = now;
     this.updatedAt = now;

@@ -7,6 +7,7 @@ import app.form.label.AddLabelForm;
 import app.form.label.UpdateLabelForm;
 import app.model.Label;
 import app.repository.LabelRepository;
+import app.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -14,19 +15,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LabelService {
   private final LabelRepository labelRepository;
+  private final SecurityUtils securityUtils;
 
   /**
    * 全てのLabelを取得する。
    */
   public Iterable<Label> getAllLabels() {
-    return labelRepository.findAll();
+    Long loginUserId = securityUtils.getCurrentUserId();
+    return labelRepository.findAllByUserId(loginUserId);
   }
 
   /**
    * Labelを追加する。
    */
   public Label addLabel(AddLabelForm addLabelForm) {
-    Label addLabel = new Label(addLabelForm);
+    Long loginUserId = securityUtils.getCurrentUserId();
+    Label addLabel = new Label(addLabelForm, loginUserId);
     return labelRepository.save(addLabel);
   }
 
@@ -35,7 +39,8 @@ public class LabelService {
    */
   public Label updateLabel(Long updateLabelId, UpdateLabelForm updateLabelForm)
       throws RuntimeException {
-    Label updateLabel = labelRepository.findById(updateLabelId)
+    Long loginUserId = securityUtils.getCurrentUserId();
+    Label updateLabel = labelRepository.findByIdAndUserId(updateLabelId, loginUserId)
         .orElseThrow(() -> new RuntimeException("更新対象のLabelが見つかりませんでした。"));
     // フォームの値でLabelの値を更新する
     updateLabel.updateWithForm(updateLabelForm);
@@ -46,9 +51,8 @@ public class LabelService {
    * Labelを削除する。
    */
   public Long deleteLabel(Long deleteLabelId) throws RuntimeException {
-    Label deleteLabel = labelRepository.findById(deleteLabelId)
-        .orElseThrow(() -> new RuntimeException("更新対象のLabelが見つかりませんでした。"));
-    labelRepository.delete(deleteLabel);
+    Long loginUserId = securityUtils.getCurrentUserId();
+    labelRepository.deleteByIdAndUserId(deleteLabelId, loginUserId);
     return deleteLabelId;
   }
 }
