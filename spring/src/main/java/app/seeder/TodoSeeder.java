@@ -1,6 +1,7 @@
 package app.seeder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -27,19 +28,20 @@ public class TodoSeeder {
      * Todoの初期データをシードする
      */
     public void seedInitialTodo() {
+        LocalDateTime nowDateTime = LocalDateTime.now();
         LocalDate nowDate = LocalDate.now();
         LocalTime nowTime = LocalTime.now();
 
         // Projectの初期データ作成
         List<Project> lists = List.of(
-                new Project("プライベート"),
-                new Project("仕事"));
+                new Project(null, 1L, "プライベート", null, null),
+                new Project(null, 1L, "仕事", null, null));
         projectRepository.saveAll(lists);
 
         // Labelの初期データ作成
         List<Label> labels = List.of(
-                new Label("家事"),
-                new Label("健康"));
+                new Label(1L, "家事"),
+                new Label(1L, "健康"));
         labelRepository.saveAll(labels);
 
         // Todoの初期データ作成
