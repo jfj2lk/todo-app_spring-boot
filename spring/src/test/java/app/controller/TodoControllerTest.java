@@ -229,30 +229,48 @@ class TodoControllerTest {
         assertEquals(expectedTodoCountAfterDelete, actualTodoCountAfterUpdate);
     }
 
+    /**
+     * Todoを完了状態にするテスト。
+     * レスポンスの形式が正しいかを確認する。
+     */
     @Test
-    void Todoを完了状態にする() throws Exception {
+    void completeTodo() throws Exception {
         // 完了状態にするTodoのID
-        int completeTodoId = 2;
-        Todo expectedTodo = this.testTodoSeeder.getTodos().get(completeTodoId - 1);
+        long completeTodoId = 1L;
+        // Todo完了後の検証用のTodoを取得
+        Todo expectedTodo = todoRepository.findById(completeTodoId).get();
+        // 検証用のTodo完了後の全てのTodoの数を取得
+        long expectedTodoCountAfterComplete = todoRepository.count();
 
         // Todo完了
-        mockMvc
+        String json = mockMvc
                 .perform(patch("/api/todos/" + completeTodoId + "/toggleComplete")
                         .header("Authorization", "Bearer " + this.jwt))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
-                // レスポンスの完了状態にしたTodoの形式が正しいか
-                .andExpectAll(
-                        jsonPath("$.data.id").value(expectedTodo.getId()),
-                        jsonPath("$.data.userId").value(expectedTodo.getUserId()),
-                        jsonPath("$.data.isCompleted").value("true"),
-                        jsonPath("$.data.name").value(expectedTodo.getName()),
-                        jsonPath("$.data.desc").value(expectedTodo.getDesc()),
-                        jsonPath("$.data.priority").value(expectedTodo.getPriority()),
-                        jsonPath("$.data.createdAt").exists(),
-                        jsonPath("$.data.updatedAt").exists());
+                .andReturn().getResponse().getContentAsString();
+
+        // JsonからTodoを取得
+        Todo actualTodo = testUtils.fieldFromJson(json, "data", Todo.class);
+        // DBから全てのTodoの数を取得
+        long actualTodoCountAfterComplete = todoRepository.count();
+
+        // レスポンスのTodoの形式が正しいか確認
+        assertThat(actualTodo).usingRecursiveComparison()
+                .ignoringFields("createdAt", "updatedAt", "dueTime", "isCompleted")
+                .withEqualsForType(Object::equals, Set.class)
+                .isEqualTo(expectedTodo);
+        assertThat(actualTodo)
+                .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
+                .doesNotContainNull();
+
+        // Todoの状態が完了になっていることを確認
+        assertTrue(actualTodo.getIsCompleted());
+
+        // Todoの件数が変わっていないことを確認
+        assertEquals(expectedTodoCountAfterComplete, actualTodoCountAfterComplete);
     }
 
     @Test
