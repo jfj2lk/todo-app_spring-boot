@@ -1,12 +1,12 @@
 package app.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,6 +28,7 @@ import app.seeder.TestLabelSeeder;
 import app.seeder.TestTodoSeeder;
 import app.seeder.TestUserSeeder;
 import app.utils.TestUtils;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -40,63 +41,73 @@ class TodoControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private TodoRepository todoRepository;
-    @Autowired
     private TestUtils testUtils;
+
+    @Autowired
+    private TodoRepository todoRepository;
+
     @Autowired
     private TestUserSeeder testUserSeeder;
     @Autowired
-    private TestTodoSeeder testTodoSeeder;
-    @Autowired
     private TestLabelSeeder testLabelSeeder;
-    // Todo操作を行うユーザーのID
-    private Long operatorForUserId1 = 1L;
-    private String jwtForUserId1;
+    @Autowired
+    private TestTodoSeeder testTodoSeeder;
+
+    // 操作を行うユーザーのID
+    private Long operatorId = 1L;
+    private String jwt;
 
     @BeforeEach
     void setUpEach() {
-        this.jwtForUserId1 = this.testUtils.createJwt(this.operatorForUserId1);
+        this.jwt = testUtils.createJwt(operatorId);
         // 初期データを作成
         this.testUserSeeder.seedInitialUser();
         this.testLabelSeeder.seedInitialLabel();
         this.testTodoSeeder.seedInitialTodo();
     }
 
+    /**
+     * 全てのTodoを取得するテスト。
+     * ユーザーに紐づく全件のTodoが取得できている事と、レスポンスの形式が正しいかを確認する。
+     */
     @Test
-    void 全てのTodoを取得() throws Exception {
-        // ユーザーID1に紐づく全てのTodoの数
-        int expectedTotalTodoCount = this.testTodoSeeder.getTodos().stream()
-                .filter(todo -> todo.getUserId().equals(this.operatorForUserId1))
-                .toList().size();
-        // TodoID1の作成予定のTodo情報取得
-        Todo expectedTodo = this.testTodoSeeder.getTodos().get(0);
+    void getAllTodos() throws Exception {
+        // ユーザーに紐づく全てのTodoを取得
+        List<Todo> getAllTodosForUser = testUtils.toList(todoRepository.findAllByUserId(1L));
+        // 検証用のユーザーに紐づく全てのTodoの数を取得
+        long expectedTotalTodoCountForUser = getAllTodosForUser.stream().count();
+        // 検証用のTodoを取得
+        Todo expectedTodo = getAllTodosForUser.get(0);
 
-        // ユーザーID1に紐づく全てのTodoを取得
-        mockMvc
+        // ユーザーに紐づく全てのTodoを取得
+        String json = mockMvc
                 .perform(get("/api/todos")
-                        .header("Authorization", "Bearer " + this.jwtForUserId1))
+                        .header("Authorization", "Bearer " + this.jwt))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
-                // Todoが全件数取得できているか
-                .andExpect(jsonPath("$.data.length()").value(expectedTotalTodoCount))
-                // レスポンスのTodoの形式が正しいか
-                .andExpectAll(
-                        jsonPath("$.data[0].id").value(expectedTodo.getId()),
-                        jsonPath("$.data[0].userId").value(expectedTodo.getUserId()),
-                        jsonPath("$.data[0].isCompleted").value(expectedTodo.getIsCompleted()),
-                        jsonPath("$.data[0].name").value(expectedTodo.getName()),
-                        jsonPath("$.data[0].desc").value(expectedTodo.getDesc()),
-                        jsonPath("$.data[0].priority").value(expectedTodo.getPriority()),
-                        jsonPath("$.data[0].createdAt").exists(),
-                        jsonPath("$.data[0].updatedAt").exists());
+                // ユーザーに紐づくTodoが全件取得できているか確認
+                .andExpect(jsonPath("$.data.length()").value(expectedTotalTodoCountForUser))
+                .andReturn().getResponse().getContentAsString();
+
+        // Jsonから最初のTodoを取得
+        Todo actualTodo = testUtils.fieldIndexFromJson(json, "data", 0, Todo.class);
+
+        // レスポンスのTodoの形式が正しいか確認
+        assertThat(actualTodo).usingRecursiveComparison()
+                .ignoringFields("createdAt", "updatedAt", "dueTime")
+                .withEqualsForType(Object::equals, Set.class)
+                .isEqualTo(expectedTodo);
+        assertThat(actualTodo)
+                .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
+                .doesNotContainNull();
     }
 
     @Test
     void Todoを追加() throws Exception {
         // 追加するTodoのID
-        long addTodoId = this.testTodoSeeder.getTodos().size() + 1;
+        Long addTodoId = this.testTodoSeeder.getTodos().size() + 1L;
         // Todoに関連付けるLabelのID
         Set<Long> associatedLabelIds = Set.of(1L, 2L);
         // Todo追加後の全てのTodoの数
@@ -108,9 +119,9 @@ class TodoControllerTest {
         String addTodoFormJson = this.testUtils.toJson(addTodoForm);
 
         // Todo追加
-        mockMvc
+        String json = mockMvc
                 .perform(post("/api/todos")
-                        .header("Authorization", "Bearer " + this.jwtForUserId1)
+                        .header("Authorization", "Bearer " + this.jwt)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTodoFormJson))
                 .andDo(print())
@@ -120,24 +131,28 @@ class TodoControllerTest {
                 // レスポンスの追加したTodoの形式が正しいか
                 .andExpectAll(
                         jsonPath("$.data.id").value(addTodoId),
-                        jsonPath("$.data.userId").value(this.operatorForUserId1),
+                        jsonPath("$.data.userId").value(this.operatorId),
                         jsonPath("$.data.isCompleted").value("false"),
                         jsonPath("$.data.name").value(addTodoForm.getName()),
                         jsonPath("$.data.desc").value(addTodoForm.getDesc()),
                         jsonPath("$.data.priority").value(addTodoForm.getPriority()),
                         jsonPath("$.data.createdAt").exists(),
-                        jsonPath("$.data.updatedAt").exists());
+                        jsonPath("$.data.updatedAt").exists())
+                .andReturn().getResponse().getContentAsString();
 
-        // 全てのTodoの件数を取得
-        long actualTotalTodoCount = this.todoRepository.count();
-        assertEquals(expectedTotalTodoCount, actualTotalTodoCount, "Todoが1件分追加されていることを確認");
+        // JsonからTodoを取得
+        Todo actualTodo = testUtils.fieldFromJson(json, "data", Todo.class);
+        // 期待するTodoを取得
+        Todo expectedTodo = todoRepository.findById(addTodoId).get();
 
-        // TodoとLabelの関連付けが保存されているか確認
-        // List<Long> todoLabels =
-        // todoLabelRepository.findAllByTodoId(addTodoId).stream()
-        // .map(TodoLabel::getLabelId)
-        // .toList();
-        // assertTrue(todoLabels.containsAll(associatedLabelIds));
+        assertThat(actualTodo).usingRecursiveComparison()
+                .ignoringFields("createdAt", "updatedAt", "dueTime")
+                .withEqualsForType(Object::equals, Set.class)
+                .isEqualTo(expectedTodo);
+        assertThat(actualTodo)
+                .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
+                .doesNotContainNull();
+
     }
 
     @Test
@@ -160,7 +175,7 @@ class TodoControllerTest {
         // Todo更新
         mockMvc
                 .perform(patch("/api/todos/" + updateTodoId)
-                        .header("Authorization", "Bearer " + this.jwtForUserId1)
+                        .header("Authorization", "Bearer " + this.jwt)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTodoFormJson))
                 .andDo(print())
@@ -170,7 +185,7 @@ class TodoControllerTest {
                 // レスポンスの更新したTodoの形式が正しいか
                 .andExpectAll(
                         jsonPath("$.data.id").value(updateTodoId),
-                        jsonPath("$.data.userId").value(this.operatorForUserId1),
+                        jsonPath("$.data.userId").value(this.operatorId),
                         jsonPath("$.data.name").value(updateTodoForm.getName()),
                         jsonPath("$.data.desc").value(updateTodoForm.getDesc()),
                         jsonPath("$.data.priority").value(updateTodoForm.getPriority()),
@@ -216,7 +231,7 @@ class TodoControllerTest {
         // Todo更新
         mockMvc
                 .perform(patch("/api/todos/" + updateTodoId)
-                        .header("Authorization", "Bearer " + this.jwtForUserId1)
+                        .header("Authorization", "Bearer " + this.jwt)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTodoFormJson))
                 .andDo(print())
@@ -236,7 +251,7 @@ class TodoControllerTest {
         // Todo削除
         mockMvc
                 .perform(delete("/api/todos/" + deleteTodoId)
-                        .header("Authorization", "Bearer " + this.jwtForUserId1))
+                        .header("Authorization", "Bearer " + this.jwt))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
@@ -261,7 +276,7 @@ class TodoControllerTest {
         // Todo削除
         mockMvc
                 .perform(delete("/api/todos/" + deleteTodoId)
-                        .header("Authorization", "Bearer " + this.jwtForUserId1))
+                        .header("Authorization", "Bearer " + this.jwt))
                 .andDo(print())
                 .andExpectAll(
                         status().isInternalServerError(),
@@ -278,7 +293,7 @@ class TodoControllerTest {
         // Todo完了
         mockMvc
                 .perform(patch("/api/todos/" + completeTodoId + "/toggleComplete")
-                        .header("Authorization", "Bearer " + this.jwtForUserId1))
+                        .header("Authorization", "Bearer " + this.jwt))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
@@ -304,7 +319,7 @@ class TodoControllerTest {
         // Todo完了
         mockMvc
                 .perform(patch("/api/todos/" + completeTodoId + "/toggleComplete")
-                        .header("Authorization", "Bearer " + this.jwtForUserId1))
+                        .header("Authorization", "Bearer " + this.jwt))
                 .andDo(print())
                 .andExpectAll(
                         status().isOk(),
