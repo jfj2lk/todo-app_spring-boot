@@ -23,6 +23,7 @@ public class Todo {
     @Id
     private Long id;
     private Long userId;
+    private Long projectId;
     private Boolean isCompleted;
     private String name;
     private String desc;
@@ -38,10 +39,11 @@ public class Todo {
     /**
      * 自動で値が設定されるフィールド以外の値でTodoオブジェクトを作成する
      */
-    public Todo(Long userId, Boolean isCompleted, String name, String desc, Integer priority,
+    public Todo(Long userId, Long projectId, Boolean isCompleted, String name, String desc, Integer priority,
             LocalDate dueDate, LocalTime dueTime, Set<TodoLabel> todoLabels) {
         LocalDateTime now = LocalDateTime.now();
         this.userId = userId;
+        this.projectId = projectId;
         this.isCompleted = isCompleted;
         this.name = name;
         this.desc = desc;
