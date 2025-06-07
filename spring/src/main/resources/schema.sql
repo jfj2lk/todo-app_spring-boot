@@ -10,9 +10,19 @@ CREATE TABLE "user" (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- プロジェクト
+CREATE TABLE project (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+--
+
 CREATE TABLE todo (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
+    project_id BIGINT NOT NULL,
     is_completed BOOLEAN NOT NULL DEFAULT FALSE, 
     name VARCHAR(255) NOT NULL,
     desc VARCHAR(255),
@@ -21,9 +31,11 @@ CREATE TABLE todo (
     due_time TIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES "user"(id)
+    FOREIGN KEY (user_id) REFERENCES "user"(id),
+    FOREIGN KEY (project_id) REFERENCES project(id)
 );
 
+-- ラベル
 CREATE TABLE label (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
@@ -38,3 +50,4 @@ CREATE TABLE todo_label (
     FOREIGN KEY (todo_id) REFERENCES todo(id) ON DELETE CASCADE,
     FOREIGN KEY (label_id) REFERENCES label(id) ON DELETE CASCADE
 );
+--
