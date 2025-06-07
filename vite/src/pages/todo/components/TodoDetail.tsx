@@ -1,17 +1,34 @@
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { LabelType } from "@/types/label";
 import { TodoReducerActions, TodoType } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
+import { Plus } from "lucide-react";
+
 import { useState } from "react";
 
 const TodoDetail = (props: {
   todo: TodoType;
   todoDispatch: React.Dispatch<TodoReducerActions>;
+  labels: LabelType[];
+  setSelectedTodo: React.Dispatch<React.SetStateAction<TodoType | null>>;
 }) => {
+  const labelIdsFromTodo: number[] = props.todo.todoLabels.map(
+    (todoLabel) => todoLabel.labelId,
+  );
+
   const [name, setName] = useState<string>(props.todo.name);
   const [desc, setDesc] = useState<string>(props.todo.desc);
   const [priority, setPriority] = useState<number>(props.todo.priority);
   const [dueDate, setDueDate] = useState<string>(props.todo.dueDate);
   const [dueTime, setDueTime] = useState<string>(props.todo.dueTime);
+  const [labelIds, setLabelIds] = useState<number[]>(labelIdsFromTodo);
 
   // Todo更新
   const handleUpdateTodo = async (updateTodoId: number) => {
@@ -24,9 +41,14 @@ const TodoDetail = (props: {
         priority,
         dueDate,
         dueTime,
+        labelIds,
       },
     );
     props.todoDispatch({ type: "updated", data: json.data });
+    setName("");
+    setDesc("");
+    setLabelIds([]);
+    props.setSelectedTodo(null);
   };
 
   // Todo削除
@@ -100,7 +122,44 @@ const TodoDetail = (props: {
             className="rounded-md border border-gray-300 px-5 py-2"
           />
 
-          <Button type="submit">更新</Button>
+          {/* ラベル入力欄 */}
+          <Popover>
+            <PopoverTrigger className="self-start" asChild>
+              <Button type="button" variant={"outline"}>
+                <Plus />
+                <span>ラベル</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto">
+              <ul className="flex flex-col gap-3">
+                {props.labels.map((label) => (
+                  <li key={label.id}>
+                    <Label>
+                      <Checkbox
+                        name="labels"
+                        value={label.id}
+                        checked={labelIds.includes(label.id)}
+                        onCheckedChange={(checked) => {
+                          checked
+                            ? setLabelIds([...labelIds, label.id])
+                            : setLabelIds(
+                                labelIds.filter(
+                                  (labelId) => labelId !== label.id,
+                                ),
+                              );
+                        }}
+                      />
+                      <span>{label.name}</span>
+                    </Label>
+                  </li>
+                ))}
+              </ul>
+            </PopoverContent>
+          </Popover>
+
+          <Button type="submit" className="mt-2">
+            更新
+          </Button>
         </form>
 
         {/* Todo削除フォーム */}

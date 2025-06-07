@@ -1,11 +1,22 @@
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { LabelType } from "@/types/label";
 import { TodoType, TodoReducerActions } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
+
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
 const AddTodo = (props: {
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
+  labels: LabelType[];
 }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
@@ -13,6 +24,7 @@ const AddTodo = (props: {
   const [priority, setPriority] = useState<number>(4);
   const [dueDate, setDueDate] = useState<string>("");
   const [dueTime, setDueTime] = useState<string>("");
+  const [labelIds, setLabelIds] = useState<number[]>([]);
 
   // Todo追加
   const handleAddTodo = async () => {
@@ -22,10 +34,13 @@ const AddTodo = (props: {
       priority,
       dueDate,
       dueTime,
+      labelIds,
     });
+    console.log(json.data);
     props.todoDispatch({ type: "added", data: json.data });
     setName("");
     setDesc("");
+    setLabelIds([]);
     setIsAdding(false);
   };
 
@@ -102,9 +117,44 @@ const AddTodo = (props: {
               placeholder="期限時刻"
               className="rounded border p-2"
             />
+
+            {/* ラベル入力欄 */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button type="button" variant={"outline"}>
+                  <Plus />
+                  <span>ラベル</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto">
+                <ul className="flex flex-col gap-3">
+                  {props.labels.map((label) => (
+                    <li key={label.id}>
+                      <Label>
+                        <Checkbox
+                          name="labels"
+                          value={label.id}
+                          checked={labelIds.includes(label.id)}
+                          onCheckedChange={(checked) => {
+                            checked
+                              ? setLabelIds([...labelIds, label.id])
+                              : setLabelIds(
+                                  labelIds.filter(
+                                    (labelId) => labelId !== label.id,
+                                  ),
+                                );
+                          }}
+                        />
+                        <span>{label.name}</span>
+                      </Label>
+                    </li>
+                  ))}
+                </ul>
+              </PopoverContent>
+            </Popover>
           </div>
 
-          <div className="flex justify-end space-x-2">
+          <div className="mt-2 flex justify-end space-x-2">
             <button
               className="rounded bg-gray-100 px-4 py-2"
               onClick={() => setIsAdding(false)}

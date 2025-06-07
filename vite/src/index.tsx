@@ -11,6 +11,7 @@ import Layout from "@/layout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import MarketingLayout from "@/components/MarketingLayout";
 import AppLayout from "@/components/AppLayout";
+import Labels from "./pages/label/Labels";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -28,6 +29,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="" element={<ProtectedRoute />}>
               <Route path="" element={<AppLayout />}>
                 <Route path="/todos" element={<Todos />} />
+                <Route path="/labels" element={<Labels />} />
               </Route>
             </Route>
           </Route>

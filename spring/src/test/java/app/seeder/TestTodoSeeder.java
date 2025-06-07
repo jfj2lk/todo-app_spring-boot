@@ -3,8 +3,11 @@ package app.seeder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 import app.model.Todo;
+import app.model.TodoLabel;
 import app.repository.TodoRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -13,27 +16,28 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class TestTodoSeeder {
-	private final TodoRepository todoRepository;
-	LocalDate nowDate = LocalDate.now();
-	LocalTime nowTime = LocalTime.now();
-	// テスト時に作成するTodoの情報
-	private final List<Todo> seedTodos = List.of(
-			new Todo(1L, 1L, true, "name1", "desc1", 1, nowDate, nowTime, null, null),
-			new Todo(2L, 1L, false, "name2", "desc2", 2, nowDate, nowTime, null, null),
-			new Todo(3L, 2L, true, "name3", "desc3", 3, nowDate, nowTime, null, null),
-			new Todo(4L, 2L, false, "name4", "desc4", 4, nowDate, nowTime, null, null));
+    private final TodoRepository todoRepository;
+    private List<Todo> todos;
 
-	/**
-	 * テスト用のTodoの初期データを作成する
-	 */
-	public void seedInitialTodo() {
-		// 元のオブジェクトの値が変更されないように、保存用のリストを作成する
-		List<Todo> saveTodos = seedTodos
-				.stream()
-				.map(seedTodo -> new Todo(seedTodo.getUserId(), seedTodo.getIsCompleted(),
-						seedTodo.getName(), seedTodo.getDesc(), seedTodo.getPriority(),
-						seedTodo.getDueDate(), seedTodo.getDueTime()))
-				.toList();
-		todoRepository.saveAll(saveTodos);
-	}
+    /**
+     * テスト用のTodoの初期データを作成する
+     */
+    public void seedInitialTodo() {
+        // 現在日付と現在時刻を取得
+        LocalDate nowDate = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+
+        // Todoの初期データ作成
+        todos = List.of(
+                new Todo(1L, false, "todo1", "desc1", 1, nowDate, nowTime,
+                        Set.of(new TodoLabel(1L), new TodoLabel(2L))),
+                new Todo(1L, true, "todo2", "desc2", 2, nowDate, nowTime,
+                        Set.of(new TodoLabel(1L))),
+                new Todo(2L, false, "todo3", "desc3", 3, nowDate, nowTime,
+                        Set.of(new TodoLabel(1L), new TodoLabel(2L))),
+                new Todo(2L, true, "todo4", "desc4", 4, nowDate, nowTime,
+                        Set.of(new TodoLabel(1L))));
+
+        todoRepository.saveAll(todos);
+    }
 }

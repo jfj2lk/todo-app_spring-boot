@@ -3,8 +3,12 @@ package app.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
@@ -28,21 +32,26 @@ public class Todo {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @MappedCollection(idColumn = "TODO_ID", keyColumn = "LABEL_ID")
+    private Set<TodoLabel> todoLabels = new LinkedHashSet<>();
+
     /**
-     * 指定可能なプロパティ（ユーザーID、完了フラグ、名前、説明、優先度、期限日時）を全て指定したTodoオブジェクトを作成する。
+     * 自動で値が設定されるフィールド以外の値でTodoオブジェクトを作成する
      */
     public Todo(Long userId, Boolean isCompleted, String name, String desc, Integer priority,
-            LocalDate dueDate, LocalTime dueTime) {
+            LocalDate dueDate, LocalTime dueTime, Set<TodoLabel> todoLabels) {
         LocalDateTime now = LocalDateTime.now();
         this.userId = userId;
         this.isCompleted = isCompleted;
         this.name = name;
         this.desc = desc;
         this.priority = priority;
-        this.createdAt = now;
-        this.updatedAt = now;
         this.dueDate = dueDate;
         this.dueTime = dueTime;
+        this.createdAt = now;
+        this.updatedAt = now;
+
+        this.todoLabels = todoLabels;
     }
 
     /**
@@ -59,6 +68,9 @@ public class Todo {
         this.dueTime = addTodoForm.getDueTime();
         this.createdAt = now;
         this.updatedAt = now;
+        this.todoLabels = addTodoForm.getLabelIds().stream()
+                .map(TodoLabel::new)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -72,5 +84,8 @@ public class Todo {
         this.dueDate = updateTodoForm.getDueDate();
         this.dueTime = updateTodoForm.getDueTime();
         this.updatedAt = now;
+        this.todoLabels = updateTodoForm.getLabelIds().stream()
+                .map(TodoLabel::new)
+                .collect(Collectors.toSet());
     }
 }
