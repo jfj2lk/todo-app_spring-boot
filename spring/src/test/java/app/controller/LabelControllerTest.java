@@ -51,8 +51,7 @@ public class LabelControllerTest {
   void setUpEach() {
     jwt = this.testUtils.createJwt(1L);
     testUserSeeder.seedInitialUser();
-    List<Label> labels = List.of(new Label(1L, "label1"), new Label(1L, "label2"));
-    labelRepository.saveAll(labels);
+    testLabelSeeder.seedInitialLabel();
   }
 
   @Test
