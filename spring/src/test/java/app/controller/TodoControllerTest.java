@@ -73,11 +73,11 @@ class TodoControllerTest {
     @Test
     void getAllTodos() throws Exception {
         // ユーザーに紐づく全てのTodoを取得
-        List<Todo> getAllTodosForUser = testUtils.toList(todoRepository.findAllByUserId(1L));
+        List<Todo> allTodosForUser = testUtils.toList(todoRepository.findAllByUserId(1L));
         // 検証用のユーザーに紐づく全てのTodoの数を取得
-        long expectedTotalTodoCountForUser = getAllTodosForUser.stream().count();
+        long expectedTodoCountForUser = allTodosForUser.size();
         // 検証用のTodoを取得
-        Todo expectedTodo = getAllTodosForUser.get(0);
+        Todo expectedTodo = allTodosForUser.get(0);
 
         // ユーザーに紐づく全てのTodoを取得
         String json = mockMvc
@@ -88,7 +88,7 @@ class TodoControllerTest {
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
                 // ユーザーに紐づくTodoが全件取得できているか確認
-                .andExpect(jsonPath("$.data.length()").value(expectedTotalTodoCountForUser))
+                .andExpect(jsonPath("$.data.length()").value(expectedTodoCountForUser))
                 .andReturn().getResponse().getContentAsString();
 
         // Jsonから最初のTodoを取得
