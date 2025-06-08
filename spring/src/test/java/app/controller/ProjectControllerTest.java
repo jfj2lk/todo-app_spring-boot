@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Sql(scripts = "/reset-sequence.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ProjectControllerTest {
   @Autowired
   private MockMvc mockMvc;
@@ -126,7 +128,7 @@ public class ProjectControllerTest {
     // ユーザーに紐づく全てのProjectを取得
     List<Project> allProjectsForUser = testUtils.toList(projectRepository.findAllByUserId(operatorId));
     // 検証用のProjectを取得
-    Project expectedProject = allProjectsForUser.get((int) expectedAddProjectId);
+    Project expectedProject = allProjectsForUser.get(allProjectsForUser.size() - 1);
 
     // レスポンスのProjectの形式が正しいか確認
     assertThat(actualProject).usingRecursiveComparison()
