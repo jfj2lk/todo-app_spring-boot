@@ -1,5 +1,7 @@
 package app.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +54,14 @@ public class ProjectService {
    */
   public Long deleteProject(Long deleteProjectId) throws RuntimeException {
     Long loginUserId = securityUtils.getCurrentUserId();
-    projectRepository.deleteByIdAndUserId(deleteProjectId, loginUserId);
+
+    Optional<Project> deleteProjectOptional = projectRepository.findByIdAndUserId(deleteProjectId, loginUserId);
+    deleteProjectOptional.ifPresentOrElse(
+        project -> projectRepository.delete(project),
+        () -> {
+          throw new RuntimeException("削除対象のProjectが見つかりません。");
+        });
+
     return deleteProjectId;
   }
 }
