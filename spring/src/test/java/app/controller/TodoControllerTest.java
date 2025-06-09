@@ -1,12 +1,21 @@
 package app.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,18 +27,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
 import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
 import app.repository.TodoRepository;
 import app.seeder.TestLabelSeeder;
+import app.seeder.TestProjectSeeder;
 import app.seeder.TestTodoSeeder;
 import app.seeder.TestUserSeeder;
 import app.utils.TestUtils;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -50,6 +57,8 @@ class TodoControllerTest {
     private TestLabelSeeder testLabelSeeder;
     @Autowired
     private TestTodoSeeder testTodoSeeder;
+    @Autowired
+    private TestProjectSeeder testProjectSeeder;
 
     // 操作を行うユーザーのID
     private Long operatorId = 1L;
@@ -60,6 +69,7 @@ class TodoControllerTest {
         this.jwt = testUtils.createJwt(operatorId);
         // 初期データを作成
         this.testUserSeeder.seedInitialUser();
+        this.testProjectSeeder.initialSeed();
         this.testLabelSeeder.seedInitialLabel();
         this.testTodoSeeder.seedInitialTodo();
     }
@@ -159,7 +169,8 @@ class TodoControllerTest {
         // 検証用のTodo更新後のユーザーに紐づく全てのTodoの数を取得
         long expectedTodoCountAfterUpdate = todoRepository.count();
         // Todo追加用のフォームを作成
-        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name3", "desc3", 1, LocalDate.now(), LocalTime.now(),
+        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name3", "desc3", 1, LocalDate.now(),
+                LocalTime.now(),
                 Set.of(1L, 2L));
         // Todo更新用のフォームのJSON形式を作成
         String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
