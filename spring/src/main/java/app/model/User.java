@@ -1,11 +1,13 @@
 package app.model;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Table;
+
 import app.form.user.SignUpForm;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,18 +19,12 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     private Long id;
-
-    @NotBlank
     private String name;
-
-    @NotBlank
     private String email;
-
-    @NotBlank
     private String password;
-
+    @CreatedDate
     private LocalDateTime createdAt;
-
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     /**
