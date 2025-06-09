@@ -25,11 +25,6 @@ public class Label {
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
-  public Label(Long userId, String name) {
-    this.userId = userId;
-    this.name = name;
-  }
-
   /**
    * Label追加フォームの値でLabelオブジェクトを作成する。
    */

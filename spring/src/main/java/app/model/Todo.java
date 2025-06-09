@@ -41,30 +41,10 @@ public class Todo {
     private Set<TodoLabel> todoLabels = new LinkedHashSet<>();
 
     /**
-     * 自動で値が設定されるフィールド以外の値でTodoオブジェクトを作成する
+     * Todo追加フォームの値でTodoオブジェクトを作成する。
      */
-    public Todo(Long userId, Long projectId, Boolean isCompleted, String name, String desc, Integer priority,
-            LocalDate dueDate, LocalTime dueTime, Set<TodoLabel> todoLabels) {
-        LocalDateTime now = LocalDateTime.now();
+    public Todo(AddTodoForm addTodoForm, Long userId) {
         this.userId = userId;
-        this.projectId = projectId;
-        this.isCompleted = isCompleted;
-        this.name = name;
-        this.desc = desc;
-        this.priority = priority;
-        this.dueDate = dueDate;
-        this.dueTime = dueTime;
-        this.createdAt = now;
-        this.updatedAt = now;
-
-        this.todoLabels = todoLabels;
-    }
-
-    /**
-     * Todo追加フォームの値でTodoオブジェクトを作成する
-     */
-    public Todo(AddTodoForm addTodoForm, Long loginUserId) {
-        this.userId = loginUserId;
         this.isCompleted = false;
         this.name = addTodoForm.getName();
         this.desc = addTodoForm.getDesc();
@@ -77,7 +57,7 @@ public class Todo {
     }
 
     /**
-     * Todo更新フォームの値でプロパティの値を更新する
+     * Todo更新フォームの値でTodoオブジェクトを更新する。
      */
     public void updateWithForm(UpdateTodoForm updateTodoForm) {
         this.name = updateTodoForm.getName();

@@ -28,26 +28,11 @@ public class User {
     private LocalDateTime updatedAt;
 
     /**
-     * 指定した名前、メールアドレス、パスワードを持つUserを作成する
-     */
-    public User(String name, String email, String password) {
-        LocalDateTime now = LocalDateTime.now();
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.createdAt = now;
-        this.updatedAt = now;
-    }
-
-    /**
-     * サインアップフォームの値でUserを作成する
+     * User追加フォームの値でUserオブジェクトを作成する。
      */
     public User(SignUpForm signUpForm) {
-        LocalDateTime now = LocalDateTime.now();
         this.name = signUpForm.getName();
         this.email = signUpForm.getEmail();
         this.password = signUpForm.getPassword();
-        this.createdAt = now;
-        this.updatedAt = now;
     }
 }
