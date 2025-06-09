@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,16 +33,14 @@ import app.form.todo.AddTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
 import app.repository.TodoRepository;
-import app.seeder.TestLabelSeeder;
-import app.seeder.TestProjectSeeder;
-import app.seeder.TestTodoSeeder;
-import app.seeder.TestUserSeeder;
+import app.seeder.Seeder;
 import app.utils.TestUtils;
 
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Sql(scripts = "/reset-sequence.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class TodoControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -52,13 +51,7 @@ class TodoControllerTest {
     private TodoRepository todoRepository;
 
     @Autowired
-    private TestUserSeeder testUserSeeder;
-    @Autowired
-    private TestLabelSeeder testLabelSeeder;
-    @Autowired
-    private TestTodoSeeder testTodoSeeder;
-    @Autowired
-    private TestProjectSeeder testProjectSeeder;
+    private Seeder seeder;
 
     // 操作を行うユーザーのID
     private Long operatorId = 1L;
@@ -66,12 +59,9 @@ class TodoControllerTest {
 
     @BeforeEach
     void setUpEach() {
-        this.jwt = testUtils.createJwt(operatorId);
+        jwt = testUtils.createJwt(operatorId);
         // 初期データを作成
-        this.testUserSeeder.seedInitialUser();
-        this.testProjectSeeder.initialSeed();
-        this.testLabelSeeder.seedInitialLabel();
-        this.testTodoSeeder.seedInitialTodo();
+        seeder.seedInitialData();
     }
 
     /**

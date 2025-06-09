@@ -1,6 +1,15 @@
 package app.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 import java.util.Set;
@@ -20,16 +29,8 @@ import app.form.project.AddProjectForm;
 import app.form.project.UpdateProjectForm;
 import app.model.Project;
 import app.repository.ProjectRepository;
-import app.seeder.TestProjectSeeder;
-import app.seeder.TestUserSeeder;
+import app.seeder.Seeder;
 import app.utils.TestUtils;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -45,22 +46,17 @@ public class ProjectControllerTest {
   private Long operatorId = 1L;
   private String jwt;
 
-  // シーダー
-  @Autowired
-  private TestUserSeeder testUserSeeder;
-  @Autowired
-  private TestProjectSeeder testProjectSeeder;
-
-  // リポジトリ
   @Autowired
   private ProjectRepository projectRepository;
+
+  @Autowired
+  private Seeder seeder;
 
   @BeforeEach
   void setUpEach() {
     jwt = testUtils.createJwt(operatorId);
     // 初期データ作成
-    testUserSeeder.seedInitialUser();
-    testProjectSeeder.initialSeed();
+    seeder.seedInitialData();
   }
 
   /**

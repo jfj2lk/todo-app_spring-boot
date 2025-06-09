@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,33 +26,32 @@ import app.form.label.AddLabelForm;
 import app.form.label.UpdateLabelForm;
 import app.model.Label;
 import app.repository.LabelRepository;
-import app.seeder.TestLabelSeeder;
-import app.seeder.TestUserSeeder;
+import app.seeder.Seeder;
 import app.utils.TestUtils;
 
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Sql(scripts = "/reset-sequence.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class LabelControllerTest {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
-  private TestUserSeeder testUserSeeder;
-  @Autowired
-  private TestLabelSeeder testLabelSeeder;
+  private TestUtils testUtils;
+
   @Autowired
   private LabelRepository labelRepository;
+
   @Autowired
-  private TestUtils testUtils;
+  private Seeder seeder;
 
   private String jwt;
 
   @BeforeEach
   void setUpEach() {
-    jwt = this.testUtils.createJwt(1L);
-    testUserSeeder.seedInitialUser();
-    testLabelSeeder.seedInitialLabel();
+    jwt = testUtils.createJwt(1L);
+    seeder.seedInitialData();
   }
 
   @Test
