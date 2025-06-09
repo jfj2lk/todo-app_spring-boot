@@ -1,6 +1,11 @@
 package app.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.dto.UserResponseDto;
@@ -11,15 +16,7 @@ import app.service.AuthService;
 import app.utils.JwtUtils;
 import lombok.AllArgsConstructor;
 
-import java.util.Map;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 @RestController
-@RequestMapping("/api")
 @AllArgsConstructor
 public class AuthController {
 
@@ -36,7 +33,8 @@ public class AuthController {
         // JWTトークン発行
         final String jwt = jwtService.generateJwt(signedUpUser);
         // レスポンス用のユーザーDTOを作成
-        final UserResponseDto userInfo = new UserResponseDto(signedUpUser.getId(), signedUpUser.getName(), signedUpUser.getEmail());
+        final UserResponseDto userInfo = new UserResponseDto(signedUpUser.getId(), signedUpUser.getName(),
+                signedUpUser.getEmail());
 
         return ResponseEntity.ok().body(Map.ofEntries(
                 Map.entry("accessToken", jwt),
@@ -53,13 +51,13 @@ public class AuthController {
         final User loginUser = authService.login(loginForm);
         // JWTトークン発行
         final String jwt = jwtService.generateJwt(loginUser);
-                // レスポンス用のユーザーDTOを作成
-        final UserResponseDto userInfo = new UserResponseDto(loginUser.getId(), loginUser.getName(), loginUser.getEmail());
+        // レスポンス用のユーザーDTOを作成
+        final UserResponseDto userInfo = new UserResponseDto(loginUser.getId(), loginUser.getName(),
+                loginUser.getEmail());
 
         return ResponseEntity.ok().body(Map.ofEntries(
                 Map.entry("accessToken", jwt),
                 Map.entry("message", "ログインしました。"),
                 Map.entry("userInfo", userInfo)));
     }
-
 }
