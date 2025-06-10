@@ -43,8 +43,9 @@ public class Todo {
     /**
      * Todo追加フォームの値でTodoオブジェクトを作成する。
      */
-    public Todo(AddTodoForm addTodoForm, Long userId) {
+    public Todo(AddTodoForm addTodoForm, Long userId, Long projectId) {
         this.userId = userId;
+        this.projectId = projectId;
         this.isCompleted = false;
         this.name = addTodoForm.getName();
         this.desc = addTodoForm.getDesc();
