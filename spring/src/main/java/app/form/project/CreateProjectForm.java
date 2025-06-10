@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddProjectForm {
-  @NotBlank(message = "名前は必須です")
-  @Size(max = 255, message = "名前は255文字以内で入力してください")
-  private String name;
+public class CreateProjectForm {
+    @NotBlank(message = "名前は必須です")
+    @Size(max = 255, message = "名前は255文字以内で入力してください")
+    private String name;
 }
