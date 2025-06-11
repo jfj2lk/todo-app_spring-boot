@@ -1,18 +1,15 @@
 package app.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +35,7 @@ import app.utils.TestUtils;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Sql(scripts = "/reset-sequence.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "/reset-sequence.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ProjectControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -49,9 +46,8 @@ public class ProjectControllerTest {
     @Autowired
     private TestUtils testUtils;
 
-    private Long userId = 1L;
+    private final Long userId = 1L;
     private String jwt;
-    private String[] ignoredFields = { "createdAt", "updatedAt" };
 
     @BeforeEach
     void setUpEach() {
@@ -62,13 +58,16 @@ public class ProjectControllerTest {
     }
 
     /**
-     * 全てのProjectを取得するテスト。
+     * Userの全てのProjectを取得するテスト。
      * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
     void getAllProjects() throws Exception {
+        // API実行前の全てのProjectを取得
+        List<Project> projectsCountBeforeApi = projectRepository.findAll();
+
         // 期待値となるUserの全てのProjectを取得
-        List<Project> expectedProjects = projectRepository.findAllByUserId(userId);
+        List<Project> expectedUserProjects = projectRepository.findAllByUserId(userId);
 
         // API実行
         String json = mockMvc
@@ -80,114 +79,144 @@ public class ProjectControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         // Jsonをオブジェクトに変換
-        List<Project> responseProjects = testUtils.fieldFromJson(json, "data", new TypeReference<List<Project>>() {
+        List<Project> responseUserProjects = testUtils.fieldFromJson(json, "data", new TypeReference<List<Project>>() {
         });
 
         /* レスポンス検証 */
-        // 要素数が期待値と一致するか確認
-        assertThat(responseProjects).hasSameSizeAs(expectedProjects);
+        // Projectの数が期待値と一致するか確認
+        assertThat(responseUserProjects).hasSameSizeAs(expectedUserProjects);
         // 内容が期待値と一致するか確認
-        assertThat(responseProjects).usingRecursiveComparison()
-                .ignoringFields(ignoredFields)
-                .isEqualTo(expectedProjects);
-        // 日時フィールドが存在するか確認
-        assertThat(responseProjects)
-                .allSatisfy(project -> {
-                    assertThat(project.getCreatedAt()).isNotNull();
-                    assertThat(project.getUpdatedAt()).isNotNull();
-                });
+        assertThat(responseUserProjects)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedUserProjects);
 
         /* DB検証 */
-        // Userの全てのProjectのレコード数が変わっていないことを確認
-        assertThat(responseProjects).hasSameSizeAs(projectRepository.findAllByUserId(userId));
+        // Projectのレコード数が変わっていないことを確認
+        List<Project> projectsCountAfterApi = projectRepository.findAll();
+        assertThat(projectsCountAfterApi).hasSize(projectsCountBeforeApi.size());
     }
 
+    /**
+     * Projectを作成するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
+     */
     @Test
-    void addProject() throws Exception {
-        // 追加されたProjectの期待するID
-        long expectedAddProjectId = this.projectRepository.count() + 1;
-        // Project追加後の期待するProjectの数
-        long expectedTotalProjectCount = this.projectRepository.count() + 1;
+    void createProject() throws Exception {
+        // API実行前の全てのProjectを取得
+        List<Project> projectsCountBeforeApi = projectRepository.findAll();
 
-        // Project追加用のフォームを作成
-        CreateProjectForm addProjectForm = new CreateProjectForm("addProject");
-        String addProjectFormJson = this.testUtils.toJson(addProjectForm);
+        // Project作成用フォームを作成
+        CreateProjectForm createProjectForm = new CreateProjectForm("createProject");
+        // フォームをJsonに変換
+        String createProjectFormJson = testUtils.toJson(createProjectForm);
 
-        String json = mockMvc.perform(post("/api/projects")
-                .header("Authorization", "Bearer " + this.jwt)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(addProjectFormJson))
-                .andDo(print())
+        // API実行
+        String json = mockMvc
+                .perform(post("/api/projects")
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createProjectFormJson))
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
-        // Jsonから最初のProjectを取得
-        Project actualProject = testUtils.fieldFromJson(json, "data", Project.class);
+        // Jsonをオブジェクトに変換
+        Project responseCreatedProject = testUtils.fieldFromJson(json, "data", Project.class);
 
-        // ユーザーに紐づく全てのProjectを取得
-        List<Project> allProjectsForUser = testUtils.toList(projectRepository.findAllByUserId(userId));
-        // 検証用のProjectを取得
-        Project expectedProject = allProjectsForUser.get(allProjectsForUser.size() - 1);
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseCreatedProject.getId()).isNotNull();
+        assertThat(responseCreatedProject.getUserId()).isEqualTo(userId);
+        assertThat(responseCreatedProject.getName()).isEqualTo(createProjectForm.getName());
+        assertThat(responseCreatedProject.getCreatedAt()).isNotNull();
+        assertThat(responseCreatedProject.getUpdatedAt()).isNotNull();
 
-        // レスポンスのProjectの形式が正しいか確認
-        assertThat(actualProject).usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt")
-                .withEqualsForType(Object::equals, Set.class)
-                .isEqualTo(expectedProject);
-        assertThat(actualProject)
-                .extracting(Project::getCreatedAt, Project::getUpdatedAt)
-                .doesNotContainNull();
-
-        // レコードが1件分増えていることを確認
-        assertEquals(expectedTotalProjectCount, this.projectRepository.count());
+        /* DB検証 */
+        // Projectのレコード数が1件増えていることを確認
+        List<Project> projectsCountAfterApi = projectRepository.findAll();
+        assertThat(projectsCountAfterApi).hasSize(projectsCountBeforeApi.size() + 1);
     }
 
+    /**
+     * Projectを更新するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
+     */
     @Test
     void updateProject() throws Exception {
-        // 更新するProjectのID
-        long updateProjectId = 1L;
-        // Project更新後の期待するProjectの数
-        long expectedTotalProjectCount = this.projectRepository.count();
+        // API実行前の全てのProjectを取得
+        List<Project> projectsCountBeforeApi = projectRepository.findAllByUserId(userId);
 
-        // Project更新用のフォームを作成
+        // 更新対象のProjectId
+        Long updateProjectId = 1L;
+        // Project作成用フォームを作成
         UpdateProjectForm updateProjectForm = new UpdateProjectForm("updateProject");
-        String updateProjectFormJson = this.testUtils.toJson(updateProjectForm);
+        // フォームをJsonに変換
+        String updateProjectFormJson = testUtils.toJson(updateProjectForm);
 
-        mockMvc.perform(patch("/api/projects/" + updateProjectId)
-                .header("Authorization", "Bearer " + this.jwt)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(updateProjectFormJson))
-                .andDo(print())
+        // API実行
+        String json = mockMvc
+                .perform(patch("/api/projects/" + updateProjectId)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateProjectFormJson))
                 .andExpectAll(
                         status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.data.id").value(updateProjectId),
-                        jsonPath("$.data.name").value(updateProjectForm.getName()),
-                        jsonPath("$.data.createdAt").exists(),
-                        jsonPath("$.data.updatedAt").exists());
+                        content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
 
-        // レコードの件数が変わっていないことを確認
-        assertEquals(expectedTotalProjectCount, this.projectRepository.count());
+        // Jsonをオブジェクトに変換
+        Project responseUpdatedProject = testUtils.fieldFromJson(json, "data", Project.class);
+
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseUpdatedProject.getId()).isNotNull();
+        assertThat(responseUpdatedProject.getUserId()).isEqualTo(userId);
+        assertThat(responseUpdatedProject.getName()).isEqualTo(updateProjectForm.getName());
+        assertThat(responseUpdatedProject.getCreatedAt()).isNotNull();
+        assertThat(responseUpdatedProject.getUpdatedAt()).isNotNull();
+        // 更新日時が作成日時よりも後か確認
+        assertThat(responseUpdatedProject.getCreatedAt()).isBeforeOrEqualTo(responseUpdatedProject.getUpdatedAt());
+
+        /* DB検証 */
+        // Projectのレコード数が変わっていないことを確認
+        List<Project> projectsCountAfterApi = projectRepository.findAll();
+        assertThat(projectsCountAfterApi).hasSize(projectsCountBeforeApi.size());
     }
 
+    /**
+     * Projectを削除するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
+     */
     @Test
     void deleteProject() throws Exception {
-        // 削除するProjectのID
-        long deleteProjectId = 1L;
-        // Project削除後の期待するProjectの数
-        long expectedTotalProjectCount = this.projectRepository.count() - 1;
+        // API実行前の全てのProjectを取得
+        List<Project> projectsCountBeforeApi = projectRepository.findAllByUserId(userId);
 
-        mockMvc.perform(delete("/api/projects/" + deleteProjectId)
-                .header("Authorization", "Bearer " + this.jwt))
-                .andDo(print())
+        // 削除対象のProjectId
+        Long deleteProjectId = 1L;
+
+        // API実行
+        String json = mockMvc
+                .perform(delete("/api/projects/" + deleteProjectId)
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpectAll(
                         status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.data").value(deleteProjectId));
+                        content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
 
-        // レコードが1件分減っていることを確認
-        assertEquals(expectedTotalProjectCount, this.projectRepository.count());
+        // Jsonをオブジェクトに変換
+        Long responseDeletedProjectId = testUtils.fieldFromJson(json, "data", Long.class);
+
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseDeletedProjectId).isEqualTo(deleteProjectId);
+
+        /* DB検証 */
+        // 削除対象のレコードが見つからないことを確認
+        assertTrue(projectRepository.findById(responseDeletedProjectId).isEmpty());
+        // Projectのレコード数が1件分減っていることを確認
+        List<Project> projectsCountAfterApi = projectRepository.findAll();
+        assertThat(projectsCountAfterApi).hasSize(projectsCountBeforeApi.size() - 1);
     }
 }
