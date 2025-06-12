@@ -22,8 +22,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import app.form.project.CreateProjectForm;
 import app.form.project.UpdateProjectForm;
 import app.model.Project;
@@ -79,8 +77,7 @@ public class ProjectControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         // Jsonをオブジェクトに変換
-        List<Project> responseUserProjects = testUtils.fieldFromJson(json, "data", new TypeReference<List<Project>>() {
-        });
+        List<Project> responseUserProjects = testUtils.fromJsonFieldAsList(json, "data", Project.class);
 
         /* レスポンス検証 */
         // Projectの数が期待値と一致するか確認
@@ -122,7 +119,7 @@ public class ProjectControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         // Jsonをオブジェクトに変換
-        Project responseCreatedProject = testUtils.fieldFromJson(json, "data", Project.class);
+        Project responseCreatedProject = testUtils.fromJsonField(json, "data", Project.class);
 
         /* レスポンス検証 */
         // 内容が期待値と一致するか確認
@@ -166,7 +163,7 @@ public class ProjectControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         // Jsonをオブジェクトに変換
-        Project responseUpdatedProject = testUtils.fieldFromJson(json, "data", Project.class);
+        Project responseUpdatedProject = testUtils.fromJsonField(json, "data", Project.class);
 
         /* レスポンス検証 */
         // 内容が期待値と一致するか確認
@@ -206,7 +203,7 @@ public class ProjectControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         // Jsonをオブジェクトに変換
-        Long responseDeletedProjectId = testUtils.fieldFromJson(json, "data", Long.class);
+        Long responseDeletedProjectId = testUtils.fromJsonField(json, "data", Long.class);
 
         /* レスポンス検証 */
         // 内容が期待値と一致するか確認
