@@ -43,16 +43,16 @@ public class Todo {
     /**
      * Todo追加フォームの値でTodoオブジェクトを作成する。
      */
-    public Todo(CreateTodoForm addTodoForm, Long userId, Long projectId) {
+    public Todo(CreateTodoForm createTodoForm, Long projectId, Long userId) {
         this.userId = userId;
         this.projectId = projectId;
         this.isCompleted = false;
-        this.name = addTodoForm.getName();
-        this.desc = addTodoForm.getDesc();
-        this.priority = addTodoForm.getPriority();
-        this.dueDate = addTodoForm.getDueDate();
-        this.dueTime = addTodoForm.getDueTime();
-        this.todoLabels = addTodoForm.getLabelIds().stream()
+        this.name = createTodoForm.getName();
+        this.desc = createTodoForm.getDesc();
+        this.priority = createTodoForm.getPriority();
+        this.dueDate = createTodoForm.getDueDate();
+        this.dueTime = createTodoForm.getDueTime();
+        this.todoLabels = createTodoForm.getLabelIds().stream()
                 .map(TodoLabel::new)
                 .collect(Collectors.toSet());
     }
