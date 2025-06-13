@@ -12,7 +12,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
-import app.form.todo.AddTodoForm;
+import app.form.todo.CreateTodoForm;
 import app.form.todo.UpdateTodoForm;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,7 +43,7 @@ public class Todo {
     /**
      * Todo追加フォームの値でTodoオブジェクトを作成する。
      */
-    public Todo(AddTodoForm addTodoForm, Long userId, Long projectId) {
+    public Todo(CreateTodoForm addTodoForm, Long userId, Long projectId) {
         this.userId = userId;
         this.projectId = projectId;
         this.isCompleted = false;

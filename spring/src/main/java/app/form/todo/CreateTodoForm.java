@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddTodoForm {
+public class CreateTodoForm {
     @NotBlank(message = "nameは必須です")
     @Size(max = 255, message = "nameは255文字以内で入力してください")
     private String name;
