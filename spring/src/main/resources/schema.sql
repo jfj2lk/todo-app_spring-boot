@@ -23,7 +23,6 @@ CREATE TABLE project (
 
 CREATE TABLE todo (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
     project_id BIGINT NOT NULL,
     is_completed BOOLEAN NOT NULL DEFAULT FALSE, 
     name VARCHAR(255) NOT NULL,
@@ -33,7 +32,6 @@ CREATE TABLE todo (
     due_time TIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
     FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 );
 
