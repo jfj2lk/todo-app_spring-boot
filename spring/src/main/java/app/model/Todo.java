@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 public class Todo {
     @Id
     private Long id;
-    private Long userId;
     private Long projectId;
     private Boolean isCompleted;
     private String name;
@@ -43,8 +42,7 @@ public class Todo {
     /**
      * Todo追加フォームの値でTodoオブジェクトを作成する。
      */
-    public Todo(CreateTodoForm createTodoForm, Long projectId, Long userId) {
-        this.userId = userId;
+    public Todo(CreateTodoForm createTodoForm, Long projectId) {
         this.projectId = projectId;
         this.isCompleted = false;
         this.name = createTodoForm.getName();
