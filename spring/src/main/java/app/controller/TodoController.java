@@ -1,5 +1,6 @@
 package app.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -10,59 +11,95 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.form.todo.AddTodoForm;
+import app.form.todo.CreateTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
 import app.service.TodoService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
+@RequestMapping("/projects/{projectId}/todos")
 public class TodoController {
     private final TodoService todoService;
 
-    // 全てのTodo取得
-    @GetMapping("/todos")
-    public ResponseEntity<Map<String, Iterable<Todo>>> getAllTodos() {
-        // DBから全てのTodoを取得し、その結果を返す
-        Iterable<Todo> allTodos = todoService.getAllTodos();
-        return ResponseEntity.ok().body(Map.of("data", allTodos));
+    /**
+     * Todo取得。
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Todo>> get(
+            @PathVariable("projectId") Long projectId,
+            @PathVariable("id") Long todoId) {
+        Todo todo = todoService.get(todoId, projectId);
+        return ResponseEntity.ok().body(Map.of("data", todo));
     }
 
-    // Todo追加
-    @PostMapping("/todos")
-    public ResponseEntity<Map<String, Todo>> addTodo(@RequestBody @Validated AddTodoForm addTodoForm) {
-        // DBにフォームから送信されたTodoデータを保存し、その結果を返す
-        Todo addedTodo = todoService.addTodo(addTodoForm);
-        return ResponseEntity.ok().body(Map.of("data", addedTodo));
-
+    /**
+     * 全てのTodo取得。
+     */
+    @GetMapping
+    public ResponseEntity<Map<String, List<Todo>>> getAll(
+            @PathVariable("projectId") Long projectId) {
+        List<Todo> todos = todoService.getAll(projectId);
+        return ResponseEntity.ok().body(Map.of("data", todos));
     }
 
-    // Todo更新
-    @PatchMapping("/todos/{id}")
-    public ResponseEntity<Map<String, Todo>> updateTodo(
+    /**
+     * Todo作成。
+     */
+    @PostMapping
+    public ResponseEntity<Map<String, Todo>> create(
+            @PathVariable("projectId") Long projectId,
+            @RequestBody @Validated CreateTodoForm createTodoForm) {
+        Todo createdTodo = todoService.create(projectId, createTodoForm);
+        return ResponseEntity.ok().body(Map.of("data", createdTodo));
+    }
+
+    /**
+     * Todo更新。
+     */
+    @PatchMapping("/{id}")
+    public ResponseEntity<Map<String, Todo>> update(
+            @PathVariable("projectId") Long projectId,
             @PathVariable("id") Long todoId,
-            @RequestBody @Validated UpdateTodoForm updateTodoForm) {
-        // フォームから送られたTodoデータで更新し、その結果を返す
-        Todo updatedTodo = todoService.updateTodo(todoId, updateTodoForm);
+            @RequestBody @Validated UpdateTodoForm UpdateTodoForm) {
+        Todo updatedTodo = todoService.update(todoId, projectId, UpdateTodoForm);
         return ResponseEntity.ok().body(Map.of("data", updatedTodo));
     }
 
-    // Todo削除
-    @DeleteMapping("/todos/{id}")
-    public ResponseEntity<Map<String, Long>> deleteTodo(@PathVariable("id") Long todoId) {
-        // パスパラメータのIDのTodoを削除
-        Long deletedTodoId = todoService.deleteTodo(todoId);
-        return ResponseEntity.ok(Map.of("data", deletedTodoId));
+    /**
+     * Todo削除。
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Long>> delete(
+            @PathVariable("projectId") Long projectId,
+            @PathVariable("id") Long todoId) {
+        Long deletedTodoId = todoService.delete(todoId, projectId);
+        return ResponseEntity.ok().body(Map.of("data", deletedTodoId));
     }
 
-    // Todo完了・未完了状態切り替え
-    @PatchMapping("/todos/{id}/toggleComplete")
-    public ResponseEntity<Map<String, Object>> toggleCompleteTodo(@PathVariable("id") Long todoId) {
-        // Todoの完了・未完了状態を切り返し、更新する
-        Todo updatedTodo = todoService.toggleCompletedTodo(todoId);
-        return ResponseEntity.ok(Map.of("data", updatedTodo));
+    /**
+     * Todoを完了状態にする。
+     */
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<Map<String, Todo>> complete(
+            @PathVariable("projectId") Long projectId,
+            @PathVariable("id") Long todoId) {
+        Todo completedTodo = todoService.complete(todoId, projectId);
+        return ResponseEntity.ok().body(Map.of("data", completedTodo));
+    }
+
+    /**
+     * Todoを未完了状態にする。
+     */
+    @PatchMapping("/{id}/incomplete")
+    public ResponseEntity<Map<String, Todo>> incomplete(
+            @PathVariable("projectId") Long projectId,
+            @PathVariable("id") Long todoId) {
+        Todo incompletedTodo = todoService.incomplete(todoId, projectId);
+        return ResponseEntity.ok().body(Map.of("data", incompletedTodo));
     }
 }
