@@ -11,7 +11,7 @@ import {
 const menus = [
   { label: "タスク管理", link: "/todos" },
   { label: "ラベル管理", link: "/labels" },
-  { label: "リスト管理", link: "#" },
+  { label: "プロジェクト管理", link: "/projects" },
 ];
 
 const SideMenu = () => {
