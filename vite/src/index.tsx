@@ -1,18 +1,19 @@
+import AppLayout from "@/components/AppLayout";
+import MarketingLayout from "@/components/MarketingLayout";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import "@/index.css";
+import Layout from "@/layout";
+import Home from "@/pages/home/Home";
+import "@/utils/axios-default-config";
+import { MantineProvider } from "@mantine/core";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { MantineProvider } from "@mantine/core";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import "@/index.css";
-import Home from "@/pages/home/Home";
-import Signup from "./pages/auth/Signup";
 import Login from "./pages/auth/Login";
-import Todos from "./pages/todo/Todos";
-import Layout from "@/layout";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import MarketingLayout from "@/components/MarketingLayout";
-import AppLayout from "@/components/AppLayout";
+import Signup from "./pages/auth/Signup";
 import Labels from "./pages/label/Labels";
 import ProjectPage from "./pages/project/ProjectPage";
+import Todos from "./pages/todo/Todos";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
