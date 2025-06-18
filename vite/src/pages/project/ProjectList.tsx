@@ -12,7 +12,7 @@ const ProjectList = (props: {
   return (
     <div>
       {props.projects.map((project) => (
-        <div>
+        <div key={project.id}>
           {project.id === editingId ? (
             <div>
               <UpdateProjectForm

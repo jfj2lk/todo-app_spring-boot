@@ -1,18 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { ProjectType } from "@/types/project";
-import { apiRequest } from "@/utils/api";
+import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
 const DeleteProjectForm = (props: {
   projectId: number;
   setProjects: Dispatch<SetStateAction<ProjectType[]>>;
 }) => {
-  const handleDeleteProject = async (id: number) => {
-    const json = await apiRequest<number>(
-      `/api/projects/${props.projectId}`,
-      "DELETE",
-    );
-
-    props.setProjects((prev) => prev.filter((e) => e.id !== json.data));
+  const handleDeleteProject = (id: number) => {
+    axios.delete(`/api/projects/${id}`).then((response) => {
+      props.setProjects((prev) =>
+        prev.filter((project) => project.id !== response.data.data),
+      );
+    });
   };
 
   return (

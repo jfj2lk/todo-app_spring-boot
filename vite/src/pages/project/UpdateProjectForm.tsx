@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ProjectType } from "@/types/project";
-import { apiRequest } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,16 +28,17 @@ const UpdateProjectForm = (props: {
     defaultValues: props.project,
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const json = await apiRequest<ProjectType>(
-      `/api/projects/${props.project.id}`,
-      "PATCH",
-      values,
-    );
-
-    props.setProjects((prev) =>
-      prev.map((e) => (e.id === json.data.id ? json.data : e)),
-    );
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    axios
+      .patch(`/api/projects/${props.project.id}`, values)
+      .then((response) => {
+        const payload = response.data.data;
+        props.setProjects((prev) =>
+          prev.map((project) =>
+            project.id === payload.id ? payload : project,
+          ),
+        );
+      });
 
     props.setEditingId(null);
   };

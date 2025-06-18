@@ -1,5 +1,5 @@
 import { ProjectType } from "@/types/project";
-import { apiRequest } from "@/utils/api";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import CreateProjectForm from "./CreateProjectForm";
 import ProjectList from "./ProjectList";
@@ -8,10 +8,13 @@ const ProjectPage = () => {
   const [projects, setProjects] = useState<ProjectType[]>([]);
 
   useEffect(() => {
-    (async () => {
-      const json = await apiRequest<ProjectType[]>("/api/projects");
-      setProjects(json.data);
-    })();
+    // 全てのProjectを取得する
+    const fetchAllProjects = () => {
+      axios.get("/api/projects").then((response) => {
+        setProjects(response.data.data);
+      });
+    };
+    fetchAllProjects();
   }, []);
 
   return (

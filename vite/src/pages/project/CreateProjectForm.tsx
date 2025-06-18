@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ProjectType } from "@/types/project";
-import { apiRequest } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,10 +29,11 @@ const CreateProjectForm = (props: {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const json = await apiRequest<ProjectType>(`/api/projects`, "POST", values);
-    props.setProjects((prev) => [...prev, json.data]);
-    form.reset();
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    axios.post("/api/projects", values).then((response) => {
+      props.setProjects((prev) => [...prev, response.data.data]);
+      form.reset();
+    });
   };
 
   return (
