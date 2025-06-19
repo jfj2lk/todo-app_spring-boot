@@ -23,7 +23,7 @@ const Login = () => {
     if (json.userInfo) {
       localStorage.setItem("userInfo", JSON.stringify(json.userInfo));
     }
-    navigate("/todos");
+    navigate("/projects/1");
   };
 
   return (
