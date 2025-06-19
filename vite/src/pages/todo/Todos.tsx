@@ -1,19 +1,22 @@
-import { todosReducer } from "@/state/todosReducer";
-import { TodoType } from "@/types/todo";
-import { apiRequest } from "@/utils/api";
-import { useEffect, useReducer, useState } from "react";
-import AddTodo from "./components/AddTodo";
-import TodoList from "./components/TodoList";
-import TodoDetail from "./components/TodoDetail";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Ellipsis } from "lucide-react";
+import { todosReducer } from "@/state/todosReducer";
 import { LabelType } from "@/types/label";
+import { TodoType } from "@/types/todo";
+import { apiRequest } from "@/utils/api";
+import { Ellipsis } from "lucide-react";
+import { useEffect, useReducer, useState } from "react";
+import { useParams } from "react-router-dom";
+import AddTodo from "./components/AddTodo";
+import TodoDetail from "./components/TodoDetail";
+import TodoList from "./components/TodoList";
 
 const Todos = () => {
+  const { id: projectId } = useParams();
+
   const [todos, todoDispatch] = useReducer(todosReducer, []);
   const [labels, setLabels] = useState<LabelType[]>([]);
   // 選択中のTodoのID
@@ -25,7 +28,9 @@ const Todos = () => {
   // Todos取得
   useEffect(() => {
     (async () => {
-      const todoJson = await apiRequest<TodoType[]>("/api/todos");
+      const todoJson = await apiRequest<TodoType[]>(
+        `/api/projects/${projectId}/todos`,
+      );
       todoDispatch({ type: "initialized", data: todoJson.data });
       console.log(todoJson.data);
 

@@ -30,7 +30,7 @@ createRoot(document.getElementById("root")!).render(
             {/* アプリページ */}
             <Route path="" element={<ProtectedRoute />}>
               <Route path="" element={<AppLayout />}>
-                <Route path="/todos" element={<Todos />} />
+                <Route path="/projects/:id" element={<Todos />} />
                 <Route path="/labels" element={<Labels />} />
                 <Route path="/projects" element={<ProjectPage />} />
               </Route>
