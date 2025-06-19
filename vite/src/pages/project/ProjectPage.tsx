@@ -18,10 +18,12 @@ const ProjectPage = () => {
   }, []);
 
   return (
-    <div>
-      <h2>プロジェクト</h2>
-      {/* プロジェクト作成フォーム */}
-      <CreateProjectForm projects={projects} setProjects={setProjects} />
+    <div className="mx-auto max-w-4xl p-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">プロジェクト</h1>
+        {/* プロジェクト作成フォーム */}
+        <CreateProjectForm projects={projects} setProjects={setProjects} />
+      </div>
 
       {/* プロジェクト一覧 */}
       <ProjectList projects={projects} setProjects={setProjects} />

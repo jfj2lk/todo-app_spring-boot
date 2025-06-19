@@ -1,5 +1,5 @@
 import { ProjectType } from "@/types/project";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import DeleteProjectForm from "./DeleteProjectForm";
 import UpdateProjectForm from "./UpdateProjectForm";
 
@@ -7,29 +7,24 @@ const ProjectList = (props: {
   projects: ProjectType[];
   setProjects: Dispatch<SetStateAction<ProjectType[]>>;
 }) => {
-  const [editingId, setEditingId] = useState<number | null>(null);
-
   return (
     <div>
       {props.projects.map((project) => (
-        <div key={project.id}>
-          {project.id === editingId ? (
-            <div>
-              <UpdateProjectForm
-                project={project}
-                setProjects={props.setProjects}
-                setEditingId={setEditingId}
-              />
-              <DeleteProjectForm
-                projectId={project.id}
-                setProjects={props.setProjects}
-              />
-            </div>
-          ) : (
-            <div>
-              <h3 onClick={() => setEditingId(project.id)}>{project.name}</h3>
-            </div>
-          )}
+        <div
+          key={project.id}
+          className="hover:bg-muted/50 group flex items-center justify-between rounded-lg px-4 py-3 transition-colors"
+        >
+          <h3>{project.name}</h3>
+          <div className="flex gap-1">
+            <UpdateProjectForm
+              project={project}
+              setProjects={props.setProjects}
+            />
+            <DeleteProjectForm
+              project={project}
+              setProjects={props.setProjects}
+            />
+          </div>
         </div>
       ))}
     </div>
