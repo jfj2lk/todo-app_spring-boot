@@ -1,5 +1,12 @@
+import { Plus } from "lucide-react";
+import { TriggerButton } from "./EntityManager";
+
 const CreateEntityButton = () => {
-  return <div>CreateEntityButton</div>;
+  return (
+    <TriggerButton>
+      <Plus />
+    </TriggerButton>
+  );
 };
 
 export { CreateEntityButton };

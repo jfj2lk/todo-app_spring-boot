@@ -1,5 +1,12 @@
+import { Trash2 } from "lucide-react";
+import { TriggerButton } from "./EntityManager";
+
 const DeleteEntityButton = () => {
-  return <div>DeleteEntityButton</div>;
+  return (
+    <TriggerButton>
+      <Trash2 />
+    </TriggerButton>
+  );
 };
 
 export { DeleteEntityButton };
