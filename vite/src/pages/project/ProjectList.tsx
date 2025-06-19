@@ -1,5 +1,6 @@
 import { ProjectType } from "@/types/project";
 import { Dispatch, SetStateAction } from "react";
+import { Link } from "react-router-dom";
 import DeleteProjectForm from "./DeleteProjectForm";
 import UpdateProjectForm from "./UpdateProjectForm";
 
@@ -12,9 +13,11 @@ const ProjectList = (props: {
       {props.projects.map((project) => (
         <div
           key={project.id}
-          className="hover:bg-muted/50 group flex items-center justify-between rounded-lg px-4 py-3 transition-colors"
+          className="hover:bg-muted/50 flex items-center justify-between rounded-lg px-4 py-3 transition-colors"
         >
-          <h3>{project.name}</h3>
+          <Link to={`/projects/${project.id}`} className="flex-1">
+            {project.name}
+          </Link>
           <div className="flex gap-1">
             <UpdateProjectForm
               project={project}
