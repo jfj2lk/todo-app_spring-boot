@@ -6,8 +6,8 @@ const DeleteProjectForm = (props: {
   projectId: number;
   setProjects: Dispatch<SetStateAction<ProjectType[]>>;
 }) => {
-  const handleDeleteProject = (id: number) => {
-    axios.delete(`/api/projects/${id}`).then((response) => {
+  const handleDeleteProject = (projectId: number) => {
+    axios.delete(`/api/projects/${projectId}`).then((response) => {
       props.setProjects((prev) =>
         prev.filter((project) => project.id !== response.data.data),
       );

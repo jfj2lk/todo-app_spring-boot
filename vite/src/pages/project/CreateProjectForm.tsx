@@ -29,7 +29,7 @@ const CreateProjectForm = (props: {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleCreateProject = (values: z.infer<typeof formSchema>) => {
     axios.post("/api/projects", values).then((response) => {
       props.setProjects((prev) => [...prev, response.data.data]);
       form.reset();
@@ -38,7 +38,7 @@ const CreateProjectForm = (props: {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex">
+      <form onSubmit={form.handleSubmit(handleCreateProject)}>
         <FormField
           control={form.control}
           name="name"

@@ -26,7 +26,7 @@ const ProjectList = (props: {
               />
             </div>
           ) : (
-            <div className="flex">
+            <div>
               <h3 onClick={() => setEditingId(project.id)}>{project.name}</h3>
             </div>
           )}
