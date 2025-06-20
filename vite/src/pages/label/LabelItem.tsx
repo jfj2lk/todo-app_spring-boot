@@ -1,15 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Edit2, MoreHorizontal, Tag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { LabelType } from "@/types/label";
+import { Edit2, Tag, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 interface LabelItemProps {
   label: LabelType;

@@ -2,7 +2,6 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LabelType as LabelType } from "@/types/label";
+import { LabelType } from "@/types/label";
+import { useEffect, useState } from "react";
 
 interface LabelModalProps {
   isOpen: boolean;
@@ -42,16 +42,16 @@ const LabelModal = ({
   editingLabel,
 }: LabelModalProps) => {
   const [name, setName] = useState("");
-  const [color, setColor] = useState("gray");
+  //   const [color, setColor] = useState("gray");
 
   useEffect(() => {
     if (editingLabel) {
       setName(editingLabel.name);
       // setColor(editingLabel.color);
-      setColor("gray");
+      //   setColor("gray");
     } else {
       setName("");
-      setColor("gray");
+      //   setColor("gray");
     }
   }, [editingLabel, isOpen]);
 
