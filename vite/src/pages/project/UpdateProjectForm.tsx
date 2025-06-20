@@ -35,9 +35,9 @@ const UpdateProjectForm = (props: {
     values: z.infer<typeof formSchema>,
   ) => {
     axios.patch(`/api/projects/${projectId}`, values).then((response) => {
-      const payload = response.data.data;
+      const data = response.data.data;
       props.setProjects((prev) =>
-        prev.map((project) => (project.id === payload.id ? payload : project)),
+        prev.map((project) => (project.id === data.id ? data : project)),
       );
     });
   };
