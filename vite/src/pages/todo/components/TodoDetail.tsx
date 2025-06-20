@@ -6,14 +6,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ApiResponse } from "@/types/api";
 import { LabelType } from "@/types/label";
 import { TodoReducerActions, TodoType } from "@/types/todo";
-import { apiRequest } from "@/utils/api";
+import axios from "axios";
 import { Plus } from "lucide-react";
 
 import { useState } from "react";
 
 const TodoDetail = (props: {
+  projectId: number;
   todo: TodoType;
   todoDispatch: React.Dispatch<TodoReducerActions>;
   labels: LabelType[];
@@ -31,33 +33,37 @@ const TodoDetail = (props: {
   const [labelIds, setLabelIds] = useState<number[]>(labelIdsFromTodo);
 
   // Todo更新
-  const handleUpdateTodo = async (updateTodoId: number) => {
-    const json = await apiRequest<TodoType>(
-      `/api/todos/${updateTodoId}`,
-      "PATCH",
-      {
-        name,
-        desc,
-        priority,
-        dueDate,
-        dueTime,
-        labelIds,
-      },
-    );
-    props.todoDispatch({ type: "updated", data: json.data });
-    setName("");
-    setDesc("");
-    setLabelIds([]);
-    props.setSelectedTodo(null);
+  const handleUpdateTodo = (todoId: number) => {
+    axios
+      .patch<ApiResponse<TodoType>>(
+        `/api/projects/${props.projectId}/todos/${todoId}`,
+        {
+          name,
+          desc,
+          priority,
+          dueDate,
+          dueTime,
+          labelIds,
+        },
+      )
+      .then((response) => {
+        props.todoDispatch({ type: "updated", data: response.data.data });
+        setName("");
+        setDesc("");
+        setLabelIds([]);
+        props.setSelectedTodo(null);
+      });
   };
 
   // Todo削除
-  const handleDeleteTodo = async (deleteTodoId: number) => {
-    const json = await apiRequest<TodoType>(
-      `/api/todos/${deleteTodoId}`,
-      "DELETE",
-    );
-    props.todoDispatch({ type: "deleted", id: json.data });
+  const handleDeleteTodo = (todoId: number) => {
+    axios
+      .delete<
+        ApiResponse<TodoType>
+      >(`/api/projects/${props.projectId}/todos/${todoId}`)
+      .then((response) => {
+        props.todoDispatch({ type: "deleted", id: response.data.data });
+      });
   };
 
   return (

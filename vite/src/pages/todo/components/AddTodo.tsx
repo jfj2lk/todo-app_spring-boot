@@ -6,14 +6,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ApiResponse } from "@/types/api";
 import { LabelType } from "@/types/label";
-import { TodoType, TodoReducerActions } from "@/types/todo";
-import { apiRequest } from "@/utils/api";
+import { TodoReducerActions, TodoType } from "@/types/todo";
+import axios from "axios";
 
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
 const AddTodo = (props: {
+  projectId: number;
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
   labels: LabelType[];
@@ -27,21 +29,23 @@ const AddTodo = (props: {
   const [labelIds, setLabelIds] = useState<number[]>([]);
 
   // Todo追加
-  const handleAddTodo = async () => {
-    const json = await apiRequest<TodoType>("/api/todos", "POST", {
-      name,
-      desc,
-      priority,
-      dueDate,
-      dueTime,
-      labelIds,
-    });
-    console.log(json.data);
-    props.todoDispatch({ type: "added", data: json.data });
-    setName("");
-    setDesc("");
-    setLabelIds([]);
-    setIsAdding(false);
+  const handleAddTodo = () => {
+    axios
+      .post<ApiResponse<TodoType>>(`/api/projects/${props.projectId}/todos`, {
+        name,
+        desc,
+        priority,
+        dueDate,
+        dueTime,
+        labelIds,
+      })
+      .then((response) => {
+        props.todoDispatch({ type: "added", data: response.data.data });
+        setName("");
+        setDesc("");
+        setLabelIds([]);
+        setIsAdding(false);
+      });
   };
 
   return (

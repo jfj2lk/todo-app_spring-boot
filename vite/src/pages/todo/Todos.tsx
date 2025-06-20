@@ -4,9 +4,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { todosReducer } from "@/state/todosReducer";
+import { ApiResponse } from "@/types/api";
 import { LabelType } from "@/types/label";
 import { TodoType } from "@/types/todo";
-import { apiRequest } from "@/utils/api";
+import axios from "axios";
 import { Ellipsis } from "lucide-react";
 import { useEffect, useReducer, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -15,7 +16,8 @@ import TodoDetail from "./components/TodoDetail";
 import TodoList from "./components/TodoList";
 
 const Todos = () => {
-  const { id: projectId } = useParams();
+  const { id } = useParams();
+  const projectId: number = id ? parseInt(id) : NaN;
 
   const [todos, todoDispatch] = useReducer(todosReducer, []);
   const [labels, setLabels] = useState<LabelType[]>([]);
@@ -27,16 +29,18 @@ const Todos = () => {
   const [sortOrder, setSortOrder] = useState<string>("ascending");
   // Todos取得
   useEffect(() => {
-    (async () => {
-      const todoJson = await apiRequest<TodoType[]>(
-        `/api/projects/${projectId}/todos`,
-      );
-      todoDispatch({ type: "initialized", data: todoJson.data });
-      console.log(todoJson.data);
+    const fetchInitialData = () => {
+      axios
+        .get<ApiResponse<TodoType[]>>(`/api/projects/${projectId}/todos`)
+        .then((response) => {
+          todoDispatch({ type: "initialized", data: response.data.data });
+        });
 
-      const labelJson = await apiRequest<LabelType[]>("/api/labels");
-      setLabels(labelJson.data);
-    })();
+      axios.get<ApiResponse<LabelType[]>>("/api/labels").then((response) => {
+        setLabels(response.data.data);
+      });
+    };
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
@@ -101,7 +105,12 @@ const Todos = () => {
         {/* インラインコンテンツ */}
         <div className="flex-1 px-7 py-5">
           {/* Todo追加欄 */}
-          <AddTodo todos={todos} todoDispatch={todoDispatch} labels={labels} />
+          <AddTodo
+            projectId={projectId}
+            todos={todos}
+            todoDispatch={todoDispatch}
+            labels={labels}
+          />
 
           {/* Todo一覧 */}
           <TodoList
@@ -117,6 +126,7 @@ const Todos = () => {
       {selectedTodo && (
         <TodoDetail
           key={selectedTodo.id}
+          projectId={projectId}
           todo={selectedTodo}
           setSelectedTodo={setSelectedTodo}
           todoDispatch={todoDispatch}
