@@ -1,11 +1,12 @@
 import { Plus } from "lucide-react";
-import { TriggerButton } from "./EntityManager";
 
-const CreateEntityButton = () => {
+import { EntityTriggerButton } from "./EntityTriggerButton";
+
+const CreateEntityButton = (props: { entityName: string }) => {
   return (
-    <TriggerButton>
+    <EntityTriggerButton mode="CREATE" entityName={props.entityName} main={""}>
       <Plus />
-    </TriggerButton>
+    </EntityTriggerButton>
   );
 };
 

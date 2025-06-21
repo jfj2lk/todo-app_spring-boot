@@ -1,21 +1,21 @@
-import { Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { EntityType } from "./EntityManager";
 import { EntityTriggerButton } from "./EntityTriggerButton";
 
-const DeleteEntityButton = (props: {
+const UpdateEntityButton = (props: {
   entityName: string;
   entity: EntityType;
 }) => {
   return (
     <EntityTriggerButton
-      mode="DELETE"
+      mode="UPDATE"
       entityName={props.entityName}
       main={""}
       entity={props.entity}
     >
-      <Trash2 />
+      <Pencil />
     </EntityTriggerButton>
   );
 };
 
-export { DeleteEntityButton };
+export { UpdateEntityButton };
