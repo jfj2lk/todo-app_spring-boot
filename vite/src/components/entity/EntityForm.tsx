@@ -9,13 +9,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
 import { DialogClose, DialogFooter } from "../ui/dialog";
 import { EntityType } from "./EntityManager";
 
-const EntityForm = (props: { entity: EntityType; submitText: string }) => {
+const EntityForm = (props: {
+  entity: EntityType;
+  submitText: string;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   // entityからidプロパティを取り除いたオブジェクトを作成する
   const { id, ...entityWithoutId } = props.entity;
 
@@ -35,6 +40,7 @@ const EntityForm = (props: { entity: EntityType; submitText: string }) => {
   // フォーム送信時処理
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
+    props.setDialogOpen(false);
   };
 
   //   エンティティのキー定義
@@ -66,9 +72,7 @@ const EntityForm = (props: { entity: EntityType; submitText: string }) => {
           <DialogClose asChild>
             <Button variant={"secondary"}>キャンセル</Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button type="submit">{props.submitText}</Button>
-          </DialogClose>
+          <Button type="submit">{props.submitText}</Button>
         </DialogFooter>
       </form>
     </Form>

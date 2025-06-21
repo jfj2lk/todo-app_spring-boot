@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { EntityForm } from "./EntityForm";
 import { EntityType } from "./EntityManager";
 
@@ -37,6 +37,9 @@ const EntityModal = (props: {
   entityName: string;
   main: ReactNode;
 }) => {
+  // Dialogの開閉を制御するstate
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+
   const title = props.entityName + titleMap[props.mode];
   let description;
   if (props.mode === "DELETE") {
@@ -45,7 +48,7 @@ const EntityModal = (props: {
   const submitText = submitTextMap[props.mode];
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
@@ -55,7 +58,11 @@ const EntityModal = (props: {
 
         {props.mode !== "DELETE" && props.entity && (
           <main>
-            <EntityForm entity={props.entity} submitText={submitText} />
+            <EntityForm
+              entity={props.entity}
+              submitText={submitText}
+              setDialogOpen={setDialogOpen}
+            />
           </main>
         )}
 
