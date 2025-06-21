@@ -16,6 +16,12 @@ const entityDatas: EntityType[] = [
   { id: 3, name: "entity3", description: "desc3" },
 ];
 
+export const entityObject: EntityType = {
+  id: 0,
+  name: "",
+  description: "",
+};
+
 const entityName = "Entity";
 const entityIcon = <Circle />;
 
