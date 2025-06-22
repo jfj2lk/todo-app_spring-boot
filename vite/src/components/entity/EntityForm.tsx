@@ -8,6 +8,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { entityActions } from "@/reducer/entitySlice";
+import { useAppDispatch } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
@@ -15,14 +17,21 @@ import { z } from "zod";
 import { Button } from "../ui/button";
 import { DialogClose, DialogFooter } from "../ui/dialog";
 import { EntityType } from "./EntityManager";
+import { modeType } from "./EntityModal";
 
 const EntityForm = (props: {
+  mode: modeType;
   entity: EntityType;
   submitText: string;
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const dispatch = useAppDispatch();
+
   // entityからidプロパティを取り除いたオブジェクトを作成する
   const { id, ...entityWithoutId } = props.entity;
+
+  // エンティティのキー定義
+  type EntityKey = keyof z.infer<typeof formSchema>;
 
   // フォーム定義
   const formSchema = z.object({
@@ -37,14 +46,32 @@ const EntityForm = (props: {
     defaultValues: entityWithoutId,
   });
 
-  // フォーム送信時処理
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    props.setDialogOpen(false);
+  // 作成処理
+  const createEntity = (values: z.infer<typeof formSchema>) => {
+    console.log("create");
+    const createdEntity = { id: 0, ...values };
+    dispatch(entityActions.added(createdEntity));
   };
 
-  //   エンティティのキー定義
-  type EntityKey = keyof z.infer<typeof formSchema>;
+  // 更新処理
+  const updateEntity = (
+    entityId: number,
+    values: z.infer<typeof formSchema>,
+  ) => {
+    console.log("update");
+    const updatedEntity = { id: entityId, ...values };
+    dispatch(entityActions.updated(updatedEntity));
+  };
+
+  // フォーム送信時処理
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (props.mode === "CREATE") {
+      createEntity(values);
+    } else if (props.mode === "UPDATE") {
+      updateEntity(props.entity.id, values);
+    }
+    props.setDialogOpen(false);
+  };
 
   return (
     <Form {...form}>
@@ -68,6 +95,7 @@ const EntityForm = (props: {
             />
           ),
         )}
+
         <DialogFooter>
           <DialogClose asChild>
             <Button variant={"secondary"}>キャンセル</Button>
