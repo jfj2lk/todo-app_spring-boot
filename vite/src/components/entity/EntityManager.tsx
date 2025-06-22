@@ -1,5 +1,7 @@
-import { useAppSelector } from "@/store";
+import { entityActions, entitySelectors } from "@/reducer/entitySlice";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { Circle } from "lucide-react";
+import { useEffect } from "react";
 import { EntityHeader } from "./EntityHeader";
 import { EntityList } from "./EntityList";
 import "./entity-manager.css";
@@ -26,7 +28,15 @@ const entityName = "Entity";
 const entityIcon = <Circle />;
 
 const EntityManager = () => {
-  const entities = useAppSelector((state) => state.entities);
+  const entities = useAppSelector(entitySelectors.selectAll);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const fetchAllEntities = () => {
+      dispatch(entityActions.initialized(entityDatas));
+    };
+    fetchAllEntities();
+  }, []);
 
   return (
     <div className="entity-manager">

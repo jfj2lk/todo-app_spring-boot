@@ -1,35 +1,24 @@
 import { EntityType } from "@/components/entity/EntityManager";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "@/store";
+import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 
-const entityDatas: EntityType[] = [
-  { id: 1, name: "entity1", description: "desc1" },
-  { id: 2, name: "entity2", description: "desc2" },
-  { id: 3, name: "entity3", description: "desc3" },
-];
+const entityAdapter = createEntityAdapter<EntityType>();
+const initialState = entityAdapter.getInitialState();
 
 export const entitySlice = createSlice({
   name: "entities",
-  initialState: entityDatas as EntityType[],
+  initialState,
   reducers: {
-    initialized: (state, action: PayloadAction<EntityType[]>) => {
-      return action.payload;
-    },
-
-    added: (state, action: PayloadAction<EntityType>) => {
-      return [...state, action.payload];
-    },
-
-    updated: (state, action: PayloadAction<EntityType>) => {
-      return state.map((todo) =>
-        todo.id === action.payload.id ? action.payload : todo,
-      );
-    },
-
-    deleted: (state, action: PayloadAction<number>) => {
-      return state.filter((todo) => todo.id !== action.payload);
-    },
+    initialized: entityAdapter.setAll,
+    added: entityAdapter.addOne,
+    updated: entityAdapter.setOne,
+    deleted: entityAdapter.removeOne,
   },
 });
 
 export const entityActions = entitySlice.actions;
 export const entityReducer = entitySlice.reducer;
+
+export const entitySelectors = entityAdapter.getSelectors(
+  (state: RootState) => state.entities,
+);
