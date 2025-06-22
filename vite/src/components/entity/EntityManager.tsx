@@ -1,5 +1,5 @@
+import { useAppSelector } from "@/store";
 import { Circle } from "lucide-react";
-import { useState } from "react";
 import { EntityHeader } from "./EntityHeader";
 import { EntityList } from "./EntityList";
 import "./entity-manager.css";
@@ -26,7 +26,7 @@ const entityName = "Entity";
 const entityIcon = <Circle />;
 
 const EntityManager = () => {
-  const [entities, setEntities] = useState<EntityType[]>(entityDatas);
+  const entities = useAppSelector((state) => state.entities);
 
   return (
     <div className="entity-manager">
