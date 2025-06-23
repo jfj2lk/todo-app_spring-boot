@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { entityActions } from "@/reducer/entitySlice";
+import { createEntity, updateEntity } from "@/reducer/entityApi";
 import { useAppDispatch } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
@@ -46,29 +46,12 @@ const EntityForm = (props: {
     defaultValues: entityWithoutId,
   });
 
-  // 作成処理
-  const createEntity = (values: z.infer<typeof formSchema>) => {
-    console.log("create");
-    const createdEntity = { id: 0, ...values };
-    dispatch(entityActions.added(createdEntity));
-  };
-
-  // 更新処理
-  const updateEntity = (
-    entityId: number,
-    values: z.infer<typeof formSchema>,
-  ) => {
-    console.log("update");
-    const updatedEntity = { id: entityId, ...values };
-    dispatch(entityActions.updated(updatedEntity));
-  };
-
   // フォーム送信時処理
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (props.mode === "CREATE") {
-      createEntity(values);
+      dispatch(createEntity(values));
     } else if (props.mode === "UPDATE") {
-      updateEntity(props.entity.id, values);
+      dispatch(updateEntity({ entityId: props.entity.id, values }));
     }
     props.setDialogOpen(false);
   };

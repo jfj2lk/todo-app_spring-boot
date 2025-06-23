@@ -1,4 +1,5 @@
-import { entityActions, entitySelectors } from "@/reducer/entitySlice";
+import { getAllEntities } from "@/reducer/entityApi";
+import { entitySelectors } from "@/reducer/entitySlice";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { Circle } from "lucide-react";
 import { useEffect } from "react";
@@ -11,12 +12,6 @@ export type EntityType = {
   name: string;
   description: string;
 };
-
-const entityDatas: EntityType[] = [
-  { id: 1, name: "entity1", description: "desc1" },
-  { id: 2, name: "entity2", description: "desc2" },
-  { id: 3, name: "entity3", description: "desc3" },
-];
 
 export const entityObject: EntityType = {
   id: 0,
@@ -32,10 +27,10 @@ const EntityManager = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const fetchAllEntities = () => {
-      dispatch(entityActions.initialized(entityDatas));
+    const handleFetchAllEntities = () => {
+      dispatch(getAllEntities());
     };
-    fetchAllEntities();
+    handleFetchAllEntities();
   }, []);
 
   return (

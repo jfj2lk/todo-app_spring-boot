@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { entityActions } from "@/reducer/entitySlice";
+import { deleteEntity } from "@/reducer/entityApi";
 import { useAppDispatch } from "@/store";
 import { ReactNode, useState } from "react";
 import { EntityForm } from "./EntityForm";
@@ -51,12 +51,6 @@ const EntityModal = (props: {
 
   const dispatch = useAppDispatch();
 
-  // 削除処理
-  const deleteEntity = (deleteEntityId: number) => {
-    console.log("delete");
-    dispatch(entityActions.deleted(deleteEntityId));
-  };
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
@@ -86,7 +80,7 @@ const EntityModal = (props: {
               <Button
                 type="submit"
                 onClick={() => {
-                  deleteEntity(props.entity!.id);
+                  dispatch(deleteEntity(props.entity!.id));
                 }}
               >
                 {submitText}
