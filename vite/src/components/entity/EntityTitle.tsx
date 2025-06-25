@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
+import { useEntityManagerPropsContext } from "./logic/entity-context";
 
-const EntityTitle = (props: { children: ReactNode }) => {
-  return <div>{props.children}</div>;
+const EntityTitle = () => {
+  const { entityName } = useEntityManagerPropsContext();
+  return <div>{entityName}</div>;
 };
 
 export { EntityTitle };

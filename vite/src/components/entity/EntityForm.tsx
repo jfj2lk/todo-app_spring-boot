@@ -8,7 +8,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createEntity, updateEntity } from "@/reducer/entityApi";
 import { useAppDispatch } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
@@ -16,16 +15,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
 import { DialogClose, DialogFooter } from "../ui/dialog";
-import { EntityType } from "./EntityManager";
-import { modeType } from "./EntityModal";
+import { useEntityManagerPropsContext } from "./logic/entity-context";
+import { modeType } from "./logic/entity-type";
 
 const EntityForm = (props: {
   mode: modeType;
-  entity: EntityType;
+  entity: any;
   submitText: string;
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const dispatch = useAppDispatch();
+  const { createEntity, updateEntity } = useEntityManagerPropsContext();
 
   // entityからidプロパティを取り除いたオブジェクトを作成する
   const { id, ...entityWithoutId } = props.entity;

@@ -1,12 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { EntityManager } from "@/components/entity/EntityManager";
+import {
+  createEntity,
+  deleteEntity,
+  getAllEntities,
+  updateEntity,
+} from "@/components/entity/logic/entity-api";
+import { entitySelectors } from "@/components/entity/logic/entity-state";
 import { Button } from "@/components/ui/button";
+import { useAppSelector } from "@/store";
+import { LabelType } from "@/types/label";
+import { apiRequest } from "@/utils/api";
+import { Circle, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { LabelList } from "./LabelList";
 import { LabelModal } from "./LabelModal";
-import { apiRequest } from "@/utils/api";
-import { LabelType } from "@/types/label";
 
 const Labels = () => {
   const [labels, setLabels] = useState<LabelType[]>([]);
@@ -73,9 +82,29 @@ const Labels = () => {
     })();
   }, []);
 
+  //
+  const entities = useAppSelector(entitySelectors.selectAll);
+
   return (
     <div className="container mx-auto max-w-4xl p-6">
       <div className="space-y-6">
+        {/*  */}
+
+        <EntityManager
+          entities={entities}
+          getAllEntities={getAllEntities}
+          createEntity={createEntity}
+          updateEntity={updateEntity}
+          deleteEntity={deleteEntity}
+          entityName="ラベル"
+          entityIcon={<Circle />}
+          createEntityDefaults={{
+            name: "",
+            description: "",
+          }}
+        />
+
+        {/*  */}
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">ラベル</h1>
           <Button

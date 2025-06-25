@@ -1,20 +1,11 @@
 import { Trash2 } from "lucide-react";
-import { EntityType } from "./EntityManager";
-import { EntityTriggerButton } from "./EntityTriggerButton";
+import { EntityActionButton } from "./EntityActionButton";
 
-const DeleteEntityButton = (props: {
-  entityName: string;
-  entity: EntityType;
-}) => {
+const DeleteEntityButton = (props: { entity: any }) => {
   return (
-    <EntityTriggerButton
-      mode="DELETE"
-      entityName={props.entityName}
-      main={""}
-      entity={props.entity}
-    >
+    <EntityActionButton mode="DELETE" entity={props.entity}>
       <Trash2 />
-    </EntityTriggerButton>
+    </EntityActionButton>
   );
 };
 

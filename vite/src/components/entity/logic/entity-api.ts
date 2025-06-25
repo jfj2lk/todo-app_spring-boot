@@ -1,8 +1,7 @@
-import { EntityType } from "@/components/entity/EntityManager";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { z } from "zod";
 
-const entityDatas: EntityType[] = [
+const entityDatas = [
   { id: 1, name: "entity1", description: "desc1" },
   { id: 2, name: "entity2", description: "desc2" },
   { id: 3, name: "entity3", description: "desc3" },

@@ -1,20 +1,11 @@
 import { Pencil } from "lucide-react";
-import { EntityType } from "./EntityManager";
-import { EntityTriggerButton } from "./EntityTriggerButton";
+import { EntityActionButton } from "./EntityActionButton";
 
-const UpdateEntityButton = (props: {
-  entityName: string;
-  entity: EntityType;
-}) => {
+const UpdateEntityButton = (props: { entity: any }) => {
   return (
-    <EntityTriggerButton
-      mode="UPDATE"
-      entityName={props.entityName}
-      main={""}
-      entity={props.entity}
-    >
+    <EntityActionButton mode="UPDATE" entity={props.entity}>
       <Pencil />
-    </EntityTriggerButton>
+    </EntityActionButton>
   );
 };
 

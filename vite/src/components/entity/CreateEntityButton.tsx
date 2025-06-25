@@ -1,21 +1,14 @@
 import { Plus } from "lucide-react";
+import { EntityActionButton } from "./EntityActionButton";
+import { useEntityManagerPropsContext } from "./logic/entity-context";
 
-import { entityObject, EntityType } from "./EntityManager";
-import { EntityTriggerButton } from "./EntityTriggerButton";
+const CreateEntityButton = () => {
+  const { createEntityDefaults } = useEntityManagerPropsContext();
 
-const CreateEntityButton = (props: {
-  entityName: string;
-  entity: EntityType;
-}) => {
   return (
-    <EntityTriggerButton
-      mode="CREATE"
-      entityName={props.entityName}
-      main={""}
-      entity={entityObject}
-    >
+    <EntityActionButton mode="CREATE" entity={createEntityDefaults}>
       <Plus />
-    </EntityTriggerButton>
+    </EntityActionButton>
   );
 };
 

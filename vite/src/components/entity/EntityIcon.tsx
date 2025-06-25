@@ -1,7 +1,9 @@
-import { ReactNode } from "react";
+import { useEntityManagerPropsContext } from "./logic/entity-context";
 
-const EntityIcon = (props: { icon: ReactNode }) => {
-  return <div className="entity-manager_list-item_icon">{props.icon}</div>;
+const EntityIcon = () => {
+  const { entityIcon } = useEntityManagerPropsContext();
+
+  return <div className="entity-manager_list-item_icon">{entityIcon}</div>;
 };
 
 export { EntityIcon };

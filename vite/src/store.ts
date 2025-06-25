@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import { entityReducer } from "./reducer/entitySlice";
+import { entityReducer } from "./components/entity/logic/entity-state";
 
 export const store = configureStore({
   reducer: {

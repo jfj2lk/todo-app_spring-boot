@@ -1,4 +1,3 @@
-import { EntityType } from "@/components/entity/EntityManager";
 import { RootState } from "@/store";
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import {
@@ -6,7 +5,13 @@ import {
   deleteEntity,
   getAllEntities,
   updateEntity,
-} from "./entityApi";
+} from "./entity-api";
+
+type EntityType = {
+  id: number;
+  name: string;
+  description: string;
+};
 
 const entityAdapter = createEntityAdapter<EntityType>();
 const initialState = entityAdapter.getInitialState();

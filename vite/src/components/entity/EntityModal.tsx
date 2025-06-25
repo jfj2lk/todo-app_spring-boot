@@ -10,13 +10,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { deleteEntity } from "@/reducer/entityApi";
 import { useAppDispatch } from "@/store";
 import { ReactNode, useState } from "react";
 import { EntityForm } from "./EntityForm";
-import { EntityType } from "./EntityManager";
-
-export type modeType = "CREATE" | "UPDATE" | "DELETE";
+import { useEntityManagerPropsContext } from "./logic/entity-context";
+import { modeType } from "./logic/entity-type";
 
 // modeに対応するタイトル
 const titleMap = {
@@ -35,14 +33,14 @@ const submitTextMap = {
 const EntityModal = (props: {
   children: ReactNode;
   mode: modeType;
-  entity?: EntityType;
-  entityName: string;
-  main: ReactNode;
+  entity?: any;
 }) => {
+  const { entityName, deleteEntity } = useEntityManagerPropsContext();
+
   // Dialogの開閉を制御するstate
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-  const title = props.entityName + titleMap[props.mode];
+  const title = entityName + titleMap[props.mode];
   let description;
   if (props.mode === "DELETE") {
     description = props.entity?.name + "は永久に削除されます。";

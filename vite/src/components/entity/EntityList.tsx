@@ -1,21 +1,12 @@
-import { ReactNode } from "react";
 import { EntityItem } from "./EntityItem";
-import { EntityType } from "./EntityManager";
+import { useEntityManagerPropsContext } from "./logic/entity-context";
 
-const EntityList = (props: {
-  entities: EntityType[];
-  icon: ReactNode;
-  entityName: string;
-}) => {
+const EntityList = () => {
+  const { entities } = useEntityManagerPropsContext();
   return (
     <div>
-      {props.entities.map((entity) => (
-        <EntityItem
-          key={entity.id}
-          entity={entity}
-          icon={props.icon}
-          entityName={props.entityName}
-        />
+      {entities.map((entity) => (
+        <EntityItem key={entity.id} entity={entity} />
       ))}
     </div>
   );

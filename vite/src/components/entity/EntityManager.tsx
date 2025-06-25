@@ -1,47 +1,40 @@
-import { getAllEntities } from "@/reducer/entityApi";
-import { entitySelectors } from "@/reducer/entitySlice";
-import { useAppDispatch, useAppSelector } from "@/store";
-import { Circle } from "lucide-react";
+import { useAppDispatch } from "@/store";
 import { useEffect } from "react";
 import { EntityHeader } from "./EntityHeader";
 import { EntityList } from "./EntityList";
 import "./entity-manager.css";
+import { EntityManagerPropsContext } from "./logic/entity-context";
+import { EntityManagerPropsType } from "./logic/entity-type";
 
-export type EntityType = {
-  id: number;
-  name: string;
-  description: string;
-};
-
-export const entityObject: EntityType = {
-  id: 0,
-  name: "",
-  description: "",
-};
-
-const entityName = "Entity";
-const entityIcon = <Circle />;
-
-const EntityManager = () => {
-  const entities = useAppSelector(entitySelectors.selectAll);
+const EntityManager = (props: EntityManagerPropsType) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const handleFetchAllEntities = () => {
-      dispatch(getAllEntities());
+    // 全てのEntityを取得
+    const handleGetAllEntities = () => {
+      dispatch(props.getAllEntities());
     };
-    handleFetchAllEntities();
+    handleGetAllEntities();
   }, []);
 
   return (
-    <div className="entity-manager">
-      <EntityHeader title={entityName} entityName={entityName} />
-      <EntityList
-        entities={entities}
-        icon={entityIcon}
-        entityName={entityName}
-      />
-    </div>
+    <EntityManagerPropsContext.Provider
+      value={{
+        entities: props.entities,
+        getAllEntities: props.getAllEntities,
+        createEntity: props.createEntity,
+        updateEntity: props.updateEntity,
+        deleteEntity: props.deleteEntity,
+        entityName: props.entityName,
+        entityIcon: props.entityIcon,
+        createEntityDefaults: props.createEntityDefaults,
+      }}
+    >
+      <div className="entity-manager">
+        <EntityHeader />
+        <EntityList />
+      </div>
+    </EntityManagerPropsContext.Provider>
   );
 };
 

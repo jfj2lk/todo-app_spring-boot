@@ -1,22 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { ReactNode } from "react";
-import { EntityType } from "./EntityManager";
 import { EntityModal } from "./EntityModal";
 
-const EntityTriggerButton = (props: {
+const EntityActionButton = (props: {
   children: ReactNode;
   mode: "CREATE" | "UPDATE" | "DELETE";
-  entity?: EntityType;
-  entityName: string;
-  main: ReactNode;
+  entity?: any;
 }) => {
   return (
-    <EntityModal
-      mode={props.mode}
-      entity={props.entity}
-      entityName={props.entityName}
-      main={""}
-    >
+    <EntityModal mode={props.mode} entity={props.entity}>
       <Button variant={"ghost"} size={"icon"} className="trigger-btn">
         {props.children}
       </Button>
@@ -24,4 +16,4 @@ const EntityTriggerButton = (props: {
   );
 };
 
-export { EntityTriggerButton };
+export { EntityActionButton };

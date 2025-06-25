@@ -31,6 +31,7 @@
 .entity-manager_list-item_icon > * {
   width: 100%;
   height: 100%;
+  background-color: red;
 }
 
 .entity-manager_list-item_info-group {
