@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/store";
+import { overrideByKeys } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
@@ -25,25 +26,20 @@ const EntityForm = (props: {
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const dispatch = useAppDispatch();
-  const { createEntity, updateEntity } = useEntityManagerPropsContext();
-
-  // entityからidプロパティを取り除いたオブジェクトを作成する
-  const { id, ...entityWithoutId } = props.entity;
+  const { formSchema, createEntity, updateEntity, defaultFormValues } =
+    useEntityManagerPropsContext();
 
   // エンティティのキー定義
   type EntityKey = keyof z.infer<typeof formSchema>;
-
-  // フォーム定義
-  const formSchema = z.object({
-    name: z.string().min(1, { message: "名前を入力してください。" }),
-    description: z.string(),
-  });
+  const defaultValues = props.entity
+    ? overrideByKeys(defaultFormValues, props.entity)
+    : defaultFormValues;
 
   // フォーム設定
   const form = useForm<z.infer<typeof formSchema>>({
     mode: "onChange",
     resolver: zodResolver(formSchema),
-    defaultValues: entityWithoutId,
+    defaultValues,
   });
 
   // フォーム送信時処理
@@ -51,7 +47,7 @@ const EntityForm = (props: {
     if (props.mode === "CREATE") {
       dispatch(createEntity(values));
     } else if (props.mode === "UPDATE") {
-      dispatch(updateEntity({ entityId: props.entity.id, values }));
+      dispatch(updateEntity({ id: props.entity.id, values }));
     }
     props.setDialogOpen(false);
   };
@@ -59,12 +55,12 @@ const EntityForm = (props: {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {(Object.entries(entityWithoutId) as [EntityKey, string][]).map(
+        {(Object.entries(defaultValues) as [EntityKey, string][]).map(
           ([key, value]) => (
             <FormField
               key={key}
               control={form.control}
-              name={key}
+              name={String(key)}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{key}</FormLabel>
