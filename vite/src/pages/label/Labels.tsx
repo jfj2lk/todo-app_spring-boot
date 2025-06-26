@@ -1,24 +1,30 @@
 "use client";
 
 import { EntityManager } from "@/components/entity/EntityManager";
-import {
-  createEntity,
-  deleteEntity,
-  getAllEntities,
-  updateEntity,
-} from "@/components/entity/logic/entity-api";
-import { entitySelectors } from "@/components/entity/logic/entity-state";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/store";
-import { LabelType } from "@/types/label";
+import {
+  createLabel,
+  deleteLabel,
+  getAllLabels,
+  labelSelectors,
+  updateLabel,
+} from "@/store/labelStore";
+import {
+  defaultLabelFormValues,
+  labelFormSchema,
+  LabelType,
+} from "@/types/label";
 import { apiRequest } from "@/utils/api";
-import { Circle, Plus } from "lucide-react";
+import { Plus, Tag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LabelList } from "./LabelList";
 import { LabelModal } from "./LabelModal";
 
 const Labels = () => {
-  const [labels, setLabels] = useState<LabelType[]>([]);
+  const labels = useAppSelector(labelSelectors.selectAll);
+
+  const [labelsState, setLabels] = useState<LabelType[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLabel, setEditingLabel] = useState<LabelType | null>(null);
@@ -41,7 +47,7 @@ const Labels = () => {
   // Label追加
   const handleAddLabel = async (addLabel: { name: string }) => {
     const json = await apiRequest<LabelType>("/api/labels", "POST", addLabel);
-    setLabels([...labels, json.data]);
+    setLabels([...labelsState, json.data]);
 
     setIsModalOpen(false);
     setEditingLabel(null);
@@ -58,7 +64,9 @@ const Labels = () => {
       updateLabel,
     );
     setLabels(
-      labels.map((label) => (label.id === updateLabelId ? json.data : label)),
+      labelsState.map((label) =>
+        label.id === updateLabelId ? json.data : label,
+      ),
     );
 
     setIsModalOpen(false);
@@ -71,7 +79,7 @@ const Labels = () => {
       `/api/labels/${deleteLabelId}`,
       "DELETE",
     );
-    setLabels(labels.filter((label) => label.id !== json.data));
+    setLabels(labelsState.filter((label) => label.id !== json.data));
   };
 
   // 全てのLabelを取得し、stateを初期化する
@@ -82,26 +90,19 @@ const Labels = () => {
     })();
   }, []);
 
-  //
-  const entities = useAppSelector(entitySelectors.selectAll);
-
   return (
     <div className="container mx-auto max-w-4xl p-6">
       <div className="space-y-6">
-        {/*  */}
-
         <EntityManager
-          entities={entities}
-          getAllEntities={getAllEntities}
-          createEntity={createEntity}
-          updateEntity={updateEntity}
-          deleteEntity={deleteEntity}
+          entities={labels}
+          formSchema={labelFormSchema}
+          getAllEntities={getAllLabels}
+          createEntity={createLabel}
+          updateEntity={updateLabel}
+          deleteEntity={deleteLabel}
           entityName="ラベル"
-          entityIcon={<Circle />}
-          createEntityDefaults={{
-            name: "",
-            description: "",
-          }}
+          entityIcon={<Tag />}
+          defaultFormValues={defaultLabelFormValues}
         />
 
         {/*  */}
@@ -118,7 +119,7 @@ const Labels = () => {
         </div>
 
         <LabelList
-          labels={labels}
+          labels={labelsState}
           onEditLabel={onEditLabel}
           onDeleteLabel={handleDeleteLabel}
         />

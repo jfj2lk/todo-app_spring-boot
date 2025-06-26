@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { ReactNode } from "react";
+import { EntityIcon } from "./EntityIcon";
 import { EntityModal } from "./EntityModal";
 
 const EntityActionButton = (props: {
@@ -9,9 +9,9 @@ const EntityActionButton = (props: {
 }) => {
   return (
     <EntityModal mode={props.mode} entity={props.entity}>
-      <Button variant={"ghost"} size={"icon"} className="trigger-btn">
+      <EntityIcon className="entity-manager_action-btn">
         {props.children}
-      </Button>
+      </EntityIcon>
     </EntityModal>
   );
 };

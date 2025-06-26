@@ -58,7 +58,7 @@ const EntityModal = (props: {
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        {props.mode !== "DELETE" && props.entity && (
+        {props.mode !== "DELETE" && (
           <main>
             <EntityForm
               mode={props.mode}
