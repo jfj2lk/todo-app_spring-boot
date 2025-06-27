@@ -9,7 +9,7 @@ const EntityItem = (props: { entity: any }) => {
   const { entityIcon } = useEntityManagerPropsContext();
 
   return (
-    <div className="entity-manager_list-item">
+    <div className="entity-manager_list-item entity-manager_transition">
       <EntityModal mode="UPDATE" entity={props.entity}>
         <div className="entity-manager_list-item_info-group">
           <EntityIcon>{entityIcon}</EntityIcon>
@@ -17,7 +17,7 @@ const EntityItem = (props: { entity: any }) => {
         </div>
       </EntityModal>
 
-      <div className="entity-manager_list-item_action-group">
+      <div className="entity-manager_list-item_action-group entity-manager_transition">
         <UpdateEntityButton entity={props.entity} />
         <DeleteEntityButton entity={props.entity} />
       </div>
