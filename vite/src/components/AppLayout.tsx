@@ -1,14 +1,15 @@
-import SideMenu from "@/components/SideMenu";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
+import AppSidebar from "./AppSidebar";
 
 const AppLayout = () => {
   return (
-    <div className="flex h-screen">
-      <SideMenu />
-      <main className="flex-1">
+    <SidebarProvider>
+      <AppSidebar />
+      <main>
         <Outlet />
       </main>
-    </div>
+    </SidebarProvider>
   );
 };
 
