@@ -28,9 +28,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.95rem;
   font-weight: 500;
+  transition-property: background-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 .entity-manager_list-item:hover {
@@ -52,6 +56,12 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+entity-manager_action-btn {
+  transition-property: background-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 .entity-manager_action-btn:hover {
