@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { labelReducer } from "./store/labelStore";
+import { projectReducer } from "./store/project-store";
 
 export const store = configureStore({
   reducer: {
     labels: labelReducer,
+    projects: projectReducer,
   },
 });
 
