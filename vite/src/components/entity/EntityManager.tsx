@@ -18,19 +18,7 @@ const EntityManager = (props: EntityManagerPropsType) => {
   }, []);
 
   return (
-    <EntityManagerPropsContext.Provider
-      value={{
-        entities: props.entities,
-        formSchema: props.formSchema,
-        defaultFormValues: props.defaultFormValues,
-        getAllEntities: props.getAllEntities,
-        createEntity: props.createEntity,
-        updateEntity: props.updateEntity,
-        deleteEntity: props.deleteEntity,
-        entityName: props.entityName,
-        entityIcon: props.entityIcon,
-      }}
-    >
+    <EntityManagerPropsContext.Provider value={props}>
       <div className="entity-manager">
         <EntityHeader />
         <EntityList />
