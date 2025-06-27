@@ -1,7 +1,7 @@
 import AppLayout from "@/components/AppLayout";
 import MarketingLayout from "@/components/MarketingLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import "@/index.css";
+import "@/global.css";
 import Layout from "@/layout";
 import Home from "@/pages/home/Home";
 import "@/utils/axios-default-config";
