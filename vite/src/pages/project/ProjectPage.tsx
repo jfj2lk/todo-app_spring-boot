@@ -1,32 +1,31 @@
-import { ProjectType } from "@/types/project";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import CreateProjectForm from "./CreateProjectForm";
-import ProjectList from "./ProjectList";
+import { EntityManager } from "@/components/entity/EntityManager";
+import { useAppSelector } from "@/store";
+import {
+  createProject,
+  deleteProject,
+  getAllProjects,
+  projectSelectors,
+  updateProject,
+} from "@/store/project-store";
+import { defaultProjectFormValues, projectFormSchema } from "@/types/project";
+import { Folder } from "lucide-react";
 
 const ProjectPage = () => {
-  const [projects, setProjects] = useState<ProjectType[]>([]);
-
-  useEffect(() => {
-    // 全てのProjectを取得する
-    const fetchAllProjects = () => {
-      axios.get("/api/projects").then((response) => {
-        setProjects(response.data.data);
-      });
-    };
-    fetchAllProjects();
-  }, []);
+  const projects = useAppSelector(projectSelectors.selectAll);
 
   return (
-    <div className="mx-auto max-w-4xl p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">プロジェクト</h1>
-        {/* プロジェクト作成フォーム */}
-        <CreateProjectForm projects={projects} setProjects={setProjects} />
-      </div>
-
-      {/* プロジェクト一覧 */}
-      <ProjectList projects={projects} setProjects={setProjects} />
+    <div className="container mx-auto max-w-4xl space-y-6 p-6">
+      <EntityManager
+        entities={projects}
+        formSchema={projectFormSchema}
+        defaultFormValues={defaultProjectFormValues}
+        getAllEntities={getAllProjects}
+        createEntity={createProject}
+        updateEntity={updateProject}
+        deleteEntity={deleteProject}
+        entityName="プロジェクト"
+        entityIcon={<Folder />}
+      />
     </div>
   );
 };

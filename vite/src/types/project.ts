@@ -9,6 +9,6 @@ export const projectFormSchema = z.object({
   name: z.string().min(1, { message: "名前を入力してください。" }),
 });
 
-export const defaultLabelFormValues: z.infer<typeof projectFormSchema> = {
+export const defaultProjectFormValues: z.infer<typeof projectFormSchema> = {
   name: "",
 };
