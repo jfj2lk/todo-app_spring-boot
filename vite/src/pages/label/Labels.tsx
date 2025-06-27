@@ -96,13 +96,13 @@ const Labels = () => {
         <EntityManager
           entities={labels}
           formSchema={labelFormSchema}
+          defaultFormValues={defaultLabelFormValues}
           getAllEntities={getAllLabels}
           createEntity={createLabel}
           updateEntity={updateLabel}
           deleteEntity={deleteLabel}
           entityName="ラベル"
           entityIcon={<Tag />}
-          defaultFormValues={defaultLabelFormValues}
         />
 
         {/*  */}
