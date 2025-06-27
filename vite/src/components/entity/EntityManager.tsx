@@ -22,13 +22,13 @@ const EntityManager = (props: EntityManagerPropsType) => {
       value={{
         entities: props.entities,
         formSchema: props.formSchema,
+        defaultFormValues: props.defaultFormValues,
         getAllEntities: props.getAllEntities,
         createEntity: props.createEntity,
         updateEntity: props.updateEntity,
         deleteEntity: props.deleteEntity,
         entityName: props.entityName,
         entityIcon: props.entityIcon,
-        defaultFormValues: props.defaultFormValues,
       }}
     >
       <div className="entity-manager">
