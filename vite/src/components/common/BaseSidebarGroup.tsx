@@ -19,6 +19,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Tag } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { ZodObject, ZodRawShape } from "zod";
 
 type PropsType = {
@@ -34,6 +35,8 @@ type PropsType = {
 };
 
 const BaseSidebarGroup = (props: PropsType) => {
+  const location = useLocation();
+
   return (
     <EntityManagerProvider {...props}>
       <Collapsible defaultOpen className="group/collapsible">
@@ -59,25 +62,31 @@ const BaseSidebarGroup = (props: PropsType) => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {/* アイテム */}
-                {props.entities.map((entity) => (
-                  <SidebarMenuItem key={entity.id}>
-                    {/* ボタン */}
-                    <SidebarMenuButton asChild>
-                      <a href={`/${props.resourceName}/${entity.id}`}>
-                        <Tag />
-                        <span className="w-[57.5%] truncate">
-                          {entity.name}
-                        </span>
-                      </a>
-                    </SidebarMenuButton>
+                {props.entities.map((entity) => {
+                  const resourcePath = `/${props.resourceName}/${entity.id}`;
+                  return (
+                    <SidebarMenuItem key={entity.id}>
+                      {/* ボタン */}
+                      <SidebarMenuButton
+                        asChild
+                        isActive={resourcePath === location.pathname}
+                      >
+                        <a href={resourcePath}>
+                          <Tag />
+                          <span className="w-[57.5%] truncate">
+                            {entity.name}
+                          </span>
+                        </a>
+                      </SidebarMenuButton>
 
-                    {/* アクションボタン */}
-                    <SidebarMenuAction showOnHover className="justify-end">
-                      <UpdateEntityButton entity={entity} />
-                      <DeleteEntityButton entity={entity} />
-                    </SidebarMenuAction>
-                  </SidebarMenuItem>
-                ))}
+                      {/* アクションボタン */}
+                      <SidebarMenuAction showOnHover className="justify-end">
+                        <UpdateEntityButton entity={entity} />
+                        <DeleteEntityButton entity={entity} />
+                      </SidebarMenuAction>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </CollapsibleContent>
