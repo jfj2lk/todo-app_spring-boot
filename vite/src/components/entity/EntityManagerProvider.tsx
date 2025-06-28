@@ -11,7 +11,6 @@ type EntityManagerPropsContextType = {
   formSchema: ZodObject<ZodRawShape>;
   defaultFormValues: Record<string, any>;
   entityName: string;
-  entityIcon: ReactNode;
 };
 
 const EntityManagerPropsContext = createContext<EntityManagerPropsContextType>({
@@ -23,7 +22,6 @@ const EntityManagerPropsContext = createContext<EntityManagerPropsContextType>({
   formSchema: z.object({}),
   defaultFormValues: {},
   entityName: "",
-  entityIcon: "",
 });
 
 export const useEntityManagerPropsContext = () =>

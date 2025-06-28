@@ -42,7 +42,6 @@ const LabelGroup = () => {
       formSchema={labelFormSchema}
       defaultFormValues={defaultLabelFormValues}
       entityName="ラベル"
-      entityIcon={<Tag />}
     >
       <Collapsible defaultOpen className="group/collapsible">
         <SidebarGroup className="text-gray-500">
