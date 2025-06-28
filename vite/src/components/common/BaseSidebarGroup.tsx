@@ -47,7 +47,7 @@ const BaseSidebarGroup = (props: PropsType) => {
               {/* エンティティ作成ボタン */}
               <CreateEntityButton />
               {/* コラプシブル開閉ボタン */}
-              <CollapsibleTrigger>
+              <CollapsibleTrigger asChild>
                 <CollapsibleTriggerButton />
               </CollapsibleTrigger>
             </div>
