@@ -5,8 +5,9 @@ import {
   SidebarHeader,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { LabelGroup } from "@/pages/label/LabelGroup";
+import { ProjectGroup } from "@/pages/project/ProjectGroup";
 import { Calendar, House, Inbox, Search, Settings } from "lucide-react";
-import { LabelGroup } from "./sidebar/LabelGroup";
 
 const menuItems = [
   {
@@ -57,8 +58,10 @@ const AppSidebar = () => {
 
       {/* コンテンツ */}
       <SidebarContent>
-        {/* ラベルグループ */}
+        {/* ラベル */}
         <LabelGroup />
+        {/* プロジェクト */}
+        <ProjectGroup />
       </SidebarContent>
 
       {/* フッター */}
