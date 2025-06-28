@@ -2,7 +2,7 @@ import { useAppDispatch } from "@/store";
 import { createContext, ReactNode, useContext, useEffect } from "react";
 import z, { ZodObject, ZodRawShape } from "zod";
 
-type EntityManagerPropsContextType = {
+export type EntityManagerPropsContextType = {
   entities: any[];
   getAllEntities: Function;
   createEntity: Function;

@@ -1,7 +1,10 @@
 import { CreateEntityButton } from "@/components/entity/button/CreateEntityButton";
 import { DeleteEntityButton } from "@/components/entity/button/DeleteEntityButton";
 import { UpdateEntityButton } from "@/components/entity/button/UpdateEntityButton";
-import { EntityManagerProvider } from "@/components/entity/EntityManagerProvider";
+import {
+  EntityManagerPropsContextType,
+  EntityManagerProvider,
+} from "@/components/entity/EntityManagerProvider";
 import { CollapsibleTriggerButton } from "@/components/sidebar/CollapsibleTriggerButton";
 import {
   Collapsible,
@@ -18,20 +21,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Tag } from "lucide-react";
+import { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
-import { ZodObject, ZodRawShape } from "zod";
 
-type PropsType = {
-  entities: any[];
-  getAllEntities: Function;
-  createEntity: Function;
-  updateEntity: Function;
-  deleteEntity: Function;
-  formSchema: ZodObject<ZodRawShape>;
-  defaultFormValues: Record<string, any>;
-  labelName: string;
+type PropsType = EntityManagerPropsContextType & {
   resourceName: string;
+  entityIcon: ReactNode;
 };
 
 const BaseSidebarGroup = (props: PropsType) => {
@@ -52,7 +47,7 @@ const BaseSidebarGroup = (props: PropsType) => {
               {/* エンティティ作成ボタン */}
               <CreateEntityButton />
               {/* コラプシブル開閉ボタン */}
-              <CollapsibleTrigger asChild>
+              <CollapsibleTrigger>
                 <CollapsibleTriggerButton />
               </CollapsibleTrigger>
             </div>
@@ -73,7 +68,7 @@ const BaseSidebarGroup = (props: PropsType) => {
                         isActive={resourcePath === location.pathname}
                       >
                         <a href={resourcePath}>
-                          <Tag />
+                          {props.entityIcon}
                           <span className="w-[57.5%] truncate">
                             {entity.name}
                           </span>
