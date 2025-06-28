@@ -30,6 +30,7 @@ type PropsType = {
   formSchema: ZodObject<ZodRawShape>;
   defaultFormValues: Record<string, any>;
   labelName: string;
+  resourceName: string;
 };
 
 const BaseSidebarGroup = (props: PropsType) => {
@@ -62,7 +63,7 @@ const BaseSidebarGroup = (props: PropsType) => {
                   <SidebarMenuItem key={entity.id}>
                     {/* ボタン */}
                     <SidebarMenuButton asChild>
-                      <a href={"#"}>
+                      <a href={`/${props.resourceName}/${entity.id}`}>
                         <Tag />
                         <span className="w-[57.5%] truncate">
                           {entity.name}
