@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
@@ -14,80 +13,83 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useAppDispatch, useAppSelector } from "@/store";
-import { getAllLabels, labelSelectors } from "@/store/labelStore";
-import { ChevronDown, Pencil, Plus, Tag, Trash2 } from "lucide-react";
-import { ReactNode, useEffect } from "react";
+import { useAppSelector } from "@/store";
+import {
+  createLabel,
+  deleteLabel,
+  getAllLabels,
+  labelSelectors,
+  updateLabel,
+} from "@/store/labelStore";
+import { defaultLabelFormValues, labelFormSchema } from "@/types/label";
+import { Tag } from "lucide-react";
+import { CollapsibleTriggerButton } from "./CollapsibleTriggerButton";
+import { CreateEntityButton } from "./CreateEntityButton";
+import { DeleteEntityButton } from "./DeleteEntityButton";
+import { EntityManagerProvider } from "./EntityManagerProvider";
+import { UpdateEntityButton } from "./UpdateEntityButton";
 
 const LabelGroup = () => {
   const labels = useAppSelector(labelSelectors.selectAll);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const handleGetAllEntities = () => {
-      dispatch(getAllLabels());
-    };
-    handleGetAllEntities();
-  }, []);
-
-  const SidebarIcon = (props: { children: ReactNode }) => {
-    return (
-      <Button variant={"ghost"} size={"icon"} className="text-gray-500">
-        {props.children}
-      </Button>
-    );
-  };
 
   return (
-    <Collapsible>
-      <SidebarGroup className="text-gray-500">
-        {/* ラベル */}
-        <SidebarGroupLabel className="text-gray-500">ラベル</SidebarGroupLabel>
+    <EntityManagerProvider
+      entities={labels}
+      getAllEntities={getAllLabels}
+      createEntity={createLabel}
+      updateEntity={updateLabel}
+      deleteEntity={deleteLabel}
+      formSchema={labelFormSchema}
+      defaultFormValues={defaultLabelFormValues}
+      entityName="ラベル"
+      entityIcon={<Tag />}
+    >
+      <Collapsible defaultOpen className="group/collapsible">
+        <SidebarGroup className="text-gray-500">
+          {/* ラベル */}
+          <SidebarGroupLabel className="text-gray-500">
+            ラベル
+          </SidebarGroupLabel>
 
-        {/* アクション */}
-        <SidebarGroupAction className="justify-end">
-          <SidebarIcon>
-            <Plus />
-          </SidebarIcon>
+          {/* アクション */}
+          <SidebarGroupAction className="justify-end">
+            {/* エンティティ作成ボタン */}
+            <CreateEntityButton />
 
-          <CollapsibleTrigger>
-            <SidebarIcon>
-              <ChevronDown />
-            </SidebarIcon>
-          </CollapsibleTrigger>
-        </SidebarGroupAction>
+            {/* コラプシブル開閉ボタン */}
+            <CollapsibleTrigger>
+              <CollapsibleTriggerButton />
+            </CollapsibleTrigger>
+          </SidebarGroupAction>
 
-        {/* コンテンツ */}
-        <CollapsibleContent>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {/* アイテム */}
-              {labels.map((label) => (
-                <SidebarMenuItem key={label.id}>
-                  {/* ボタン */}
-                  <SidebarMenuButton asChild>
-                    <a href={"#"}>
-                      <Tag />
-                      <span className="w-[57.5%] truncate">{label.name}</span>
-                    </a>
-                  </SidebarMenuButton>
+          {/* コンテンツ */}
+          <CollapsibleContent>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {/* アイテム */}
+                {labels.map((label) => (
+                  <SidebarMenuItem key={label.id}>
+                    {/* ボタン */}
+                    <SidebarMenuButton asChild>
+                      <a href={"#"}>
+                        <Tag />
+                        <span className="w-[57.5%] truncate">{label.name}</span>
+                      </a>
+                    </SidebarMenuButton>
 
-                  {/* アクションボタン */}
-                  <SidebarMenuAction showOnHover className="justify-end">
-                    <SidebarIcon>
-                      <Pencil />
-                    </SidebarIcon>
-                    <SidebarIcon>
-                      <Trash2 />
-                    </SidebarIcon>
-                  </SidebarMenuAction>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </CollapsibleContent>
-      </SidebarGroup>
-    </Collapsible>
+                    {/* アクションボタン */}
+                    <SidebarMenuAction showOnHover className="justify-end">
+                      <UpdateEntityButton entity={label} />
+                      <DeleteEntityButton entity={label} />
+                    </SidebarMenuAction>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </CollapsibleContent>
+        </SidebarGroup>
+      </Collapsible>
+    </EntityManagerProvider>
   );
 };
 
