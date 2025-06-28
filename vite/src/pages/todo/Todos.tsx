@@ -41,7 +41,7 @@ const Todos = () => {
       });
     };
     fetchInitialData();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     // Todosの要素を、並び替え要素と並び変え順の値で並び替える
