@@ -8,6 +8,7 @@ import {
   updateLabel,
 } from "@/store/label-Store";
 import { defaultLabelFormValues, labelFormSchema } from "@/types/label";
+import { Tag } from "lucide-react";
 
 const LabelGroup = () => {
   const labels = useAppSelector(labelSelectors.selectAll);
@@ -23,6 +24,7 @@ const LabelGroup = () => {
       defaultFormValues={defaultLabelFormValues}
       labelName="ラベル"
       resourceName="labels"
+      entityIcon={<Tag />}
     />
   );
 };

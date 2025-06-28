@@ -8,6 +8,7 @@ import {
   updateProject,
 } from "@/store/project-store";
 import { defaultProjectFormValues, projectFormSchema } from "@/types/project";
+import { Folder } from "lucide-react";
 
 const ProjectGroup = () => {
   const projects = useAppSelector(projectSelectors.selectAll);
@@ -23,6 +24,7 @@ const ProjectGroup = () => {
       defaultFormValues={defaultProjectFormValues}
       labelName="プロジェクト"
       resourceName="projects"
+      entityIcon={<Folder />}
     />
   );
 };
