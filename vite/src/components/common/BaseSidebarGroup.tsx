@@ -22,7 +22,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 type PropsType = EntityManagerPropsContextType & {
   resourceName: string;
@@ -67,12 +67,12 @@ const BaseSidebarGroup = (props: PropsType) => {
                         asChild
                         isActive={resourcePath === location.pathname}
                       >
-                        <a href={resourcePath}>
+                        <Link to={resourcePath}>
                           {props.entityIcon}
                           <span className="w-[57.5%] truncate">
                             {entity.name}
                           </span>
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
 
                       {/* アクションボタン */}
