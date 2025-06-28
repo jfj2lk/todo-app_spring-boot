@@ -1,11 +1,11 @@
+import { BaseButton } from "@/components/common/BaseButton";
 import { ChevronDown } from "lucide-react";
-import { EntityIcon } from "../entity/button/EntityIcon";
 
 const CollapsibleTriggerButton = () => {
   return (
-    <EntityIcon>
+    <BaseButton>
       <ChevronDown className="transition-transform group-data-[state=open]/collapsible:rotate-180" />
-    </EntityIcon>
+    </BaseButton>
   );
 };
 

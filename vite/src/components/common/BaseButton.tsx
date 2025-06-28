@@ -5,7 +5,7 @@ type EntityIconProps = {
   children: ReactNode;
 } & ComponentPropsWithoutRef<"button">;
 
-const EntityIcon = forwardRef<HTMLButtonElement, EntityIconProps>(
+const BaseButton = forwardRef<HTMLButtonElement, EntityIconProps>(
   (props, ref) => {
     return (
       <Button
@@ -21,4 +21,4 @@ const EntityIcon = forwardRef<HTMLButtonElement, EntityIconProps>(
   },
 );
 
-export { EntityIcon };
+export { BaseButton };

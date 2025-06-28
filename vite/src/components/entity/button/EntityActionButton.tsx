@@ -1,7 +1,7 @@
+import { BaseButton } from "@/components/common/BaseButton";
 import { ReactNode } from "react";
 import { modeType } from "../EntityManagerProvider";
 import { EntityModal } from "../form/EntityModal";
-import { EntityIcon } from "./EntityIcon";
 
 const EntityActionButton = (props: {
   children: ReactNode;
@@ -10,7 +10,7 @@ const EntityActionButton = (props: {
 }) => {
   return (
     <EntityModal mode={props.mode} entity={props.entity}>
-      <EntityIcon>{props.children}</EntityIcon>
+      <BaseButton>{props.children}</BaseButton>
     </EntityModal>
   );
 };
