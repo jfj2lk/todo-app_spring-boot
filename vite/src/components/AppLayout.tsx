@@ -12,7 +12,7 @@ const AppLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <main className="w-full">
         <Outlet />
       </main>
     </SidebarProvider>
