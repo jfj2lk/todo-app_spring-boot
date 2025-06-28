@@ -10,7 +10,7 @@ type EntityManagerPropsContextType = {
   deleteEntity: Function;
   formSchema: ZodObject<ZodRawShape>;
   defaultFormValues: Record<string, any>;
-  entityName: string;
+  labelName: string;
 };
 
 const EntityManagerPropsContext = createContext<EntityManagerPropsContextType>({
@@ -21,7 +21,7 @@ const EntityManagerPropsContext = createContext<EntityManagerPropsContextType>({
   deleteEntity: Function,
   formSchema: z.object({}),
   defaultFormValues: {},
-  entityName: "",
+  labelName: "",
 });
 
 export const useEntityManagerPropsContext = () =>

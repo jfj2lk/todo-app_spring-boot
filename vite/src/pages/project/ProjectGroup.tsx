@@ -21,7 +21,7 @@ const ProjectGroup = () => {
       deleteEntity={deleteProject}
       formSchema={projectFormSchema}
       defaultFormValues={defaultProjectFormValues}
-      entityName="プロジェクト"
+      labelName="プロジェクト"
     />
   );
 };

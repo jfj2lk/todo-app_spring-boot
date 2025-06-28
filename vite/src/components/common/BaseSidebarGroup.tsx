@@ -29,7 +29,7 @@ type PropsType = {
   deleteEntity: Function;
   formSchema: ZodObject<ZodRawShape>;
   defaultFormValues: Record<string, any>;
-  entityName: string;
+  labelName: string;
 };
 
 const BaseSidebarGroup = (props: PropsType) => {
@@ -39,7 +39,7 @@ const BaseSidebarGroup = (props: PropsType) => {
         <SidebarGroup className="text-gray-500">
           {/* ラベル */}
           <SidebarGroupLabel className="text-gray-500">
-            {props.entityName}
+            {props.labelName}
           </SidebarGroupLabel>
 
           {/* アクション */}

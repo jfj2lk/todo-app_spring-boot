@@ -37,7 +37,8 @@ const EntityModal = (props: {
   mode: modeType;
   entity?: any;
 }) => {
-  const { entityName, deleteEntity } = useEntityManagerPropsContext();
+  const { labelName: entityName, deleteEntity } =
+    useEntityManagerPropsContext();
 
   // Dialogの開閉を制御するstate
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);

@@ -21,7 +21,7 @@ const LabelGroup = () => {
       deleteEntity={deleteLabel}
       formSchema={labelFormSchema}
       defaultFormValues={defaultLabelFormValues}
-      entityName="ラベル"
+      labelName="ラベル"
     />
   );
 };
