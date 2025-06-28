@@ -47,14 +47,15 @@ const BaseSidebarGroup = (props: PropsType) => {
           </SidebarGroupLabel>
 
           {/* アクション */}
-          <SidebarGroupAction className="justify-end">
-            {/* エンティティ作成ボタン */}
-            <CreateEntityButton />
-
-            {/* コラプシブル開閉ボタン */}
-            <CollapsibleTrigger>
-              <CollapsibleTriggerButton />
-            </CollapsibleTrigger>
+          <SidebarGroupAction asChild className="justify-end">
+            <div>
+              {/* エンティティ作成ボタン */}
+              <CreateEntityButton />
+              {/* コラプシブル開閉ボタン */}
+              <CollapsibleTrigger asChild>
+                <CollapsibleTriggerButton />
+              </CollapsibleTrigger>
+            </div>
           </SidebarGroupAction>
 
           {/* コンテンツ */}
@@ -80,9 +81,15 @@ const BaseSidebarGroup = (props: PropsType) => {
                       </SidebarMenuButton>
 
                       {/* アクションボタン */}
-                      <SidebarMenuAction showOnHover className="justify-end">
-                        <UpdateEntityButton entity={entity} />
-                        <DeleteEntityButton entity={entity} />
+                      <SidebarMenuAction
+                        asChild
+                        showOnHover
+                        className="justify-end"
+                      >
+                        <div>
+                          <UpdateEntityButton entity={entity} />
+                          <DeleteEntityButton entity={entity} />
+                        </div>
                       </SidebarMenuAction>
                     </SidebarMenuItem>
                   );
