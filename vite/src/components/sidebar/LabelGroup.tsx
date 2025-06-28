@@ -23,11 +23,11 @@ import {
 } from "@/store/labelStore";
 import { defaultLabelFormValues, labelFormSchema } from "@/types/label";
 import { Tag } from "lucide-react";
+import { CreateEntityButton } from "../entity/button/CreateEntityButton";
+import { DeleteEntityButton } from "../entity/button/DeleteEntityButton";
+import { UpdateEntityButton } from "../entity/button/UpdateEntityButton";
+import { EntityManagerProvider } from "../entity/EntityManagerProvider";
 import { CollapsibleTriggerButton } from "./CollapsibleTriggerButton";
-import { CreateEntityButton } from "./CreateEntityButton";
-import { DeleteEntityButton } from "./DeleteEntityButton";
-import { EntityManagerProvider } from "./EntityManagerProvider";
-import { UpdateEntityButton } from "./UpdateEntityButton";
 
 const LabelGroup = () => {
   const labels = useAppSelector(labelSelectors.selectAll);

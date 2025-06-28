@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
+import { modeType } from "../EntityManagerProvider";
+import { EntityModal } from "../form/EntityModal";
 import { EntityIcon } from "./EntityIcon";
-import { modeType } from "./EntityManagerProvider";
-import { EntityModal } from "./EntityModal";
 
 const EntityActionButton = (props: {
   children: ReactNode;

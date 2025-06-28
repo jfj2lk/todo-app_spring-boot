@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { EntityIcon } from "./EntityIcon";
+import { EntityIcon } from "../entity/button/EntityIcon";
 
 const CollapsibleTriggerButton = () => {
   return (

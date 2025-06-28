@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -14,12 +16,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "../ui/button";
-import { DialogClose, DialogFooter } from "../ui/dialog";
 import {
   modeType,
   useEntityManagerPropsContext,
-} from "./EntityManagerProvider";
+} from "../EntityManagerProvider";
 
 const EntityForm = (props: {
   mode: modeType;

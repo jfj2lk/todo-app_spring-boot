@@ -12,11 +12,11 @@ import {
 
 import { useAppDispatch } from "@/store";
 import { ReactNode, useState } from "react";
-import { EntityForm } from "./EntityForm";
 import {
   modeType,
   useEntityManagerPropsContext,
-} from "./EntityManagerProvider";
+} from "../EntityManagerProvider";
+import { EntityForm } from "./EntityForm";
 
 // modeに対応するタイトル
 const titleMap = {
