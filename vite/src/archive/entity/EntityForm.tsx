@@ -14,8 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "../ui/button";
-import { DialogClose, DialogFooter } from "../ui/dialog";
+import { Button } from "../../components/ui/button";
+import { DialogClose, DialogFooter } from "../../components/ui/dialog";
 import { useEntityManagerPropsContext } from "./logic/entity-context";
 import { modeType } from "./logic/entity-type";
 

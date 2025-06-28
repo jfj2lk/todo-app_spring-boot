@@ -1,4 +1,4 @@
-import { EntityManager } from "@/components/entity/EntityManager";
+import { EntityManager } from "@/archive/entity/EntityManager";
 import { useAppSelector } from "@/store";
 import {
   createProject,
