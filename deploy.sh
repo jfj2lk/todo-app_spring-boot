@@ -30,11 +30,11 @@ EOF
 # build
 ## frontend
 cd $LOCAL_FRONTEND_DIR
-# npm run build
+npm run build
 
 ## backend
 cd $LOCAL_BACKEND_DIR
-# ./gradlew clean build
+./gradlew clean build
 
 # deploy
 ## app stop
@@ -42,11 +42,11 @@ stop_app
 
 ## frontend
 ssh ${HOST_NAME} "mkdir -p ${DEPLOY_FRONTEND_DIR}"
-scp -r ${LOCAL_FRONTEND_DIR}/dist/ ${HOST_NAME}:${DEPLOY_FRONTEND_DIR}
+scp -r ${LOCAL_FRONTEND_BUILD_DIR} ${HOST_NAME}:${DEPLOY_FRONTEND_DIR}
 
 ## backend
 ssh ${HOST_NAME} "mkdir -p ${DEPLOY_BACKEND_DIR}"
-scp ${LOCAL_BACKEND_DIR}/build/libs/${JAR_NAME} ${HOST_NAME}:${DEPLOY_BACKEND_DIR}
+scp ${LOCAL_BACKEND_BUILD_DIR}/${JAR_NAME} ${HOST_NAME}:${DEPLOY_BACKEND_DIR}
 
 ## app start
 start_app
