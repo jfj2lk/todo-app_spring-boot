@@ -1,4 +1,4 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
 
@@ -12,6 +12,7 @@ const AppLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
+      <SidebarTrigger className="p-4 md:hidden" />
       <main className="w-full">
         <Outlet />
       </main>
