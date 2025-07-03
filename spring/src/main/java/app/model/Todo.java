@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
 
 import app.form.todo.CreateTodoForm;
 import app.form.todo.UpdateTodoForm;
@@ -18,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Table("todos")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
