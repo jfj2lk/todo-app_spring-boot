@@ -174,7 +174,7 @@ public class TodoControllerTest {
         assertThat(responseCreatedTodo.getId()).isNotNull();
         assertThat(responseCreatedTodo.getProjectId()).isEqualTo(projectId);
         assertThat(responseCreatedTodo.getName()).isEqualTo(createTodoForm.getName());
-        assertThat(responseCreatedTodo.getDesc()).isEqualTo(createTodoForm.getDesc());
+        assertThat(responseCreatedTodo.getDescription()).isEqualTo(createTodoForm.getDescription());
         assertThat(responseCreatedTodo.getCreatedAt()).isNotNull();
         assertThat(responseCreatedTodo.getUpdatedAt()).isNotNull();
 
@@ -220,7 +220,7 @@ public class TodoControllerTest {
         assertThat(responseUpdatedTodo.getId()).isNotNull();
         assertThat(responseUpdatedTodo.getProjectId()).isEqualTo(projectId);
         assertThat(responseUpdatedTodo.getName()).isEqualTo(updateTodoForm.getName());
-        assertThat(responseUpdatedTodo.getDesc()).isEqualTo(updateTodoForm.getDesc());
+        assertThat(responseUpdatedTodo.getDescription()).isEqualTo(updateTodoForm.getDescription());
         assertThat(responseUpdatedTodo.getCreatedAt()).isNotNull();
         assertThat(responseUpdatedTodo.getUpdatedAt()).isNotNull();
         // 更新日時が作成日時よりも後か確認

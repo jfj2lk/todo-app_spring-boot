@@ -21,8 +21,8 @@ public class CreateTodoForm {
     @Size(max = 255, message = "nameは255文字以内で入力してください")
     private String name;
 
-    @Size(max = 255, message = "descは255文字以内で入力してください")
-    private String desc;
+    @Size(max = 255, message = "descriptionは255文字以内で入力してください")
+    private String description;
 
     @NotNull(message = "priorityは必須です")
     @Min(value = 1, message = "priorityは1以上にしてください")

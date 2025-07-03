@@ -29,7 +29,7 @@ public class Todo {
     private Long projectId;
     private Boolean isCompleted;
     private String name;
-    private String desc;
+    private String description;
     private Integer priority;
     private LocalDate dueDate;
     private LocalTime dueTime;
@@ -48,7 +48,7 @@ public class Todo {
         this.projectId = projectId;
         this.isCompleted = false;
         this.name = createTodoForm.getName();
-        this.desc = createTodoForm.getDesc();
+        this.description = createTodoForm.getDescription();
         this.priority = createTodoForm.getPriority();
         this.dueDate = createTodoForm.getDueDate();
         this.dueTime = createTodoForm.getDueTime();
@@ -62,7 +62,7 @@ public class Todo {
      */
     public void updateWithForm(UpdateTodoForm updateTodoForm) {
         this.name = updateTodoForm.getName();
-        this.desc = updateTodoForm.getDesc();
+        this.description = updateTodoForm.getDescription();
         this.priority = updateTodoForm.getPriority();
         this.dueDate = updateTodoForm.getDueDate();
         this.dueTime = updateTodoForm.getDueTime();
