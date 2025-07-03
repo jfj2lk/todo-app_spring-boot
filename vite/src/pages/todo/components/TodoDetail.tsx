@@ -26,7 +26,9 @@ const TodoDetail = (props: {
   );
 
   const [name, setName] = useState<string>(props.todo.name);
-  const [desc, setDesc] = useState<string>(props.todo.desc);
+  const [description, setDescription] = useState<string>(
+    props.todo.description,
+  );
   const [priority, setPriority] = useState<number>(props.todo.priority);
   const [dueDate, setDueDate] = useState<string>(props.todo.dueDate);
   const [dueTime, setDueTime] = useState<string>(props.todo.dueTime);
@@ -39,7 +41,7 @@ const TodoDetail = (props: {
         `/api/projects/${props.projectId}/todos/${todoId}`,
         {
           name,
-          desc,
+          description,
           priority,
           dueDate,
           dueTime,
@@ -49,7 +51,7 @@ const TodoDetail = (props: {
       .then((response) => {
         props.todoDispatch({ type: "updated", data: response.data.data });
         setName("");
-        setDesc("");
+        setDescription("");
         setLabelIds([]);
         props.setSelectedTodo(null);
       });
@@ -89,9 +91,9 @@ const TodoDetail = (props: {
             {/* 詳細入力欄 */}
             <input
               type="text"
-              value={desc}
+              value={description}
               onChange={(e) => {
-                setDesc(e.target.value);
+                setDescription(e.target.value);
               }}
             />
           </div>

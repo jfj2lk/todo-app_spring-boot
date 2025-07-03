@@ -22,7 +22,7 @@ const AddTodo = (props: {
 }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
-  const [desc, setDesc] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [priority, setPriority] = useState<number>(4);
   const [dueDate, setDueDate] = useState<string>("");
   const [dueTime, setDueTime] = useState<string>("");
@@ -33,7 +33,7 @@ const AddTodo = (props: {
     axios
       .post<ApiResponse<TodoType>>(`/api/projects/${props.projectId}/todos`, {
         name,
-        desc,
+        description,
         priority,
         dueDate,
         dueTime,
@@ -42,7 +42,7 @@ const AddTodo = (props: {
       .then((response) => {
         props.todoDispatch({ type: "added", data: response.data.data });
         setName("");
-        setDesc("");
+        setDescription("");
         setLabelIds([]);
         setIsAdding(false);
       });
@@ -79,9 +79,9 @@ const AddTodo = (props: {
           {/* 説明入力欄 */}
           <input
             type="text"
-            value={desc}
+            value={description}
             onChange={(e) => {
-              setDesc(e.target.value);
+              setDescription(e.target.value);
             }}
             placeholder="説明"
             className="mb-2 w-full rounded border p-2"
