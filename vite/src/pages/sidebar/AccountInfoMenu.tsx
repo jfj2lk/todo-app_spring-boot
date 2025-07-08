@@ -10,14 +10,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { useAppSelector } from "@/store";
-import { deleteUser, updateUser, userSelectors } from "@/store/user-store";
+import { deleteUser, getUser, updateUser } from "@/store/user-store";
 import { defaultUserFormValues, userFormSchema } from "@/types/user";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { ChevronDown, LogOut, Pencil } from "lucide-react";
 
 const AccountInfoMenu = () => {
-  const user = useAppSelector(userSelectors.selectAll);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo") ?? "");
+  const user = useAppSelector((state) => state.user);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -26,25 +25,26 @@ const AccountInfoMenu = () => {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild className="h-12">
-        <SidebarMenuButton>
-          <div>
-            <div className="text-base font-bold">{userInfo.name}</div>
-            <div className="text-sm">{userInfo.email}</div>
-          </div>
-          <ChevronDown className="ml-auto" />
-        </SidebarMenuButton>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
-        <EntityManagerProvider
-          entity={user}
-          updateEntity={updateUser}
-          deleteEntity={deleteUser}
-          formSchema={userFormSchema}
-          defaultFormValues={defaultUserFormValues}
-          labelName="ユーザー"
-        >
+    <EntityManagerProvider
+      entity={user}
+      getEntity={getUser}
+      updateEntity={updateUser}
+      deleteEntity={deleteUser}
+      formSchema={userFormSchema}
+      defaultFormValues={defaultUserFormValues}
+      labelName="ユーザー"
+    >
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild className="h-12">
+          <SidebarMenuButton>
+            <div>
+              <div className="text-base font-bold">{user?.name}</div>
+              <div className="text-sm">{user?.email}</div>
+            </div>
+            <ChevronDown className="ml-auto" />
+          </SidebarMenuButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
           <DropdownMenuItem asChild>
             <UpdateEntityButton entity={user}>
               <Pencil />
@@ -65,9 +65,9 @@ const AccountInfoMenu = () => {
               <span className="text-gray-500">ログアウト</span>
             </BaseButton>
           </DropdownMenuItem>
-        </EntityManagerProvider>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </EntityManagerProvider>
   );
 };
 
