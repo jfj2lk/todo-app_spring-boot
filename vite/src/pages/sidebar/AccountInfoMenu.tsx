@@ -1,3 +1,4 @@
+import { BaseButton } from "@/components/common/BaseButton";
 import { DeleteEntityButton } from "@/components/entity/button/DeleteEntityButton";
 import { UpdateEntityButton } from "@/components/entity/button/UpdateEntityButton";
 import { EntityManagerProvider } from "@/components/entity/EntityManagerProvider";
@@ -12,7 +13,7 @@ import { useAppSelector } from "@/store";
 import { deleteUser, updateUser, userSelectors } from "@/store/user-store";
 import { defaultUserFormValues, userFormSchema } from "@/types/user";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, Pencil } from "lucide-react";
 
 const AccountInfoMenu = () => {
   const user = useAppSelector(userSelectors.selectAll);
@@ -45,16 +46,24 @@ const AccountInfoMenu = () => {
           labelName="ユーザー"
         >
           <DropdownMenuItem asChild>
-            <UpdateEntityButton entity={user} />
+            <UpdateEntityButton entity={user}>
+              <Pencil />
+              <span>編集</span>
+            </UpdateEntityButton>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <DeleteEntityButton entity={user} />
+            <DeleteEntityButton entity={user}>
+              <LogOut />
+              <span>退会</span>
+            </DeleteEntityButton>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut />
-            <span>ログアウト</span>
+          <DropdownMenuItem onClick={handleLogout} asChild>
+            <BaseButton>
+              <LogOut />
+              <span className="text-gray-500">ログアウト</span>
+            </BaseButton>
           </DropdownMenuItem>
         </EntityManagerProvider>
       </DropdownMenuContent>
