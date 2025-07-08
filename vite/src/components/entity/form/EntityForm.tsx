@@ -23,7 +23,7 @@ import {
 
 const EntityForm = (props: {
   mode: modeType;
-  entity: any;
+  entity?: any;
   submitText: string;
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
@@ -31,13 +31,15 @@ const EntityForm = (props: {
   const { formSchema, createEntity, updateEntity, defaultFormValues } =
     useEntityManagerPropsContext();
 
-  // エンティティのキー定義
-  type EntityKey = keyof z.infer<typeof formSchema>;
+  //   フォームスキーマからキーのみを抽出
+  type formSchemaKeys = keyof z.infer<typeof formSchema>;
+
+  // フォームのデフォルト値
   const defaultValues = props.entity
     ? overrideByKeys(defaultFormValues, props.entity)
     : defaultFormValues;
 
-  // フォーム設定
+  // フォームスキーマ
   const form = useForm<z.infer<typeof formSchema>>({
     mode: "onChange",
     resolver: zodResolver(formSchema),
@@ -57,8 +59,8 @@ const EntityForm = (props: {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {(Object.entries(defaultValues) as [EntityKey, string][]).map(
-          ([key, value]) => (
+        {(Object.entries(defaultValues) as [formSchemaKeys, string][]).map(
+          ([key]) => (
             <FormField
               key={key}
               control={form.control}

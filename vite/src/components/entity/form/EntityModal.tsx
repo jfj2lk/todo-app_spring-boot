@@ -37,20 +37,18 @@ const EntityModal = (props: {
   mode: modeType;
   entity?: any;
 }) => {
-  const { labelName: entityName, deleteEntity } =
-    useEntityManagerPropsContext();
+  const dispatch = useAppDispatch();
+  const { labelName, deleteEntity } = useEntityManagerPropsContext();
+
+  const title = labelName + titleMap[props.mode];
+  const description =
+    props.mode === "DELETE"
+      ? props.entity?.name + "は永久に削除されます。"
+      : null;
+  const submitText = submitTextMap[props.mode];
 
   // Dialogの開閉を制御するstate
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-
-  const title = entityName + titleMap[props.mode];
-  let description;
-  if (props.mode === "DELETE") {
-    description = props.entity?.name + "は永久に削除されます。";
-  }
-  const submitText = submitTextMap[props.mode];
-
-  const dispatch = useAppDispatch();
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -61,17 +59,17 @@ const EntityModal = (props: {
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        {props.mode !== "DELETE" && (
-          <main>
-            <EntityForm
-              mode={props.mode}
-              entity={props.entity}
-              submitText={submitText}
-              setDialogOpen={setDialogOpen}
-            />
-          </main>
+        {/* modeが作成または更新の場合 */}
+        {(props.mode === "CREATE" || props.mode === "UPDATE") && (
+          <EntityForm
+            mode={props.mode}
+            entity={props.entity}
+            submitText={submitText}
+            setDialogOpen={setDialogOpen}
+          />
         )}
 
+        {/* modeが削除の場合 */}
         {props.mode === "DELETE" && props.entity && (
           <DialogFooter>
             <DialogClose asChild>
