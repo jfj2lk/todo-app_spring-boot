@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/store";
-import { overrideByKeys } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
@@ -31,19 +30,15 @@ const EntityForm = (props: {
   const { formSchema, createEntity, updateEntity, defaultFormValues } =
     useEntityManagerPropsContext();
 
-  //   フォームスキーマからキーのみを抽出
-  type formSchemaKeys = keyof z.infer<typeof formSchema>;
-
-  // フォームのデフォルト値
-  const defaultValues = props.entity
-    ? overrideByKeys(defaultFormValues, props.entity)
-    : defaultFormValues;
+  // フォームスキーマからキーのみを抽出
+  const formKeys = Object.keys(formSchema.shape);
 
   // フォームスキーマ
   const form = useForm<z.infer<typeof formSchema>>({
     mode: "onChange",
     resolver: zodResolver(formSchema),
-    defaultValues,
+    // entityが存在する場合はそれをデフォルト値にし、存在しない場合はフォームのデフォルト値を使用する
+    defaultValues: props.entity ?? defaultFormValues,
   });
 
   // フォーム送信時処理
@@ -59,25 +54,23 @@ const EntityForm = (props: {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {(Object.entries(defaultValues) as [formSchemaKeys, string][]).map(
-          ([key]) => (
-            <FormField
-              key={key}
-              control={form.control}
-              name={String(key)}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{key}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="" {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ),
-        )}
+        {formKeys.map((key) => (
+          <FormField
+            key={key}
+            control={form.control}
+            name={String(key)}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{key}</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
 
         <DialogFooter>
           <DialogClose asChild>
