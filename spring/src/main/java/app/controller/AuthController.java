@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +65,19 @@ public class AuthController {
                 Map.entry("userInfo", userInfo)));
     }
 
+    /**
+     * ユーザー情報取得
+     */
+    @GetMapping("/auth/user")
+    public ResponseEntity<Map<String, Object>> getUser(@AuthenticationPrincipal String userId) {
+        UserResponseDto userDto = authService.getUser(Long.valueOf(userId));
+
+        return ResponseEntity.ok().body(Map.of("data", userDto));
+    }
+
+    /**
+     * ユーザー情報更新
+     */
     @PatchMapping("/auth/user")
     public ResponseEntity<Map<String, Object>> updateUser(
             @AuthenticationPrincipal String userId,
