@@ -79,7 +79,7 @@ const EntityModal = (props: {
               <Button
                 type="submit"
                 onClick={() => {
-                  dispatch(deleteEntity(props.entity!.id));
+                  deleteEntity && dispatch(deleteEntity(props.entity!.id));
                 }}
               >
                 {submitText}
