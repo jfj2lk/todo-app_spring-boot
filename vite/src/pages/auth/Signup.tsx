@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User } from "@/types/user";
+import { UserType } from "@/types/user";
 import { apiRequest } from "@/utils/api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +18,7 @@ const Signup = () => {
     email: string,
     password: string,
   ) => {
-    const json = await apiRequest<User>("/api/auth/signup", "POST", {
+    const json = await apiRequest<UserType>("/api/auth/signup", "POST", {
       name,
       email,
       password,
