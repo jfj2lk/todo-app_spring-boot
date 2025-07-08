@@ -8,7 +8,7 @@ import {
   getAllLabels,
   labelSelectors,
   updateLabel,
-} from "@/store/label-Store";
+} from "@/store/label-store";
 import { defaultLabelFormValues, labelFormSchema } from "@/types/label";
 import { Tag } from "lucide-react";
 
