@@ -74,4 +74,14 @@ public class AuthService {
 
         return userRepository.save(user);
     }
+
+    /**
+     * ユーザー削除
+     */
+    public void deleteUser(Long userId) throws RuntimeException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません。"));
+
+        userRepository.delete(user);
+    }
 }

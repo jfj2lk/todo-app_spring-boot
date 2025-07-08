@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -86,5 +87,15 @@ public class AuthController {
         final UserResponseDto userInfo = new UserResponseDto(updatedUser.getId(), updatedUser.getName(),
                 updatedUser.getEmail());
         return ResponseEntity.ok(Map.of("data", userInfo));
+    }
+
+    /**
+     * ユーザー削除
+     */
+    @DeleteMapping("/auth/user")
+    public ResponseEntity<Map<String, Object>> deleteUser(
+            @AuthenticationPrincipal String userId) {
+        authService.deleteUser(Long.valueOf(userId));
+        return ResponseEntity.ok(Map.of("message", "退会しました。"));
     }
 }
