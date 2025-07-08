@@ -15,8 +15,8 @@ const LabelGroup = () => {
 
   return (
     <BaseSidebarGroup
-      entities={labels}
-      getAllEntities={getAllLabels}
+      entity={labels}
+      getEntity={getAllLabels}
       createEntity={createLabel}
       updateEntity={updateLabel}
       deleteEntity={deleteLabel}

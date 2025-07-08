@@ -49,9 +49,9 @@ const EntityForm = (props: {
   // フォーム送信時処理
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (props.mode === "CREATE") {
-      dispatch(createEntity(values));
+      createEntity && dispatch(createEntity(values));
     } else if (props.mode === "UPDATE") {
-      dispatch(updateEntity({ id: props.entity.id, values }));
+      updateEntity && dispatch(updateEntity({ id: props.entity.id, values }));
     }
     props.setDialogOpen(false);
   };

@@ -3,19 +3,19 @@ import { createContext, ReactNode, useContext, useEffect } from "react";
 import z, { ZodObject, ZodRawShape } from "zod";
 
 export type EntityManagerPropsContextType = {
-  entities: any[];
-  getAllEntities: Function;
-  createEntity: Function;
-  updateEntity: Function;
-  deleteEntity: Function;
+  entity: any;
+  getEntity?: Function;
+  createEntity?: Function;
+  updateEntity?: Function;
+  deleteEntity?: Function;
   formSchema: ZodObject<ZodRawShape>;
   defaultFormValues: Record<string, any>;
   labelName: string;
 };
 
 const EntityManagerPropsContext = createContext<EntityManagerPropsContextType>({
-  entities: [],
-  getAllEntities: Function,
+  entity: [],
+  getEntity: Function,
   createEntity: Function,
   updateEntity: Function,
   deleteEntity: Function,
@@ -36,7 +36,7 @@ const EntityManagerProvider = (
 
   useEffect(() => {
     const handleGetAllEntities = () => {
-      dispatch(props.getAllEntities());
+      props.getEntity && dispatch(props.getEntity());
     };
     handleGetAllEntities();
   }, []);

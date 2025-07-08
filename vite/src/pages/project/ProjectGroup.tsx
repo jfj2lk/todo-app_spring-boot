@@ -15,8 +15,8 @@ const ProjectGroup = () => {
 
   return (
     <BaseSidebarGroup
-      entities={projects}
-      getAllEntities={getAllProjects}
+      entity={projects}
+      getEntity={getAllProjects}
       createEntity={createProject}
       updateEntity={updateProject}
       deleteEntity={deleteProject}
