@@ -49,22 +49,18 @@ export const projectSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getAllProjects.fulfilled, (state, action) => {
-      console.log(state, action);
       projectAdapter.setAll(state, action);
     });
 
     builder.addCase(createProject.fulfilled, (state, action) => {
-      console.log(state, action);
       projectAdapter.addOne(state, action);
     });
 
     builder.addCase(updateProject.fulfilled, (state, action) => {
-      console.log(state, action);
       projectAdapter.setOne(state, action);
     });
 
     builder.addCase(deleteProject.fulfilled, (state, action) => {
-      console.log(state, action);
       projectAdapter.removeOne(state, action);
     });
   },

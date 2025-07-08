@@ -49,22 +49,18 @@ export const labelSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getAllLabels.fulfilled, (state, action) => {
-      console.log(state, action);
       labelAdapter.setAll(state, action);
     });
 
     builder.addCase(createLabel.fulfilled, (state, action) => {
-      console.log(state, action);
       labelAdapter.addOne(state, action);
     });
 
     builder.addCase(updateLabel.fulfilled, (state, action) => {
-      console.log(state, action);
       labelAdapter.setOne(state, action);
     });
 
     builder.addCase(deleteLabel.fulfilled, (state, action) => {
-      console.log(state, action);
       labelAdapter.removeOne(state, action);
     });
   },
