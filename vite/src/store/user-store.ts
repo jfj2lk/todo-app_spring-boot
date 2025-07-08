@@ -31,6 +31,9 @@ export const updateUser = createAsyncThunk(
 // ユーザー削除
 export const deleteUser = createAsyncThunk("user/deleteUser", async () => {
   await axios.delete("/api/auth/user");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("userInfo");
+  location.href = "/";
   return null;
 });
 
