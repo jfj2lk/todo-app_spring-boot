@@ -1,3 +1,6 @@
+import { DeleteEntityButton } from "@/components/entity/button/DeleteEntityButton";
+import { UpdateEntityButton } from "@/components/entity/button/UpdateEntityButton";
+import { EntityManagerProvider } from "@/components/entity/EntityManagerProvider";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -5,15 +8,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
+import { useAppSelector } from "@/store";
+import { deleteUser, updateUser, userSelectors } from "@/store/user-store";
+import { defaultUserFormValues, userFormSchema } from "@/types/user";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
-import { ChevronDown, Edit2, LogOut } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 
 const AccountInfoMenu = () => {
+  const user = useAppSelector(userSelectors.selectAll);
   const userInfo = JSON.parse(localStorage.getItem("userInfo") ?? "");
-
-  const handleEdit = async () => {};
-
-  const handleDelete = async () => {};
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -33,20 +36,27 @@ const AccountInfoMenu = () => {
         </SidebarMenuButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <DropdownMenuItem>
-          <Edit2 />
-          <span>編集</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <LogOut />
-          <span>退会</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
-          <LogOut />
-          <span>ログアウト</span>
-        </DropdownMenuItem>
+        <EntityManagerProvider
+          entity={user}
+          updateEntity={updateUser}
+          deleteEntity={deleteUser}
+          formSchema={userFormSchema}
+          defaultFormValues={defaultUserFormValues}
+          labelName="ユーザー"
+        >
+          <DropdownMenuItem asChild>
+            <UpdateEntityButton entity={user} />
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <DeleteEntityButton entity={user} />
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleLogout}>
+            <LogOut />
+            <span>ログアウト</span>
+          </DropdownMenuItem>
+        </EntityManagerProvider>
       </DropdownMenuContent>
     </DropdownMenu>
   );
