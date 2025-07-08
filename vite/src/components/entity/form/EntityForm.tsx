@@ -63,7 +63,7 @@ const EntityForm = (props: {
               <FormItem>
                 <FormLabel>{key}</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input type={key} placeholder="" {...field} />
                 </FormControl>
                 <FormDescription></FormDescription>
                 <FormMessage />
