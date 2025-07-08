@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Table;
 
 import app.form.user.SignUpForm;
+import app.form.user.UpdateUserForm;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,5 +35,14 @@ public class User {
         this.name = signUpForm.getName();
         this.email = signUpForm.getEmail();
         this.password = signUpForm.getPassword();
+    }
+
+    /**
+     * User更新フォームの値でUserオブジェクトを作成する。
+     */
+    public void updateWithForm(UpdateUserForm updateUserForm) {
+        this.name = updateUserForm.getName();
+        this.email = updateUserForm.getEmail();
+        this.password = updateUserForm.getPassword();
     }
 }
