@@ -1,10 +1,11 @@
 import { Plus } from "lucide-react";
+import { ReactNode } from "react";
 import { EntityActionButton } from "./EntityActionButton";
 
-const CreateEntityButton = () => {
+const CreateEntityButton = (props: { children?: ReactNode }) => {
   return (
     <EntityActionButton mode="CREATE">
-      <Plus />
+      {props.children ?? <Plus />}
     </EntityActionButton>
   );
 };

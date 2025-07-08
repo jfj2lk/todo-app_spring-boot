@@ -1,10 +1,11 @@
 import { Trash2 } from "lucide-react";
+import { ReactNode } from "react";
 import { EntityActionButton } from "./EntityActionButton";
 
-const DeleteEntityButton = (props: { entity: any }) => {
+const DeleteEntityButton = (props: { children?: ReactNode; entity: any }) => {
   return (
     <EntityActionButton mode="DELETE" entity={props.entity}>
-      <Trash2 />
+      {props.children ?? <Trash2 />}
     </EntityActionButton>
   );
 };
