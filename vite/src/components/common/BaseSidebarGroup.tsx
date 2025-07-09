@@ -58,7 +58,7 @@ const BaseSidebarGroup = (props: PropsType) => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {/* アイテム */}
-                {props.entity.map((entity) => {
+                {(props.entity as any[]).map((entity) => {
                   const resourcePath = `/${props.resourceName}/${entity.id}`;
                   return (
                     <SidebarMenuItem key={entity.id}>
