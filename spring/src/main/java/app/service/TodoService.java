@@ -9,6 +9,7 @@ import app.exception.ModelNotFoundException;
 import app.form.todo.CreateTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
+import app.repository.LabelRepository;
 import app.repository.ProjectRepository;
 import app.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class TodoService {
     private final TodoRepository todoRepository;
     private final ProjectRepository projectRepository;
+    private final LabelRepository labelRepository;
 
     /**
      * Todo取得。
@@ -33,13 +35,23 @@ public class TodoService {
     }
 
     /**
-     * 全てのTodo取得。
+     * 特定のProjectに紐づく全てのTodo取得。
      */
-    public List<Todo> getAll(Long projectId) {
+    public List<Todo> getAllByProject(Long projectId) {
         projectRepository
                 .findById(projectId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
         return todoRepository.findAllByProjectId(projectId);
+    }
+
+    /**
+     * 特定のLabelに紐づく全てのTodo取得。
+     */
+    public List<Todo> getAllByLabel(Long labelId) {
+        labelRepository
+                .findById(labelId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたLabelが見つかりません。"));
+        return todoRepository.findAllByLabelId(labelId);
     }
 
     /**

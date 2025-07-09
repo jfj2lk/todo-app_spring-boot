@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.form.todo.CreateTodoForm;
@@ -22,14 +21,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/projects/{projectId}/todos")
 public class TodoController {
     private final TodoService todoService;
 
     /**
      * Todo取得。
      */
-    @GetMapping("/{id}")
+    @GetMapping("/projects/{projectId}/todos/{id}")
     public ResponseEntity<Map<String, Todo>> get(
             @PathVariable("projectId") Long projectId,
             @PathVariable("id") Long todoId) {
@@ -38,19 +36,29 @@ public class TodoController {
     }
 
     /**
-     * 全てのTodo取得。
+     * 特定のProjectに紐づく全てのTodo取得。
      */
-    @GetMapping
-    public ResponseEntity<Map<String, List<Todo>>> getAll(
+    @GetMapping("/projects/{projectId}/todos")
+    public ResponseEntity<Map<String, List<Todo>>> getAllByProject(
             @PathVariable("projectId") Long projectId) {
-        List<Todo> todos = todoService.getAll(projectId);
+        List<Todo> todos = todoService.getAllByProject(projectId);
+        return ResponseEntity.ok().body(Map.of("data", todos));
+    }
+
+    /**
+     * 特定のLabelに紐づく全てのTodo取得。
+     */
+    @GetMapping("/labels/{labelId}/todos")
+    public ResponseEntity<Map<String, List<Todo>>> getAllByLabel(
+            @PathVariable("labelId") Long labelId) {
+        List<Todo> todos = todoService.getAllByLabel(labelId);
         return ResponseEntity.ok().body(Map.of("data", todos));
     }
 
     /**
      * Todo作成。
      */
-    @PostMapping
+    @PostMapping("/projects/{projectId}/todos")
     public ResponseEntity<Map<String, Todo>> create(
             @PathVariable("projectId") Long projectId,
             @RequestBody @Validated CreateTodoForm createTodoForm) {
@@ -61,7 +69,7 @@ public class TodoController {
     /**
      * Todo更新。
      */
-    @PatchMapping("/{id}")
+    @PatchMapping("/projects/{projectId}/todos/{id}")
     public ResponseEntity<Map<String, Todo>> update(
             @PathVariable("projectId") Long projectId,
             @PathVariable("id") Long todoId,
@@ -73,7 +81,7 @@ public class TodoController {
     /**
      * Todo削除。
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/projects/{projectId}/todos/{id}")
     public ResponseEntity<Map<String, Long>> delete(
             @PathVariable("projectId") Long projectId,
             @PathVariable("id") Long todoId) {
@@ -84,7 +92,7 @@ public class TodoController {
     /**
      * Todoを完了状態にする。
      */
-    @PatchMapping("/{id}/complete")
+    @PatchMapping("/projects/{projectId}/todos/{id}/complete")
     public ResponseEntity<Map<String, Todo>> complete(
             @PathVariable("projectId") Long projectId,
             @PathVariable("id") Long todoId) {
@@ -95,7 +103,7 @@ public class TodoController {
     /**
      * Todoを未完了状態にする。
      */
-    @PatchMapping("/{id}/incomplete")
+    @PatchMapping("/projects/{projectId}/todos/{id}/incomplete")
     public ResponseEntity<Map<String, Todo>> incomplete(
             @PathVariable("projectId") Long projectId,
             @PathVariable("id") Long todoId) {
