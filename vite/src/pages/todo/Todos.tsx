@@ -10,12 +10,13 @@ import { TodoType } from "@/types/todo";
 import axios from "axios";
 import { Ellipsis } from "lucide-react";
 import { useEffect, useReducer, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import AddTodo from "./components/AddTodo";
 import TodoDetail from "./components/TodoDetail";
 import TodoList from "./components/TodoList";
 
 const Todos = () => {
+  const location = useLocation();
   const { id } = useParams();
   const projectId: number = id ? parseInt(id) : NaN;
 
@@ -31,7 +32,7 @@ const Todos = () => {
   useEffect(() => {
     const fetchInitialData = () => {
       axios
-        .get<ApiResponse<TodoType[]>>(`/api/projects/${projectId}/todos`)
+        .get<ApiResponse<TodoType[]>>(`/api${location.pathname}/todos`)
         .then((response) => {
           todoDispatch({ type: "initialized", data: response.data.data });
         });
