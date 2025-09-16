@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
-import { CheckCircle, ListTodo, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CheckCircle, ListTodo, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -28,9 +28,7 @@ const Home = () => {
           </Link>
         </div>
 
-        <div>
-          <img src="" alt="アプリ画面のスクリーンショット" />
-        </div>
+        <div>{/* <img src="" alt="アプリ画面のスクリーンショット" /> */}</div>
       </section>
 
       {/* 特徴セクション */}
