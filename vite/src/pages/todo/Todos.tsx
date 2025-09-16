@@ -115,6 +115,7 @@ const Todos = () => {
 
           {/* Todo一覧 */}
           <TodoList
+            projectId={projectId}
             todos={todos}
             todoDispatch={todoDispatch}
             selectedTodo={selectedTodo}

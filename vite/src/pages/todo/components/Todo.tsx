@@ -4,6 +4,7 @@ import { Circle } from "lucide-react";
 import React from "react";
 
 const Todo = (props: {
+  projectId: number;
   todo: TodoType;
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
@@ -12,10 +13,12 @@ const Todo = (props: {
 }) => {
   // Todoの完了・未完了状態を変更するAPIリクエストを送信
   const toggleComplete = async (todoId: number) => {
+    const completeUrl = props.todo.isCompleted ? "incomplete" : "complete";
     const json = await apiRequest<TodoType>(
-      `/api/todos/${todoId}/toggleComplete`,
+      `/api/projects/${props.projectId}/todos/${todoId}/${completeUrl}`,
       "PATCH",
     );
+    console.log(json);
     props.todoDispatch({ type: "updated", data: json.data });
   };
 
