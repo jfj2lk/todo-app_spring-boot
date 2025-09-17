@@ -59,11 +59,11 @@ const Todo = (props: {
       </button>
       <button
         onClick={() => props.setSelectedTodo(props.todo)}
-        className="flex-1 cursor-pointer text-left"
+        className="flex-1 cursor-pointer truncate text-left"
       >
         <div className="flex items-center gap-5">
           {/* Todo名 */}
-          <div>{props.todo.name}</div>
+          <div className="max-w-[17.5rem] truncate">{props.todo.name}</div>
 
           <div className="flex items-center gap-2.5">
             {/* 優先度 */}
