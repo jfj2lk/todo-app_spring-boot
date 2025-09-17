@@ -74,7 +74,10 @@ const Todo = (props: {
             {/* ラベル */}
             <ul className="flex gap-2.5">
               {todoLabels.map((label) => (
-                <li className="flex items-center gap-1 rounded-md border px-1 py-0.5 text-sm text-gray-600">
+                <li
+                  key={label.id}
+                  className="flex items-center gap-1 rounded-md border px-1 py-0.5 text-sm text-gray-600"
+                >
                   <Tag size={16} />
                   <div>{label.name}</div>
                 </li>
