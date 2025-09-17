@@ -120,6 +120,7 @@ const Todos = () => {
             todoDispatch={todoDispatch}
             selectedTodo={selectedTodo}
             setSelectedTodo={setSelectedTodo}
+            labels={labels}
           />
         </div>
       </div>

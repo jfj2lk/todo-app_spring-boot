@@ -1,3 +1,4 @@
+import { LabelType } from "@/types/label";
 import { TodoReducerActions, TodoType } from "@/types/todo";
 import Todo from "./Todo";
 
@@ -7,6 +8,7 @@ const TodoList = (props: {
   todoDispatch: React.Dispatch<TodoReducerActions>;
   selectedTodo: TodoType | null;
   setSelectedTodo: React.Dispatch<React.SetStateAction<TodoType | null>>;
+  labels: LabelType[];
 }) => {
   // 未完了状態のTodos
   const inCompleteTodos = props.todos.filter((todo) => !todo.isCompleted);
@@ -26,6 +28,7 @@ const TodoList = (props: {
               todoDispatch={props.todoDispatch}
               selectedTodo={props.selectedTodo}
               setSelectedTodo={props.setSelectedTodo}
+              labels={props.labels}
             />
           </li>
         ))}
@@ -43,6 +46,7 @@ const TodoList = (props: {
               todoDispatch={props.todoDispatch}
               selectedTodo={props.selectedTodo}
               setSelectedTodo={props.setSelectedTodo}
+              labels={props.labels}
             />
           </li>
         ))}
