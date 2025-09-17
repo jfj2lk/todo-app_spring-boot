@@ -4,8 +4,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { todosReducer } from "@/state/todosReducer";
+import { useAppSelector } from "@/store";
+import { labelSelectors } from "@/store/label-store";
 import { ApiResponse } from "@/types/api";
-import { LabelType } from "@/types/label";
 import { TodoType } from "@/types/todo";
 import axios from "axios";
 import { Ellipsis } from "lucide-react";
@@ -21,7 +22,7 @@ const Todos = () => {
   const projectId: number = id ? parseInt(id) : NaN;
 
   const [todos, todoDispatch] = useReducer(todosReducer, []);
-  const [labels, setLabels] = useState<LabelType[]>([]);
+  const labels = useAppSelector(labelSelectors.selectAll);
   // 選択中のTodoのID
   const [selectedTodo, setSelectedTodo] = useState<TodoType | null>(null);
   // 並び替え要素
@@ -36,10 +37,6 @@ const Todos = () => {
         .then((response) => {
           todoDispatch({ type: "initialized", data: response.data.data });
         });
-
-      axios.get<ApiResponse<LabelType[]>>("/api/labels").then((response) => {
-        setLabels(response.data.data);
-      });
     };
     fetchInitialData();
   }, [id]);

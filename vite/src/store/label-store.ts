@@ -27,7 +27,6 @@ export const createLabel = createAsyncThunk(
 export const updateLabel = createAsyncThunk(
   "updateLabel",
   (payload: { id: number; values: z.infer<typeof labelFormSchema> }) => {
-    console;
     return axios
       .patch(`/api/labels/${payload.id}`, payload.values)
       .then((response) => response.data.data);
