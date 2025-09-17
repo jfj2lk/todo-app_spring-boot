@@ -10,7 +10,7 @@ import { ApiResponse } from "@/types/api";
 import { LabelType } from "@/types/label";
 import { TodoReducerActions, TodoType } from "@/types/todo";
 import axios from "axios";
-import { Plus } from "lucide-react";
+import { Pencil, Tag } from "lucide-react";
 
 import { useState } from "react";
 
@@ -26,6 +26,11 @@ const TodoDetail = (props: {
     (todoLabel) => todoLabel.labelId,
   );
   const [todoLabelIds, setTodoLabelIds] = useState<number[]>(todoLabelIdsData);
+
+  // Todoに関連付いた全てのラベルを取得
+  const todoLabels: LabelType[] = props.labels.filter((label) =>
+    todoLabelIds.includes(label.id),
+  );
 
   const [name, setName] = useState<string>(props.todo.name);
   const [description, setDescription] = useState<string>(
@@ -133,17 +138,31 @@ const TodoDetail = (props: {
 
           {/* ラベル入力欄 */}
           <Popover>
-            <PopoverTrigger className="self-start" asChild>
-              <Button type="button" variant={"outline"}>
-                <Plus />
+            <PopoverTrigger className="text-md flex flex-col gap-2.5 rounded-md border px-5 py-2.5">
+              <div className="flex justify-between">
                 <span>ラベル</span>
-              </Button>
+                <Pencil size={16} />
+              </div>
+
+              {/* ラベル一覧表示 */}
+              <ul className="flex gap-2.5">
+                {todoLabels.map((label) => (
+                  <li
+                    key={label.id}
+                    className="flex items-center gap-1 rounded-md border px-1 py-0.5 text-sm text-gray-600"
+                  >
+                    <Tag size={16} />
+                    <div>{label.name}</div>
+                  </li>
+                ))}
+              </ul>
             </PopoverTrigger>
-            <PopoverContent className="w-auto">
+            <PopoverContent className="min-w-[15rem]">
               <ul className="flex flex-col gap-3">
                 {props.labels.map((label) => (
                   <li key={label.id}>
-                    <Label>
+                    <Label className="flex justify-between">
+                      <span>{label.name}</span>
                       <Checkbox
                         name="labels"
                         value={label.id}
@@ -160,7 +179,6 @@ const TodoDetail = (props: {
                           }
                         }}
                       />
-                      <span>{label.name}</span>
                     </Label>
                   </li>
                 ))}
