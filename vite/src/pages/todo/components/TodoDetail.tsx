@@ -21,9 +21,11 @@ const TodoDetail = (props: {
   labels: LabelType[];
   setSelectedTodo: React.Dispatch<React.SetStateAction<TodoType | null>>;
 }) => {
-  const labelIdsFromTodo: number[] = props.todo.todoLabels.map(
+  // Todoに関連付いた全てのラベルのIDを取得
+  const todoLabelIdsData: number[] = props.todo.todoLabels.map(
     (todoLabel) => todoLabel.labelId,
   );
+  const [todoLabelIds, setTodoLabelIds] = useState<number[]>(todoLabelIdsData);
 
   const [name, setName] = useState<string>(props.todo.name);
   const [description, setDescription] = useState<string>(
@@ -32,7 +34,6 @@ const TodoDetail = (props: {
   const [priority, setPriority] = useState<number>(props.todo.priority);
   const [dueDate, setDueDate] = useState<string>(props.todo.dueDate);
   const [dueTime, setDueTime] = useState<string>(props.todo.dueTime);
-  const [labelIds, setLabelIds] = useState<number[]>(labelIdsFromTodo);
 
   // Todo更新
   const handleUpdateTodo = (todoId: number) => {
@@ -45,14 +46,14 @@ const TodoDetail = (props: {
           priority,
           dueDate,
           dueTime,
-          labelIds,
+          labelIds: todoLabelIds,
         },
       )
       .then((response) => {
         props.todoDispatch({ type: "updated", data: response.data.data });
         setName("");
         setDescription("");
-        setLabelIds([]);
+        setTodoLabelIds([]);
         props.setSelectedTodo(null);
       });
   };
@@ -146,15 +147,17 @@ const TodoDetail = (props: {
                       <Checkbox
                         name="labels"
                         value={label.id}
-                        checked={labelIds.includes(label.id)}
+                        checked={todoLabelIds.includes(label.id)}
                         onCheckedChange={(checked) => {
-                          checked
-                            ? setLabelIds([...labelIds, label.id])
-                            : setLabelIds(
-                                labelIds.filter(
-                                  (labelId) => labelId !== label.id,
-                                ),
-                              );
+                          if (checked) {
+                            setTodoLabelIds([...todoLabelIds, label.id]);
+                          } else {
+                            setTodoLabelIds(
+                              todoLabelIds.filter(
+                                (labelId) => labelId !== label.id,
+                              ),
+                            );
+                          }
                         }}
                       />
                       <span>{label.name}</span>
