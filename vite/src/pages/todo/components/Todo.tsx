@@ -1,6 +1,6 @@
 import { TodoReducerActions, TodoType } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
-import { Circle } from "lucide-react";
+import { Circle, Flag } from "lucide-react";
 import React from "react";
 
 const Todo = (props: {
@@ -22,6 +22,23 @@ const Todo = (props: {
     props.todoDispatch({ type: "updated", data: json.data });
   };
 
+  // 優先度の色
+  let priorityColor;
+  switch (props.todo.priority) {
+    case 1: {
+      priorityColor = "red";
+      break;
+    }
+    case 2: {
+      priorityColor = "orange";
+      break;
+    }
+    case 3: {
+      priorityColor = "blue";
+      break;
+    }
+  }
+
   return (
     <div
       className={`flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2 ${props.selectedTodo?.id === props.todo.id ? "border-blue-300 bg-blue-100" : ""}`}
@@ -31,9 +48,19 @@ const Todo = (props: {
       </button>
       <button
         onClick={() => props.setSelectedTodo(props.todo)}
-        className="w-full text-left"
+        className="flex-1 cursor-pointer text-left"
       >
-        {props.todo.name}
+        <div className="flex items-center gap-5">
+          {/* Todo名 */}
+          <div>{props.todo.name}</div>
+
+          <div className="flex items-center gap-2.5">
+            {/* 優先度 */}
+            <div className={`rounded-md border px-1 py-0.5`}>
+              <Flag size={16} color={priorityColor} />
+            </div>
+          </div>
+        </div>
       </button>
     </div>
   );
