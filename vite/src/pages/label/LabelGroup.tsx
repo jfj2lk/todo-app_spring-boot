@@ -24,7 +24,7 @@ const LabelGroup = () => {
       defaultFormValues={defaultLabelFormValues}
       labelName="ラベル"
       resourceName="labels"
-      entityIcon={<Tag />}
+      entityIcon={<Tag size={16} />}
     />
   );
 };

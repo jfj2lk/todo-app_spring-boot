@@ -17,7 +17,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
@@ -67,25 +66,25 @@ const BaseSidebarGroup = (props: PropsType) => {
                         asChild
                         isActive={resourcePath === location.pathname}
                       >
-                        <Link to={resourcePath}>
-                          {props.entityIcon}
-                          <span className="w-[57.5%] truncate">
-                            {entity.name}
-                          </span>
-                        </Link>
-                      </SidebarMenuButton>
+                        <div className="flex justify-between">
+                          {/* ラベル */}
+                          <div className="min-w-0 flex-1">
+                            <Link
+                              to={resourcePath}
+                              className="flex items-center gap-2"
+                            >
+                              <span>{props.entityIcon}</span>
+                              <span className="truncate">{entity.name}</span>
+                            </Link>
+                          </div>
 
-                      {/* アクションボタン */}
-                      <SidebarMenuAction
-                        asChild
-                        showOnHover
-                        className="justify-end"
-                      >
-                        <div>
-                          <UpdateEntityButton entity={entity} />
-                          <DeleteEntityButton entity={entity} />
+                          {/* アクションボタン */}
+                          <div className="flex">
+                            <UpdateEntityButton entity={entity} />
+                            <DeleteEntityButton entity={entity} />
+                          </div>
                         </div>
-                      </SidebarMenuAction>
+                      </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
                 })}

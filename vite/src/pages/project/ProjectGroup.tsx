@@ -24,7 +24,7 @@ const ProjectGroup = () => {
       defaultFormValues={defaultProjectFormValues}
       labelName="プロジェクト"
       resourceName="projects"
-      entityIcon={<Folder />}
+      entityIcon={<Folder size={16} />}
     />
   );
 };
