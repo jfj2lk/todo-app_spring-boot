@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
@@ -35,14 +34,12 @@ const BaseSidebarGroup = (props: PropsType) => {
     <EntityManagerProvider {...props}>
       <Collapsible defaultOpen className="group/collapsible">
         <SidebarGroup className="text-gray-500">
-          {/* ラベル */}
-          <SidebarGroupLabel className="text-gray-500">
-            {props.labelName}
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="flex justify-between text-gray-500">
+            {/* ラベル */}
+            <span>{props.labelName}</span>
 
-          {/* アクション */}
-          <SidebarGroupAction asChild className="justify-end">
-            <div>
+            {/* アクションボタン */}
+            <div className="flex">
               {/* エンティティ作成ボタン */}
               <CreateEntityButton />
               {/* コラプシブル開閉ボタン */}
@@ -50,7 +47,7 @@ const BaseSidebarGroup = (props: PropsType) => {
                 <CollapsibleTriggerButton />
               </CollapsibleTrigger>
             </div>
-          </SidebarGroupAction>
+          </SidebarGroupLabel>
 
           {/* コンテンツ */}
           <CollapsibleContent>
