@@ -33,7 +33,8 @@ CREATE TABLE labels (
 
 CREATE TABLE todos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    project_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    project_id BIGINT,
     is_completed BOOLEAN NOT NULL DEFAULT FALSE, 
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
