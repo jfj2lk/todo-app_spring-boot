@@ -6,58 +6,72 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ApiResponse } from "@/types/api";
 import { LabelType } from "@/types/label";
 import { TodoReducerActions, TodoType } from "@/types/todo";
-import { apiRequest } from "@/utils/api";
-import { Plus } from "lucide-react";
+import axios from "axios";
+import { Pencil, Tag } from "lucide-react";
 
 import { useState } from "react";
 
 const TodoDetail = (props: {
+  projectId: number;
   todo: TodoType;
   todoDispatch: React.Dispatch<TodoReducerActions>;
   labels: LabelType[];
   setSelectedTodo: React.Dispatch<React.SetStateAction<TodoType | null>>;
 }) => {
-  const labelIdsFromTodo: number[] = props.todo.todoLabels.map(
+  // Todoに関連付いた全てのラベルのIDを取得
+  const todoLabelIdsData: number[] = props.todo.todoLabels.map(
     (todoLabel) => todoLabel.labelId,
+  );
+  const [todoLabelIds, setTodoLabelIds] = useState<number[]>(todoLabelIdsData);
+
+  // Todoに関連付いた全てのラベルを取得
+  const todoLabels: LabelType[] = props.labels.filter((label) =>
+    todoLabelIds.includes(label.id),
   );
 
   const [name, setName] = useState<string>(props.todo.name);
-  const [desc, setDesc] = useState<string>(props.todo.desc);
+  const [description, setDescription] = useState<string>(
+    props.todo.description,
+  );
   const [priority, setPriority] = useState<number>(props.todo.priority);
   const [dueDate, setDueDate] = useState<string>(props.todo.dueDate);
   const [dueTime, setDueTime] = useState<string>(props.todo.dueTime);
-  const [labelIds, setLabelIds] = useState<number[]>(labelIdsFromTodo);
 
   // Todo更新
-  const handleUpdateTodo = async (updateTodoId: number) => {
-    const json = await apiRequest<TodoType>(
-      `/api/todos/${updateTodoId}`,
-      "PATCH",
-      {
-        name,
-        desc,
-        priority,
-        dueDate,
-        dueTime,
-        labelIds,
-      },
-    );
-    props.todoDispatch({ type: "updated", data: json.data });
-    setName("");
-    setDesc("");
-    setLabelIds([]);
-    props.setSelectedTodo(null);
+  const handleUpdateTodo = (todoId: number) => {
+    axios
+      .patch<ApiResponse<TodoType>>(
+        `/api/projects/${props.projectId}/todos/${todoId}`,
+        {
+          name,
+          description,
+          priority,
+          dueDate,
+          dueTime,
+          labelIds: todoLabelIds,
+        },
+      )
+      .then((response) => {
+        props.todoDispatch({ type: "updated", data: response.data.data });
+        setName("");
+        setDescription("");
+        setTodoLabelIds([]);
+        props.setSelectedTodo(null);
+      });
   };
 
   // Todo削除
-  const handleDeleteTodo = async (deleteTodoId: number) => {
-    const json = await apiRequest<TodoType>(
-      `/api/todos/${deleteTodoId}`,
-      "DELETE",
-    );
-    props.todoDispatch({ type: "deleted", id: json.data });
+  const handleDeleteTodo = (todoId: number) => {
+    axios
+      .delete<
+        ApiResponse<TodoType>
+      >(`/api/projects/${props.projectId}/todos/${todoId}`)
+      .then((response) => {
+        props.todoDispatch({ type: "deleted", id: response.data.data });
+      });
   };
 
   return (
@@ -83,9 +97,9 @@ const TodoDetail = (props: {
             {/* 詳細入力欄 */}
             <input
               type="text"
-              value={desc}
+              value={description}
               onChange={(e) => {
-                setDesc(e.target.value);
+                setDescription(e.target.value);
               }}
             />
           </div>
@@ -124,32 +138,47 @@ const TodoDetail = (props: {
 
           {/* ラベル入力欄 */}
           <Popover>
-            <PopoverTrigger className="self-start" asChild>
-              <Button type="button" variant={"outline"}>
-                <Plus />
+            <PopoverTrigger className="text-md flex flex-col gap-2.5 rounded-md border px-5 py-2.5">
+              <div className="flex justify-between">
                 <span>ラベル</span>
-              </Button>
+                <Pencil size={16} />
+              </div>
+
+              {/* ラベル一覧表示 */}
+              <ul className="flex gap-2.5">
+                {todoLabels.map((label) => (
+                  <li
+                    key={label.id}
+                    className="flex items-center gap-1 rounded-md border px-1 py-0.5 text-sm text-gray-600"
+                  >
+                    <Tag size={16} />
+                    <div>{label.name}</div>
+                  </li>
+                ))}
+              </ul>
             </PopoverTrigger>
-            <PopoverContent className="w-auto">
+            <PopoverContent className="min-w-[15rem]">
               <ul className="flex flex-col gap-3">
                 {props.labels.map((label) => (
                   <li key={label.id}>
-                    <Label>
+                    <Label className="flex justify-between">
+                      <span>{label.name}</span>
                       <Checkbox
                         name="labels"
                         value={label.id}
-                        checked={labelIds.includes(label.id)}
+                        checked={todoLabelIds.includes(label.id)}
                         onCheckedChange={(checked) => {
-                          checked
-                            ? setLabelIds([...labelIds, label.id])
-                            : setLabelIds(
-                                labelIds.filter(
-                                  (labelId) => labelId !== label.id,
-                                ),
-                              );
+                          if (checked) {
+                            setTodoLabelIds([...todoLabelIds, label.id]);
+                          } else {
+                            setTodoLabelIds(
+                              todoLabelIds.filter(
+                                (labelId) => labelId !== label.id,
+                              ),
+                            );
+                          }
                         }}
                       />
-                      <span>{label.name}</span>
                     </Label>
                   </li>
                 ))}

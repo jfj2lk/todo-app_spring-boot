@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/todo_app
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      encoding: UTF-8
+      mode: never
+      schema-locations: classpath:/schema-mysql.sql
+      data-locations: classpath:/data-mysql.sql

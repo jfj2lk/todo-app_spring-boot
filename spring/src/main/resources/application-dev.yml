@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:db
+    url: jdbc:h2:mem:db;CASE_INSENSITIVE_IDENTIFIERS=TRUE
     # jdbc:h2:file:~
     driver-class-name: org.h2.Driver
     username: sa
@@ -9,7 +9,7 @@ spring:
     init:
       encoding: UTF-8
       mode: embedded
-      schema-locations: classpath:/schema.sql
+      schema-locations: classpath:/schema-h2.sql
       # data-locations: classpath:/data.sql
   h2:
     console:

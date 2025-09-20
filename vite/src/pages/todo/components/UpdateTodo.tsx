@@ -1,4 +1,4 @@
-import { TodoType, TodoReducerActions } from "@/types/todo";
+import { TodoReducerActions, TodoType } from "@/types/todo";
 import { apiRequest } from "@/utils/api";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -10,7 +10,9 @@ const UpdateTodo = (props: {
   setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
 }) => {
   const [name, setName] = useState<string>(props.todo.name);
-  const [desc, setDesc] = useState<string>(props.todo.desc);
+  const [description, setDescription] = useState<string>(
+    props.todo.description,
+  );
   const [priority, setPriority] = useState<number>(props.todo.priority);
   const [dueDate, setDueDate] = useState<string>(props.todo.dueDate);
   const [dueTime, setDueTime] = useState<string>(props.todo.dueTime);
@@ -24,7 +26,7 @@ const UpdateTodo = (props: {
       "PATCH",
       {
         name,
-        desc,
+        description,
         priority,
         dueDate,
         dueTime,
@@ -62,9 +64,9 @@ const UpdateTodo = (props: {
         {/* 詳細入力欄 */}
         <input
           type="text"
-          value={desc}
+          value={description}
           onChange={(e) => {
-            setDesc(e.target.value);
+            setDescription(e.target.value);
           }}
         />
 

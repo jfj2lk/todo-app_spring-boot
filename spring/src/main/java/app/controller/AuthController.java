@@ -1,25 +1,27 @@
 package app.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.dto.UserResponseDto;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
+import app.form.user.UpdateUserForm;
 import app.model.User;
 import app.service.AuthService;
 import app.utils.JwtUtils;
 import lombok.AllArgsConstructor;
 
-import java.util.Map;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 @RestController
-@RequestMapping("/api")
 @AllArgsConstructor
 public class AuthController {
 
@@ -36,7 +38,8 @@ public class AuthController {
         // JWTトークン発行
         final String jwt = jwtService.generateJwt(signedUpUser);
         // レスポンス用のユーザーDTOを作成
-        final UserResponseDto userInfo = new UserResponseDto(signedUpUser.getId(), signedUpUser.getName(), signedUpUser.getEmail());
+        final UserResponseDto userInfo = new UserResponseDto(signedUpUser.getId(), signedUpUser.getName(),
+                signedUpUser.getEmail());
 
         return ResponseEntity.ok().body(Map.ofEntries(
                 Map.entry("accessToken", jwt),
@@ -53,8 +56,9 @@ public class AuthController {
         final User loginUser = authService.login(loginForm);
         // JWTトークン発行
         final String jwt = jwtService.generateJwt(loginUser);
-                // レスポンス用のユーザーDTOを作成
-        final UserResponseDto userInfo = new UserResponseDto(loginUser.getId(), loginUser.getName(), loginUser.getEmail());
+        // レスポンス用のユーザーDTOを作成
+        final UserResponseDto userInfo = new UserResponseDto(loginUser.getId(), loginUser.getName(),
+                loginUser.getEmail());
 
         return ResponseEntity.ok().body(Map.ofEntries(
                 Map.entry("accessToken", jwt),
@@ -62,4 +66,36 @@ public class AuthController {
                 Map.entry("userInfo", userInfo)));
     }
 
+    /**
+     * ユーザー情報取得
+     */
+    @GetMapping("/auth/user")
+    public ResponseEntity<Map<String, Object>> getUser(@AuthenticationPrincipal String userId) {
+        UserResponseDto userDto = authService.getUser(Long.valueOf(userId));
+
+        return ResponseEntity.ok().body(Map.of("data", userDto));
+    }
+
+    /**
+     * ユーザー情報更新
+     */
+    @PatchMapping("/auth/user")
+    public ResponseEntity<Map<String, Object>> updateUser(
+            @AuthenticationPrincipal String userId,
+            @RequestBody @Validated UpdateUserForm form) {
+        User updatedUser = authService.updateUser(Long.valueOf(userId), form);
+        final UserResponseDto userInfo = new UserResponseDto(updatedUser.getId(), updatedUser.getName(),
+                updatedUser.getEmail());
+        return ResponseEntity.ok(Map.of("data", userInfo));
+    }
+
+    /**
+     * ユーザー削除
+     */
+    @DeleteMapping("/auth/user")
+    public ResponseEntity<Map<String, Object>> deleteUser(
+            @AuthenticationPrincipal String userId) {
+        authService.deleteUser(Long.valueOf(userId));
+        return ResponseEntity.ok(Map.of("message", "退会しました。"));
+    }
 }

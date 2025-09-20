@@ -31,7 +31,11 @@ const apiRequest = async <T>(
 
     // レスポンスメッセージ表示
     if (json.message) {
-      res.ok ? toast.success(json.message) : toast.error(json.message);
+      if (res.ok) {
+        toast.success(json.message);
+      } else {
+        toast.error(json.message);
+      }
     }
 
     // エラーハンドリング

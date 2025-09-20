@@ -1,9 +1,12 @@
 package app.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import app.form.label.AddLabelForm;
+import app.exception.ModelNotFoundException;
+import app.form.label.CreateLabelForm;
 import app.form.label.UpdateLabelForm;
 import app.model.Label;
 import app.repository.LabelRepository;
@@ -13,42 +16,51 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class LabelService {
-  private final LabelRepository labelRepository;
+    private final LabelRepository labelRepository;
 
-  /**
-   * 全てのLabelを取得する。
-   */
-  public Iterable<Label> getAllLabels() {
-    return labelRepository.findAll();
-  }
+    /**
+     * Label取得。
+     */
+    public Label get(Long labelId, Long userId) {
+        return labelRepository
+                .findByIdAndUserId(labelId, userId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたLabelが見つかりません。"));
+    }
 
-  /**
-   * Labelを追加する。
-   */
-  public Label addLabel(AddLabelForm addLabelForm) {
-    Label addLabel = new Label(addLabelForm);
-    return labelRepository.save(addLabel);
-  }
+    /**
+     * 全てのLabel取得。
+     */
+    public List<Label> getAll(Long userId) {
+        return labelRepository.findAllByUserId(userId);
+    }
 
-  /**
-   * Labelを更新する。
-   */
-  public Label updateLabel(Long updateLabelId, UpdateLabelForm updateLabelForm)
-      throws RuntimeException {
-    Label updateLabel = labelRepository.findById(updateLabelId)
-        .orElseThrow(() -> new RuntimeException("更新対象のLabelが見つかりませんでした。"));
-    // フォームの値でLabelの値を更新する
-    updateLabel.updateWithForm(updateLabelForm);
-    return labelRepository.save(updateLabel);
-  }
+    /**
+     * Label作成。
+     */
+    public Label create(Long userId, CreateLabelForm createLabelForm) {
+        Label createLabel = new Label(createLabelForm, userId);
+        return labelRepository.save(createLabel);
+    }
 
-  /**
-   * Labelを削除する。
-   */
-  public Long deleteLabel(Long deleteLabelId) throws RuntimeException {
-    Label deleteLabel = labelRepository.findById(deleteLabelId)
-        .orElseThrow(() -> new RuntimeException("更新対象のLabelが見つかりませんでした。"));
-    labelRepository.delete(deleteLabel);
-    return deleteLabelId;
-  }
+    /**
+     * Label更新。
+     */
+    public Label update(Long labelId, Long userId, UpdateLabelForm updateLabelForm) {
+        Label updateLabel = labelRepository
+                .findByIdAndUserId(labelId, userId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたLabelが見つかりません。"));
+        updateLabel.updateWithForm(updateLabelForm);
+        return labelRepository.save(updateLabel);
+    }
+
+    /**
+     * Label削除。
+     */
+    public Long delete(Long labelId, Long userId) {
+        Label deleteLabel = labelRepository
+                .findByIdAndUserId(labelId, userId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたLabelが見つかりません。"));
+        labelRepository.delete(deleteLabel);
+        return labelId;
+    }
 }

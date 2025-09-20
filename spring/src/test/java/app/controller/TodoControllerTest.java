@@ -1,12 +1,18 @@
 package app.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,304 +22,337 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import app.form.todo.AddTodoForm;
+
+import app.form.todo.CreateTodoForm;
 import app.form.todo.UpdateTodoForm;
 import app.model.Todo;
 import app.repository.TodoRepository;
-import app.seeder.TestLabelSeeder;
-import app.seeder.TestTodoSeeder;
-import app.seeder.TestUserSeeder;
+import app.seeder.Seeder;
 import app.utils.TestUtils;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class TodoControllerTest {
+@Sql(scripts = "/reset-sequence.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+public class TodoControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private TestUtils testUtils;
-
+    private Seeder seeder;
     @Autowired
     private TodoRepository todoRepository;
+    @Autowired
+    private TestUtils testUtils;
 
-    @Autowired
-    private TestUserSeeder testUserSeeder;
-    @Autowired
-    private TestLabelSeeder testLabelSeeder;
-    @Autowired
-    private TestTodoSeeder testTodoSeeder;
-
-    // 操作を行うユーザーのID
-    private Long operatorId = 1L;
+    private final Long projectId = 1L;
+    private final String apiBasePath = "/api/projects/" + projectId + "/todos";
     private String jwt;
 
     @BeforeEach
     void setUpEach() {
-        this.jwt = testUtils.createJwt(operatorId);
-        // 初期データを作成
-        this.testUserSeeder.seedInitialUser();
-        this.testLabelSeeder.seedInitialLabel();
-        this.testTodoSeeder.seedInitialTodo();
+        // JWT作成
+        jwt = testUtils.createJwt(projectId);
+        // 初期データ作成
+        seeder.seedInitialData();
     }
 
     /**
-     * 全てのTodoを取得するテスト。
-     * ユーザーに紐づく全件のTodoが取得できている事と、レスポンスの形式が正しいかを確認する。
+     * ProjectのTodoを取得するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
+     */
+    @Test
+    void getTodo() throws Exception {
+        // API実行前の全てのTodoを取得
+        long todosCountBeforeApi = todoRepository.count();
+
+        // 取得対象のTodoId
+        Long getTodoId = 1L;
+        // 期待値となるProjectのTodoを取得
+        Todo expectedTodo = todoRepository.findById(getTodoId).get();
+
+        // API実行
+        String json = mockMvc
+                .perform(get(apiBasePath + "/" + getTodoId)
+                        .header("Authorization", "Bearer " + jwt))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        // Jsonをオブジェクトに変換
+        Todo responseTodo = testUtils.fromJsonField(json, "data", Todo.class);
+
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseTodo)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .isEqualTo(expectedTodo);
+
+        /* DB検証 */
+        // Todoのレコード数が変わっていないことを確認
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi);
+    }
+
+    /**
+     * Projectの全てのTodoを取得するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
     void getAllTodos() throws Exception {
-        // ユーザーに紐づく全てのTodoを取得
-        List<Todo> allTodosForUser = testUtils.toList(todoRepository.findAllByUserId(1L));
-        // 検証用のユーザーに紐づく全てのTodoの数を取得
-        long expectedTodoCountForUser = allTodosForUser.size();
-        // 検証用のTodoを取得
-        Todo expectedTodo = allTodosForUser.get(0);
+        // API実行前の全てのTodoを取得
+        List<Todo> todosCountBeforeApi = todoRepository.findAll();
 
-        // ユーザーに紐づく全てのTodoを取得
+        // 期待値となるProjectの全てのTodoを取得
+        List<Todo> expectedProjectTodos = todoRepository.findAllByProjectId(projectId);
+
+        // API実行
         String json = mockMvc
-                .perform(get("/api/todos")
-                        .header("Authorization", "Bearer " + this.jwt))
-                .andDo(print())
+                .perform(get(apiBasePath)
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
-                // ユーザーに紐づくTodoが全件取得できているか確認
-                .andExpect(jsonPath("$.data.length()").value(expectedTodoCountForUser))
                 .andReturn().getResponse().getContentAsString();
 
-        // Jsonから最初のTodoを取得
-        Todo actualTodo = testUtils.fieldIndexFromJson(json, "data", 0, Todo.class);
+        // Jsonをオブジェクトに変換
+        List<Todo> responseTodos = testUtils.fromJsonFieldAsList(json, "data", Todo.class);
 
-        // レスポンスのTodoの形式が正しいか確認
-        assertThat(actualTodo).usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "dueTime")
-                .withEqualsForType(Object::equals, Set.class)
-                .isEqualTo(expectedTodo);
-        assertThat(actualTodo)
-                .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
-                .doesNotContainNull();
+        /* レスポンス検証 */
+        // Todoの数が期待値と一致するか確認
+        assertThat(responseTodos).hasSameSizeAs(expectedProjectTodos);
+        // 内容が期待値と一致するか確認
+        assertThat(responseTodos)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .isEqualTo(expectedProjectTodos);
+
+        /* DB検証 */
+        // Todoのレコード数が変わっていないことを確認
+        List<Todo> todosCountAfterApi = todoRepository.findAll();
+        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size());
     }
 
     /**
-     * Todoを追加するテスト。
-     * Todo追加後にレコードの件数が1件増えている、レスポンスの形式が正しいかを確認する。
+     * Todoを作成するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
-    void addTodo() throws Exception {
-        // 検証用のTodo追加後のユーザーに紐づく全てのTodoの数を取得
-        long expectedTodoCountAfterAdd = todoRepository.count() + 1;
-        // Todo追加用のフォームを作成
-        AddTodoForm addTodoForm = new AddTodoForm("name3", "desc3", 1, LocalDate.now(), LocalTime.now(),
-                Set.of(1L, 2L));
-        // Todo追加用のフォームのJSON形式を作成
-        String addTodoFormJson = this.testUtils.toJson(addTodoForm);
+    void createTodo() throws Exception {
+        // API実行前の全てのTodoを取得
+        List<Todo> todosCountBeforeApi = todoRepository.findAll();
 
-        // Todo追加
+        // Todo作成用フォームを作成
+
+        CreateTodoForm createTodoForm = new CreateTodoForm("createTodo", "createDesc", 1, LocalDate.now(),
+                LocalTime.now(),
+                Set.of(1L, 2L));
+        // フォームをJsonに変換
+        String createTodoFormJson = testUtils.toJson(createTodoForm);
+
+        // API実行
         String json = mockMvc
-                .perform(post("/api/todos")
-                        .header("Authorization", "Bearer " + this.jwt)
+                .perform(post(apiBasePath)
+                        .header("Authorization", "Bearer " + jwt)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(addTodoFormJson))
-                .andDo(print())
+                        .content(createTodoFormJson))
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
-        // JsonからTodoを取得
-        Todo actualTodo = testUtils.fieldFromJson(json, "data", Todo.class);
-        // DBから追加後のTodoを取得
-        Todo expectedTodo = todoRepository.findById(expectedTodoCountAfterAdd).get();
-        // DBから全てのTodoの数を取得
-        long actualTodoCountAfterAdd = todoRepository.count();
+        // Jsonをオブジェクトに変換
+        Todo responseCreatedTodo = testUtils.fromJsonField(json, "data", Todo.class);
 
-        // レスポンスのTodoの形式が正しいか確認
-        assertThat(actualTodo).usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "dueTime")
-                .withEqualsForType(Object::equals, Set.class)
-                .isEqualTo(expectedTodo);
-        assertThat(actualTodo)
-                .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
-                .doesNotContainNull();
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseCreatedTodo.getId()).isNotNull();
+        assertThat(responseCreatedTodo.getProjectId()).isEqualTo(projectId);
+        assertThat(responseCreatedTodo.getName()).isEqualTo(createTodoForm.getName());
+        assertThat(responseCreatedTodo.getDescription()).isEqualTo(createTodoForm.getDescription());
+        assertThat(responseCreatedTodo.getCreatedAt()).isNotNull();
+        assertThat(responseCreatedTodo.getUpdatedAt()).isNotNull();
 
-        // Todoの件数が1件分増えているか確認
-        assertEquals(expectedTodoCountAfterAdd, actualTodoCountAfterAdd);
+        /* DB検証 */
+        // Todoのレコード数が1件増えていることを確認
+        List<Todo> todosCountAfterApi = todoRepository.findAll();
+        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size() + 1);
     }
 
     /**
      * Todoを更新するテスト。
-     * Todo更新後にレコードの件数が変わっていない、レスポンスの形式が正しいかを確認する。
+     * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
     void updateTodo() throws Exception {
-        // 更新するTodoのID
-        long updateTodoId = 1L;
-        // 検証用のTodo更新後のユーザーに紐づく全てのTodoの数を取得
-        long expectedTodoCountAfterUpdate = todoRepository.count();
-        // Todo追加用のフォームを作成
-        UpdateTodoForm updateTodoForm = new UpdateTodoForm("name3", "desc3", 1, LocalDate.now(), LocalTime.now(),
-                Set.of(1L, 2L));
-        // Todo更新用のフォームのJSON形式を作成
-        String updateTodoFormJson = this.testUtils.toJson(updateTodoForm);
+        // API実行前の全てのTodoを取得
+        List<Todo> todosCountBeforeApi = todoRepository.findAll();
 
-        // Todo追加
+        // 更新対象のTodoId
+        Long updateTodoId = 1L;
+        // Todo作成用フォームを作成
+        UpdateTodoForm updateTodoForm = new UpdateTodoForm("updateTodo", "updateDesc", 1, LocalDate.now(),
+                LocalTime.now(), Set.of(1L, 2L));
+        // フォームをJsonに変換
+        String updateTodoFormJson = testUtils.toJson(updateTodoForm);
+
+        // API実行
         String json = mockMvc
-                .perform(patch("/api/todos/" + updateTodoId)
-                        .header("Authorization", "Bearer " + this.jwt)
+                .perform(patch(apiBasePath + "/" + updateTodoId)
+                        .header("Authorization", "Bearer " + jwt)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTodoFormJson))
-                .andDo(print())
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
-        // JsonからTodoを取得
-        Todo actualTodo = testUtils.fieldFromJson(json, "data", Todo.class);
-        // DBから更新後のTodoを取得
-        Todo expectedTodo = todoRepository.findById(updateTodoId).get();
-        // DBから全てのTodoの数を取得
-        long actualTodoCountAfterUpdate = todoRepository.count();
+        // Jsonをオブジェクトに変換
+        Todo responseUpdatedTodo = testUtils.fromJsonField(json, "data", Todo.class);
 
-        // レスポンスのTodoの形式が正しいか確認
-        assertThat(actualTodo).usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "dueTime")
-                .withEqualsForType(Object::equals, Set.class)
-                .isEqualTo(expectedTodo);
-        assertThat(actualTodo)
-                .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
-                .doesNotContainNull();
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseUpdatedTodo.getId()).isNotNull();
+        assertThat(responseUpdatedTodo.getProjectId()).isEqualTo(projectId);
+        assertThat(responseUpdatedTodo.getName()).isEqualTo(updateTodoForm.getName());
+        assertThat(responseUpdatedTodo.getDescription()).isEqualTo(updateTodoForm.getDescription());
+        assertThat(responseUpdatedTodo.getCreatedAt()).isNotNull();
+        assertThat(responseUpdatedTodo.getUpdatedAt()).isNotNull();
+        // 更新日時が作成日時よりも後か確認
+        assertThat(responseUpdatedTodo.getCreatedAt()).isBeforeOrEqualTo(responseUpdatedTodo.getUpdatedAt());
 
-        // Todoの件数が変わっていないことを確認
-        assertEquals(expectedTodoCountAfterUpdate, actualTodoCountAfterUpdate);
+        /* DB検証 */
+        // Todoのレコード数が変わっていないことを確認
+        List<Todo> todosCountAfterApi = todoRepository.findAll();
+        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size());
     }
 
     /**
      * Todoを削除するテスト。
-     * Todo削除後にレコードの件数が1件減っている、レスポンスの形式が正しいかを確認する。
+     * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
     void deleteTodo() throws Exception {
-        // 削除するTodoのID
-        long deleteTodoId = 1L;
-        // 検証用のTodo更新後のユーザーに紐づく全てのTodoの数を取得
-        long expectedTodoCountAfterDelete = todoRepository.count() - 1;
+        // API実行前の全てのTodoを取得
+        List<Todo> todosCountBeforeApi = todoRepository.findAll();
 
-        // Todo追加
+        // 削除対象のTodoId
+        Long deleteTodoId = 1L;
+
+        // API実行
         String json = mockMvc
-                .perform(delete("/api/todos/" + deleteTodoId)
-                        .header("Authorization", "Bearer " + this.jwt))
-                .andDo(print())
+                .perform(delete(apiBasePath + "/" + deleteTodoId)
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
-        // JsonからTodoを取得
-        long actualDeleteTodoId = testUtils.fieldFromJson(json, "data", Long.class);
-        // DBから全てのTodoの数を取得
-        long actualTodoCountAfterUpdate = todoRepository.count();
+        // Jsonをオブジェクトに変換
+        Long responseDeletedTodoId = testUtils.fromJsonField(json, "data", Long.class);
 
-        // レスポンスのTodoのIDと削除したTodoのIDが合っているかを確認
-        assertEquals(deleteTodoId, actualDeleteTodoId);
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseDeletedTodoId).isEqualTo(deleteTodoId);
 
-        // Todoの件数が1件分減っていることを確認
-        assertEquals(expectedTodoCountAfterDelete, actualTodoCountAfterUpdate);
+        /* DB検証 */
+        // 削除対象のレコードが見つからないことを確認
+        assertTrue(todoRepository.findById(responseDeletedTodoId).isEmpty());
+        // Todoのレコード数が1件分減っていることを確認
+        List<Todo> todosCountAfterApi = todoRepository.findAll();
+        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size() - 1);
     }
 
     /**
      * Todoを完了状態にするテスト。
-     * Todo完了後にレコードの件数が変わっていない、レスポンスの形式が正しいかを確認する。
+     * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
     void completeTodo() throws Exception {
-        // 完了状態にするTodoのID
-        long completeTodoId = 1L;
-        // Todo完了後の検証用のTodoを取得
-        Todo expectedTodo = todoRepository.findById(completeTodoId).get();
-        // 検証用のTodo完了後の全てのTodoの数を取得
-        long expectedTodoCountAfterComplete = todoRepository.count();
+        // API実行前の全てのTodoを取得
+        List<Todo> todosCountBeforeApi = todoRepository.findAll();
 
-        // Todo完了
+        // 更新対象のTodoId
+        Long completeTodoId = 1L;
+        // 期待値となるProjectのTodoを取得
+        Todo expectedTodo = todoRepository.findById(completeTodoId).get();
+
+        // API実行
         String json = mockMvc
-                .perform(patch("/api/todos/" + completeTodoId + "/toggleComplete")
-                        .header("Authorization", "Bearer " + this.jwt))
-                .andDo(print())
+                .perform(patch(apiBasePath + "/" + completeTodoId + "/complete")
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
-        // JsonからTodoを取得
-        Todo actualTodo = testUtils.fieldFromJson(json, "data", Todo.class);
-        // DBから全てのTodoの数を取得
-        long actualTodoCountAfterComplete = todoRepository.count();
+        // Jsonをオブジェクトに変換
+        Todo responseCompletedTodo = testUtils.fromJsonField(json, "data", Todo.class);
 
-        // レスポンスのTodoの形式が正しいか確認
-        assertThat(actualTodo).usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "dueTime", "isCompleted")
-                .withEqualsForType(Object::equals, Set.class)
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseCompletedTodo)
+                .usingRecursiveComparison()
+                .ignoringFields("updatedAt", "isCompleted")
+                .ignoringCollectionOrder()
                 .isEqualTo(expectedTodo);
-        assertThat(actualTodo)
-                .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
-                .doesNotContainNull();
+        // 完了状態になっているか確認
+        assertTrue(responseCompletedTodo.getIsCompleted());
+        // 更新日時が作成日時よりも後か確認
+        assertThat(responseCompletedTodo.getCreatedAt()).isBeforeOrEqualTo(responseCompletedTodo.getUpdatedAt());
 
-        // Todoの状態が完了になっていることを確認
-        assertTrue(actualTodo.getIsCompleted());
-
-        // Todoの件数が変わっていないことを確認
-        assertEquals(expectedTodoCountAfterComplete, actualTodoCountAfterComplete);
+        /* DB検証 */
+        // Todoのレコード数が変わっていないことを確認
+        List<Todo> todosCountAfterApi = todoRepository.findAll();
+        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size());
     }
 
     /**
      * Todoを未完了状態にするテスト。
-     * Todo未完了後にレコードの件数が変わっていない、レスポンスの形式が正しいかを確認する。
+     * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
-    void inCompleteTodo() throws Exception {
-        // 未完了状態にするTodoのID
-        long inCompleteTodoId = 2L;
-        // Todo未完了後の検証用のTodoを取得
-        Todo expectedTodo = todoRepository.findById(inCompleteTodoId).get();
-        // 検証用のTodo未完了後の全てのTodoの数を取得
-        long expectedTodoCountAfterComplete = todoRepository.count();
+    void incompleteTodo() throws Exception {
+        // API実行前の全てのTodoを取得
+        List<Todo> todosCountBeforeApi = todoRepository.findAll();
 
-        // Todo未完了
+        // 更新対象のTodoId
+        Long incompleteTodoId = 1L;
+        // 期待値となるProjectのTodoを取得
+        Todo expectedTodo = todoRepository.findById(incompleteTodoId).get();
+
+        // API実行
         String json = mockMvc
-                .perform(patch("/api/todos/" + inCompleteTodoId + "/toggleComplete")
-                        .header("Authorization", "Bearer " + this.jwt))
-                .andDo(print())
+                .perform(patch(apiBasePath + "/" + incompleteTodoId + "/incomplete")
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
 
-        // JsonからTodoを取得
-        Todo actualTodo = testUtils.fieldFromJson(json, "data", Todo.class);
-        // DBから全てのTodoの数を取得
-        long actualTodoCountAfterComplete = todoRepository.count();
+        // Jsonをオブジェクトに変換
+        Todo responseIncompletedTodo = testUtils.fromJsonField(json, "data", Todo.class);
 
-        // レスポンスのTodoの形式が正しいか確認
-        assertThat(actualTodo).usingRecursiveComparison()
-                .ignoringFields("createdAt", "updatedAt", "dueTime", "isCompleted")
-                .withEqualsForType(Object::equals, Set.class)
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseIncompletedTodo)
+                .usingRecursiveComparison()
+                .ignoringFields("updatedAt", "isCompleted")
+                .ignoringCollectionOrder()
                 .isEqualTo(expectedTodo);
-        assertThat(actualTodo)
-                .extracting(Todo::getCreatedAt, Todo::getUpdatedAt, Todo::getDueTime)
-                .doesNotContainNull();
+        // 未完了状態になっているか確認
+        assertFalse(responseIncompletedTodo.getIsCompleted());
+        // 更新日時が作成日時よりも後か確認
+        assertThat(responseIncompletedTodo.getCreatedAt()).isBeforeOrEqualTo(responseIncompletedTodo.getUpdatedAt());
 
-        // Todoの状態が未完了になっていることを確認
-        assertFalse(actualTodo.getIsCompleted());
-
-        // Todoの件数が変わっていないことを確認
-        assertEquals(expectedTodoCountAfterComplete, actualTodoCountAfterComplete);
+        /* DB検証 */
+        // Todoのレコード数が変わっていないことを確認
+        List<Todo> todosCountAfterApi = todoRepository.findAll();
+        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size());
     }
 }

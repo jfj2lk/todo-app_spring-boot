@@ -1,122 +1,123 @@
 package app.service;
 
-import app.form.todo.AddTodoForm;
-import app.form.todo.UpdateTodoForm;
-import app.model.Label;
-import app.model.Todo;
-import app.repository.LabelRepository;
-import app.repository.TodoRepository;
-import app.utils.SecurityUtils;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Set;
-import java.util.stream.StreamSupport;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import app.exception.ModelNotFoundException;
+import app.form.todo.CreateTodoForm;
+import app.form.todo.UpdateTodoForm;
+import app.model.Todo;
+import app.repository.LabelRepository;
+import app.repository.ProjectRepository;
+import app.repository.TodoRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class TodoService {
     private final TodoRepository todoRepository;
-    private final SecurityUtils securityUtils;
+    private final ProjectRepository projectRepository;
     private final LabelRepository labelRepository;
 
     /**
-     * 全てのTodoをDBから取得する。
+     * Todo取得。
      */
-    public Iterable<Todo> getAllTodos() {
-        // ログイン中のユーザーIDを取得
-        Long currentUserId = securityUtils.getCurrentUserId();
-        // 全てのTodo取得
-        return todoRepository.findAllByUserId(currentUserId);
+    public Todo get(Long todoId, Long projectId) {
+        projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+        return todoRepository
+                .findByIdAndProjectId(todoId, projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
     }
 
     /**
-     * Todoを追加する。
+     * 特定のProjectに紐づく全てのTodo取得。
      */
-    public Todo addTodo(AddTodoForm addTodoForm) {
-        // 指定されたLabelIdsに対応するレコードが全て存在しない場合は例外を投げる
-        if (!isAllLabelsExist(addTodoForm.getLabelIds())) {
-            throw new RuntimeException("指定されたラベルが見つかりません。");
-        }
-
-        // ログイン中のユーザーIDを取得
-        Long currentUserId = securityUtils.getCurrentUserId();
-        // フォームの値でTodoオブジェクトを作成する
-        Todo addTodo = new Todo(addTodoForm, currentUserId);
-
-        // Todoを追加し、追加後の値を返す
-        return todoRepository.save(addTodo);
+    public List<Todo> getAllByProject(Long projectId) {
+        projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+        return todoRepository.findAllByProjectId(projectId);
     }
 
     /**
-     * Todoを更新する。
+     * 特定のLabelに紐づく全てのTodo取得。
      */
-    public Todo updateTodo(Long todoId, UpdateTodoForm updateTodoForm) {
-        // 指定されたLabelIdsに対応するレコードが全て存在しない場合は例外を投げる
-        if (!isAllLabelsExist(updateTodoForm.getLabelIds())) {
-            throw new RuntimeException("指定されたラベルが見つかりません。");
-        }
+    public List<Todo> getAllByLabel(Long labelId) {
+        labelRepository
+                .findById(labelId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたLabelが見つかりません。"));
+        return todoRepository.findAllByLabelId(labelId);
+    }
 
-        // ログイン中のユーザーIDを取得
-        Long currentUserId = securityUtils.getCurrentUserId();
-        // 更新対象のTodoをDBから取得
-        Todo updateTodo = todoRepository.findByIdAndUserId(todoId, currentUserId)
-                .orElseThrow(() -> new RuntimeException("更新対象のTodoが見つかりませんでした。"));
-        // フォームの値でTodoオブジェクトを更新する
+    /**
+     * Todo作成。
+     */
+    public Todo create(Long projectId, CreateTodoForm createTodoForm) {
+        projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+        Todo createTodo = new Todo(createTodoForm, projectId);
+        return todoRepository.save(createTodo);
+    }
+
+    /**
+     * Todo更新。
+     */
+    public Todo update(Long todoId, Long projectId, UpdateTodoForm updateTodoForm) {
+        projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+        Todo updateTodo = todoRepository
+                .findByIdAndProjectId(todoId, projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
         updateTodo.updateWithForm(updateTodoForm);
-
-        // Todoを更新し、更新後の値を返す
         return todoRepository.save(updateTodo);
     }
 
     /**
-     * Todoを削除する。
+     * Todo削除。
      */
-    public Long deleteTodo(Long todoId) throws RuntimeException {
-        // ログイン中のユーザーIDを取得
-        Long currentUserId = securityUtils.getCurrentUserId();
-        // 削除対象のTodoをDBから取得
-        Todo deleteTodo = todoRepository.findByIdAndUserId(todoId, currentUserId)
-                .orElseThrow(() -> new RuntimeException("削除対象のTodoが見つかりませんでした。"));
-        // Todo削除
+    public Long delete(Long todoId, Long projectId) {
+        projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+        Todo deleteTodo = todoRepository
+                .findByIdAndProjectId(todoId, projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
         todoRepository.delete(deleteTodo);
-        // 削除したTodoのIDを返す
         return todoId;
     }
 
     /**
-     * Todo完了・未完了状態切り替え。
+     * Todoを完了状態にする。
      */
-    public Todo toggleCompletedTodo(Long todoId) {
-        // ログイン中のユーザーIDを取得
-        Long currentUserId = securityUtils.getCurrentUserId();
-        // 更新対象のTodoをDBから取得
-        Todo updateTodo = todoRepository.findByIdAndUserId(todoId, currentUserId)
-                .orElseThrow(() -> new RuntimeException("更新対象のTodoが見つかりませんでした。"));
-        // isCompletedの値を反転してセットする
-        updateTodo.setIsCompleted(!updateTodo.getIsCompleted());
-        // todoを更新し、更新後の値を返す
-        return todoRepository.save(updateTodo);
+    public Todo complete(Long todoId, Long projectId) {
+        projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+        Todo completeTodo = todoRepository
+                .findByIdAndProjectId(todoId, projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
+        completeTodo.setIsCompleted(true);
+        return todoRepository.save(completeTodo);
     }
 
-    /*
-     * 指定されたLabelがDBに全て存在するか確認する
+    /**
+     * Todoを未完了状態にする。
      */
-    public boolean isAllLabelsExist(Set<Long> labelIds) {
-        // nullや中身が空の場合は、全てのLabelが存在すると判定する
-        if (labelIds == null || labelIds.isEmpty()) {
-            return true;
-        }
-
-        // IDが一致するレコードを全て取得する
-        Iterable<Label> existingLabels = labelRepository.findAllById(labelIds);
-        // IDが一致したレコードの数を取得する
-        long existingLabelsCount = StreamSupport.stream(existingLabels.spliterator(), false).count();
-
-        // 指定されたIDの数と実際に存在するレコードの数が一致しているか判定する
-        return existingLabelsCount == labelIds.size();
+    public Todo incomplete(Long todoId, Long projectId) {
+        projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+        Todo completeTodo = todoRepository
+                .findByIdAndProjectId(todoId, projectId)
+                .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
+        completeTodo.setIsCompleted(false);
+        return todoRepository.save(completeTodo);
     }
 }

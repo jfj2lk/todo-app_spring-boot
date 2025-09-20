@@ -1,109 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { LabelList } from "./LabelList";
-import { LabelModal } from "./LabelModal";
-import { apiRequest } from "@/utils/api";
-import { LabelType } from "@/types/label";
+import { EntityManager } from "@/archive/entity/EntityManager";
+import { useAppSelector } from "@/store";
+import {
+  createLabel,
+  deleteLabel,
+  getAllLabels,
+  labelSelectors,
+  updateLabel,
+} from "@/store/label-store";
+import { defaultLabelFormValues, labelFormSchema } from "@/types/label";
+import { Tag } from "lucide-react";
 
-const Labels = () => {
-  const [labels, setLabels] = useState<LabelType[]>([]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingLabel, setEditingLabel] = useState<LabelType | null>(null);
-
-  const onAddLabel = () => {
-    setEditingLabel(null);
-    setIsModalOpen(true);
-  };
-
-  const onEditLabel = (label: LabelType) => {
-    setEditingLabel(label);
-    setIsModalOpen(true);
-  };
-
-  const onCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingLabel(null);
-  };
-
-  // Label追加
-  const handleAddLabel = async (addLabel: { name: string }) => {
-    const json = await apiRequest<LabelType>("/api/labels", "POST", addLabel);
-    setLabels([...labels, json.data]);
-
-    setIsModalOpen(false);
-    setEditingLabel(null);
-  };
-
-  // Label更新
-  const handleUpdateLabel = async (
-    updateLabelId: number,
-    updateLabel: { name: string },
-  ) => {
-    const json = await apiRequest<LabelType>(
-      `/api/labels/${updateLabelId}`,
-      "PATCH",
-      updateLabel,
-    );
-    setLabels(
-      labels.map((label) => (label.id === updateLabelId ? json.data : label)),
-    );
-
-    setIsModalOpen(false);
-    setEditingLabel(null);
-  };
-
-  // Label削除
-  const handleDeleteLabel = async (deleteLabelId: number) => {
-    const json = await apiRequest<number>(
-      `/api/labels/${deleteLabelId}`,
-      "DELETE",
-    );
-    setLabels(labels.filter((label) => label.id !== json.data));
-  };
-
-  // 全てのLabelを取得し、stateを初期化する
-  useEffect(() => {
-    (async () => {
-      const json = await apiRequest<LabelType[]>("/api/labels");
-      setLabels(json.data);
-    })();
-  }, []);
+const LabelPage = () => {
+  const labels = useAppSelector(labelSelectors.selectAll);
 
   return (
-    <div className="container mx-auto max-w-4xl p-6">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">ラベル</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onAddLabel}
-            className="text-muted-foreground hover:text-foreground h-8 w-8"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <LabelList
-          labels={labels}
-          onEditLabel={onEditLabel}
-          onDeleteLabel={handleDeleteLabel}
-        />
-
-        <LabelModal
-          isOpen={isModalOpen}
-          onClose={onCloseModal}
-          handleAddLabel={handleAddLabel}
-          handleUpdateLabel={handleUpdateLabel}
-          editingLabel={editingLabel}
-        />
-      </div>
+    <div className="container mx-auto max-w-4xl space-y-6 p-6">
+      <EntityManager
+        entities={labels}
+        formSchema={labelFormSchema}
+        defaultFormValues={defaultLabelFormValues}
+        getAllEntities={getAllLabels}
+        createEntity={createLabel}
+        updateEntity={updateLabel}
+        deleteEntity={deleteLabel}
+        entityName="ラベル"
+        entityIcon={<Tag />}
+      />
     </div>
   );
 };
 
-export default Labels;
+export default LabelPage;

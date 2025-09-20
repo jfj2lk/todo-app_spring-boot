@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 // フッターメニューの要素
 const items: { label: string; link: string }[] = [
-  { label: "プライバシー", link: "#" },
-  { label: "利用規約", link: "#" },
-  { label: "お問い合わせ", link: "#" },
+  { label: "プライバシー", link: "#1" },
+  { label: "利用規約", link: "#2" },
+  { label: "お問い合わせ", link: "#3" },
 ];
 
 const Footer = () => {

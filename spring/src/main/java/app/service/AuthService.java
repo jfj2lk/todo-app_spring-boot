@@ -2,8 +2,11 @@ package app.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import app.dto.UserResponseDto;
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
+import app.form.user.UpdateUserForm;
 import app.model.User;
 import app.repository.UserRepository;
 import app.utils.PasswordUtils;
@@ -47,5 +50,38 @@ public class AuthService {
 
         // メールアドレスが一致するUserを返す
         return user;
+    }
+
+    /**
+     * ユーザー取得
+     */
+    public UserResponseDto getUser(Long userId) throws RuntimeException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません。"));
+        final UserResponseDto userDto = new UserResponseDto(user.getId(), user.getName(),
+                user.getEmail());
+        return userDto;
+    }
+
+    /**
+     * ユーザー更新
+     */
+    public User updateUser(Long userId, UpdateUserForm form) throws RuntimeException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません。"));
+        user.updateWithForm(form);
+        user.setPassword(passwordUtils.encode(user.getPassword()));
+
+        return userRepository.save(user);
+    }
+
+    /**
+     * ユーザー削除
+     */
+    public void deleteUser(Long userId) throws RuntimeException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません。"));
+
+        userRepository.delete(user);
     }
 }

@@ -6,42 +6,46 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ApiResponse } from "@/types/api";
 import { LabelType } from "@/types/label";
-import { TodoType, TodoReducerActions } from "@/types/todo";
-import { apiRequest } from "@/utils/api";
+import { TodoReducerActions, TodoType } from "@/types/todo";
+import axios from "axios";
 
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
 const AddTodo = (props: {
+  projectId: number;
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
   labels: LabelType[];
 }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
-  const [desc, setDesc] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [priority, setPriority] = useState<number>(4);
   const [dueDate, setDueDate] = useState<string>("");
   const [dueTime, setDueTime] = useState<string>("");
   const [labelIds, setLabelIds] = useState<number[]>([]);
 
   // Todo追加
-  const handleAddTodo = async () => {
-    const json = await apiRequest<TodoType>("/api/todos", "POST", {
-      name,
-      desc,
-      priority,
-      dueDate,
-      dueTime,
-      labelIds,
-    });
-    console.log(json.data);
-    props.todoDispatch({ type: "added", data: json.data });
-    setName("");
-    setDesc("");
-    setLabelIds([]);
-    setIsAdding(false);
+  const handleAddTodo = () => {
+    axios
+      .post<ApiResponse<TodoType>>(`/api/projects/${props.projectId}/todos`, {
+        name,
+        description,
+        priority,
+        dueDate,
+        dueTime,
+        labelIds,
+      })
+      .then((response) => {
+        props.todoDispatch({ type: "added", data: response.data.data });
+        setName("");
+        setDescription("");
+        setLabelIds([]);
+        setIsAdding(false);
+      });
   };
 
   return (
@@ -75,9 +79,9 @@ const AddTodo = (props: {
           {/* 説明入力欄 */}
           <input
             type="text"
-            value={desc}
+            value={description}
             onChange={(e) => {
-              setDesc(e.target.value);
+              setDescription(e.target.value);
             }}
             placeholder="説明"
             className="mb-2 w-full rounded border p-2"

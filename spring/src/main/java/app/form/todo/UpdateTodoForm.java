@@ -2,7 +2,6 @@ package app.form.todo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.validation.constraints.Max;
@@ -22,8 +21,8 @@ public class UpdateTodoForm {
     @Size(max = 255, message = "nameは255文字以内で入力してください")
     private String name;
 
-    @Size(max = 255, message = "descは255文字以内で入力してください")
-    private String desc;
+    @Size(max = 255, message = "descriptionは255文字以内で入力してください")
+    private String description;
 
     @NotNull(message = "priorityは必須です")
     @Min(value = 1, message = "priorityは1以上にしてください")

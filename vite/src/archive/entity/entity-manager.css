@@ -1,0 +1,68 @@
+.entity-manager {
+  min-width: 50%;
+  margin-inline: auto;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+}
+
+.entity-manager_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 1rem 0.5rem;
+}
+
+.entity-manager_header-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.entity-manager_list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.entity-manager_transition {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.entity-manager_list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.entity-manager_list-item:hover {
+  background-color: #f8f9fc;
+}
+
+.entity-manager_icon {
+  color: gray;
+}
+
+.entity-manager_list-item_info-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.entity-manager_list-item_action-group {
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.entity-manager_list-item:hover .entity-manager_list-item_action-group {
+  opacity: 1;
+}
+
+.entity-manager_action-btn:hover {
+  background-color: gainsboro;
+}

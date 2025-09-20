@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.svg";
 
 // ヘッダーメニューの要素
 const items: { label: string; link: string }[] = [
@@ -13,7 +12,7 @@ const Header = () => {
       {/* ヘッダーロゴ */}
       <div>
         <Link to={"/"} className="flex items-center gap-3">
-          <img src={logo} className="h-10 w-10" alt="ロゴ画像" />
+          <img src="/logo.svg" className="h-10 w-10" alt="ロゴ画像" />
           <div className="mb-1.5 text-xl font-extrabold">MyTodo</div>
         </Link>
       </div>

@@ -1,80 +1,73 @@
 package app.controller;
 
-import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.jayway.jsonpath.JsonPath;
 
 import app.form.user.LoginForm;
 import app.form.user.SignUpForm;
 import app.model.User;
 import app.repository.UserRepository;
-import app.seeder.TestTodoSeeder;
-import app.seeder.TestUserSeeder;
+import app.seeder.Seeder;
 import app.utils.JwtUtils;
 import app.utils.PasswordUtils;
 import app.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import java.util.Optional;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Slf4j
+@Sql(scripts = "/reset-sequence.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class AuthControllerTest {
-    private final MockMvc mockMvc;
-    private final UserRepository userRepository;
-    private final TestUtils testUtils;
-    private final TestTodoSeeder testTodoSeeder;
-    private final TestUserSeeder testUserSeeder;
-    private final PasswordUtils passwordUtils;
-    private final JwtUtils jwtService;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private TestUtils testUtils;
+    @Autowired
+    private PasswordUtils passwordUtils;
+    @Autowired
+    private JwtUtils jwtService;
 
     @Autowired
-    AuthControllerTest(MockMvc mockMvc, UserRepository userRepository,
-            TestUtils testUtils, TestTodoSeeder testTodoSeeder,
-            TestUserSeeder testUserSeeder, PasswordUtils passwordUtils, JwtUtils jwtService) {
-        this.mockMvc = mockMvc;
-        this.userRepository = userRepository;
-        this.testUtils = testUtils;
-        this.testTodoSeeder = testTodoSeeder;
-        this.testUserSeeder = testUserSeeder;
-        this.passwordUtils = passwordUtils;
-        this.jwtService = jwtService;
-    }
+    private UserRepository userRepository;
 
-    @BeforeAll
+    @Autowired
+    private Seeder seeder;
+
+    @BeforeEach
     void setUpAll() {
         // 初期データを作成
-        this.testUserSeeder.seedInitialUser();
-        this.testTodoSeeder.seedInitialTodo();
+        seeder.seedInitialData();
     }
 
     @Test
     void 新規登録できるか() throws Exception {
         // 期待する新規登録するユーザーのID
-        long expectedSignUpUserId = this.testUserSeeder.getSeedUsers().size() + 1;
+        long expectedSignUpUserId = this.seeder.getUsers().size() + 1;
         // 期待する新規登録後の全てのユーザーのレコード数
-        long expectedTotalUserCount = this.testUserSeeder.getSeedUsers().size() + 1;
+        long expectedTotalUserCount = this.seeder.getUsers().size() + 1;
         // 新規登録用のフォーム
         SignUpForm signUpForm = new SignUpForm("c", "c@c", "c");
         // 新規登録用のフォームのJSON形式
@@ -122,7 +115,7 @@ public class AuthControllerTest {
         // 期待するログインするユーザーのID
         long expectedLoginUserId = 1;
         // 期待するログイン後の全てのユーザーのレコード数
-        long expectedTotalUserCount = this.testUserSeeder.getSeedUsers().size();
+        long expectedTotalUserCount = this.seeder.getUsers().size();
         // ログイン用のフォーム
         LoginForm loginForm = new LoginForm("a@a", "a");
         // ログイン用のフォームのJSON形式

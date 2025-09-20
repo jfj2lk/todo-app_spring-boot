@@ -1,21 +1,28 @@
-import { todosReducer } from "@/state/todosReducer";
-import { TodoType } from "@/types/todo";
-import { apiRequest } from "@/utils/api";
-import { useEffect, useReducer, useState } from "react";
-import AddTodo from "./components/AddTodo";
-import TodoList from "./components/TodoList";
-import TodoDetail from "./components/TodoDetail";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { todosReducer } from "@/state/todosReducer";
+import { useAppSelector } from "@/store";
+import { labelSelectors } from "@/store/label-store";
+import { ApiResponse } from "@/types/api";
+import { TodoType } from "@/types/todo";
+import axios from "axios";
 import { Ellipsis } from "lucide-react";
-import { LabelType } from "@/types/label";
+import { useEffect, useReducer, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import AddTodo from "./components/AddTodo";
+import TodoDetail from "./components/TodoDetail";
+import TodoList from "./components/TodoList";
 
 const Todos = () => {
+  const location = useLocation();
+  const { id } = useParams();
+  const projectId: number = id ? parseInt(id) : NaN;
+
   const [todos, todoDispatch] = useReducer(todosReducer, []);
-  const [labels, setLabels] = useState<LabelType[]>([]);
+  const labels = useAppSelector(labelSelectors.selectAll);
   // 選択中のTodoのID
   const [selectedTodo, setSelectedTodo] = useState<TodoType | null>(null);
   // 並び替え要素
@@ -24,15 +31,15 @@ const Todos = () => {
   const [sortOrder, setSortOrder] = useState<string>("ascending");
   // Todos取得
   useEffect(() => {
-    (async () => {
-      const todoJson = await apiRequest<TodoType[]>("/api/todos");
-      todoDispatch({ type: "initialized", data: todoJson.data });
-      console.log(todoJson.data);
-
-      const labelJson = await apiRequest<LabelType[]>("/api/labels");
-      setLabels(labelJson.data);
-    })();
-  }, []);
+    const fetchInitialData = () => {
+      axios
+        .get<ApiResponse<TodoType[]>>(`/api${location.pathname}/todos`)
+        .then((response) => {
+          todoDispatch({ type: "initialized", data: response.data.data });
+        });
+    };
+    fetchInitialData();
+  }, [id]);
 
   useEffect(() => {
     // Todosの要素を、並び替え要素と並び変え順の値で並び替える
@@ -96,14 +103,21 @@ const Todos = () => {
         {/* インラインコンテンツ */}
         <div className="flex-1 px-7 py-5">
           {/* Todo追加欄 */}
-          <AddTodo todos={todos} todoDispatch={todoDispatch} labels={labels} />
+          <AddTodo
+            projectId={projectId}
+            todos={todos}
+            todoDispatch={todoDispatch}
+            labels={labels}
+          />
 
           {/* Todo一覧 */}
           <TodoList
+            projectId={projectId}
             todos={todos}
             todoDispatch={todoDispatch}
             selectedTodo={selectedTodo}
             setSelectedTodo={setSelectedTodo}
+            labels={labels}
           />
         </div>
       </div>
@@ -112,6 +126,7 @@ const Todos = () => {
       {selectedTodo && (
         <TodoDetail
           key={selectedTodo.id}
+          projectId={projectId}
           todo={selectedTodo}
           setSelectedTodo={setSelectedTodo}
           todoDispatch={todoDispatch}
