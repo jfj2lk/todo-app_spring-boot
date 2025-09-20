@@ -20,12 +20,22 @@ public interface TodoRepository extends CrudRepository<Todo, Long> {
     List<Todo> findAll();
 
     /**
+     * 指定したuserIdに一致する全てのTodoを取得する
+     */
+    List<Todo> findAllByUserId(Long userId);
+
+    /**
      * 指定したprojectIdに一致する全てのTodoを取得する
      */
     List<Todo> findAllByProjectId(Long projectId);
 
     /**
-     * 指定したIdとprojectIdに一致するTodoを取得する
+     * 指定したidとuserIdに一致するTodoを取得する
+     */
+    Optional<Todo> findByIdAndUserId(Long id, Long userId);
+
+    /**
+     * 指定したidとprojectIdに一致するTodoを取得する
      */
     Optional<Todo> findByIdAndProjectId(Long id, Long projectId);
 
