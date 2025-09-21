@@ -45,7 +45,7 @@ public class TodoService {
         projectRepository
                 .findByIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
-        return todoRepository.findAllByProjectId(projectId);
+        return todoRepository.findAllByUserIdAndProjectId(userId, projectId);
     }
 
     /**
@@ -55,7 +55,7 @@ public class TodoService {
         labelRepository
                 .findByIdAndUserId(labelId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたLabelが見つかりません。"));
-        return todoRepository.findAllByLabelId(labelId);
+        return todoRepository.findAllByUserIdAndLabelId(userId, labelId);
     }
 
     /**

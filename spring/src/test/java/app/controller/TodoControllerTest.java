@@ -152,7 +152,7 @@ public class TodoControllerTest {
         long todosCountBeforeApi = todoRepository.count();
 
         // 期待値となるProjectの全てのTodoを取得
-        List<Todo> expectedProjectTodos = todoRepository.findAllByProjectId(projectId);
+        List<Todo> expectedProjectTodos = todoRepository.findAllByUserIdAndProjectId(userId, projectId);
 
         // API実行
         String json = mockMvc
@@ -191,7 +191,7 @@ public class TodoControllerTest {
         long todosCountBeforeApi = todoRepository.count();
 
         // 期待値となるProjectの全てのTodoを取得
-        List<Todo> expectedLabelTodos = todoRepository.findAllByLabelId(labelId);
+        List<Todo> expectedLabelTodos = todoRepository.findAllByUserIdAndLabelId(userId, labelId);
 
         // API実行
         String json = mockMvc

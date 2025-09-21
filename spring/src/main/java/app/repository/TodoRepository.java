@@ -20,33 +20,28 @@ public interface TodoRepository extends CrudRepository<Todo, Long> {
     List<Todo> findAll();
 
     /**
-     * 指定したuserIdに一致する全てのTodoを取得する
-     */
-    List<Todo> findAllByUserId(Long userId);
-
-    /**
-     * 指定したprojectIdに一致する全てのTodoを取得する
-     */
-    List<Todo> findAllByProjectId(Long projectId);
-
-    /**
      * 指定したidとuserIdに一致するTodoを取得する
      */
     Optional<Todo> findByIdAndUserId(Long id, Long userId);
 
     /**
-     * 指定したidとprojectIdに一致するTodoを取得する
+     * 指定したuserIdに一致する全てのTodoを取得する
      */
-    Optional<Todo> findByIdAndProjectId(Long id, Long projectId);
+    List<Todo> findAllByUserId(Long userId);
 
     /**
-     * 指定したlabelIdに一致する全てのTodoを取得する
+     * 指定したuserIdとprojectIdに一致する全てのTodoを取得する
+     */
+    List<Todo> findAllByUserIdAndProjectId(Long userId, Long projectId);
+
+    /**
+     * 指定したuserIdとlabelIdに一致する全てのTodoを取得する
      */
     @Query("""
             SELECT t.*
             FROM todos t
             JOIN todo_label tl ON t.id = tl.todo_id
-            WHERE tl.label_id = :labelId
+            WHERE tl.label_id = :labelId AND t.user_id = :userId
             """)
-    List<Todo> findAllByLabelId(Long labelId);
+    List<Todo> findAllByUserIdAndLabelId(Long userId, Long labelId);
 }
