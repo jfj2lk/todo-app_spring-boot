@@ -59,13 +59,13 @@ public class Seeder {
 
         // Todo
         todos = List.of(
-                new Todo(null, 1L, true, "todo1", "desc1", 1, nowDate, nowTime, null, null,
+                new Todo(null, 1L, 1L, true, "todo1", "desc1", 1, nowDate, nowTime, null, null,
                         Set.of(new TodoLabel(1L))),
-                new Todo(null, 1L, false, "todo2", "desc2", 2, nowDate, nowTime, null, null,
+                new Todo(null, 1L, 1L, false, "todo2", "desc2", 2, nowDate, nowTime, null, null,
                         Set.of(new TodoLabel(1L), new TodoLabel(2L))),
-                new Todo(null, 2L, true, "todo3", "desc3", 3, nowDate, nowTime, null, null,
+                new Todo(null, 2L, 1L, true, "todo3", "desc3", 3, nowDate, nowTime, null, null,
                         Set.of(new TodoLabel(1L))),
-                new Todo(null, 2L, false, "todo4", "desc4", 4, nowDate, nowTime, null, null,
+                new Todo(null, 2L, 1L, false, "todo4", "desc4", 4, nowDate, nowTime, null, null,
                         Set.of(new TodoLabel(1L), new TodoLabel(2L))));
         todoRepository.saveAll(todos);
     }

@@ -48,20 +48,24 @@ public class TodoControllerTest {
     @Autowired
     private TestUtils testUtils;
 
+    private final Long userId = 1L;
     private final Long projectId = 1L;
-    private final String apiBasePath = "/api/projects/" + projectId + "/todos";
+    private final Long labelId = 1L;
+    private final String apiBasePath = "/api/todos";
+    private final String queryParamProjectId = "?projectId=" + projectId;
+    private final String queryParamLabelId = "?labelId=" + labelId;
     private String jwt;
 
     @BeforeEach
     void setUpEach() {
         // JWT作成
-        jwt = testUtils.createJwt(projectId);
+        jwt = testUtils.createJwt(userId);
         // 初期データ作成
         seeder.seedInitialData();
     }
 
     /**
-     * ProjectのTodoを取得するテスト。
+     * 単一のTodoを取得するテスト。
      * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
@@ -71,7 +75,7 @@ public class TodoControllerTest {
 
         // 取得対象のTodoId
         Long getTodoId = 1L;
-        // 期待値となるProjectのTodoを取得
+        // 期待値となるTodoを取得
         Todo expectedTodo = todoRepository.findById(getTodoId).get();
 
         // API実行
@@ -100,20 +104,59 @@ public class TodoControllerTest {
     }
 
     /**
-     * Projectの全てのTodoを取得するテスト。
+     * 全てのTodoを取得するテスト。
      * レスポンスとDBの内容が正しいかを確認する。
      */
     @Test
     void getAllTodos() throws Exception {
         // API実行前の全てのTodoを取得
-        List<Todo> todosCountBeforeApi = todoRepository.findAll();
+        long todosCountBeforeApi = todoRepository.count();
+
+        // 期待値となる全てのTodoを取得
+        List<Todo> expectedTodos = todoRepository.findAllByUserId(userId);
+
+        // API実行
+        String json = mockMvc
+                .perform(get(apiBasePath)
+                        .header("Authorization", "Bearer " + jwt))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        // Jsonをオブジェクトに変換
+        List<Todo> responseTodos = testUtils.fromJsonFieldAsList(json, "data", Todo.class);
+
+        /* レスポンス検証 */
+        // Todoの数が期待値と一致するか確認
+        assertThat(responseTodos).hasSameSizeAs(expectedTodos);
+        // 内容が期待値と一致するか確認
+        assertThat(responseTodos)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .isEqualTo(expectedTodos);
+
+        /* DB検証 */
+        // Todoのレコード数が変わっていないことを確認
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi);
+    }
+
+    /**
+     * 特定のProjectに関する全てのTodoを取得するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
+     */
+    @Test
+    void getAllTodosByProject() throws Exception {
+        // API実行前の全てのTodoを取得
+        long todosCountBeforeApi = todoRepository.count();
 
         // 期待値となるProjectの全てのTodoを取得
         List<Todo> expectedProjectTodos = todoRepository.findAllByProjectId(projectId);
 
         // API実行
         String json = mockMvc
-                .perform(get(apiBasePath)
+                .perform(get(apiBasePath + queryParamProjectId)
                         .header("Authorization", "Bearer " + jwt))
                 .andExpectAll(
                         status().isOk(),
@@ -134,8 +177,47 @@ public class TodoControllerTest {
 
         /* DB検証 */
         // Todoのレコード数が変わっていないことを確認
-        List<Todo> todosCountAfterApi = todoRepository.findAll();
-        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size());
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi);
+    }
+
+    /**
+     * 特定のLabelに関する全てのTodoを取得するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
+     */
+    @Test
+    void getAllTodosByLabel() throws Exception {
+        // API実行前の全てのTodoを取得
+        long todosCountBeforeApi = todoRepository.count();
+
+        // 期待値となるProjectの全てのTodoを取得
+        List<Todo> expectedLabelTodos = todoRepository.findAllByLabelId(labelId);
+
+        // API実行
+        String json = mockMvc
+                .perform(get(apiBasePath + queryParamLabelId)
+                        .header("Authorization", "Bearer " + jwt))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        // Jsonをオブジェクトに変換
+        List<Todo> responseTodos = testUtils.fromJsonFieldAsList(json, "data", Todo.class);
+
+        /* レスポンス検証 */
+        // Todoの数が期待値と一致するか確認
+        assertThat(responseTodos).hasSameSizeAs(expectedLabelTodos);
+        // 内容が期待値と一致するか確認
+        assertThat(responseTodos)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .isEqualTo(expectedLabelTodos);
+
+        /* DB検証 */
+        // Todoのレコード数が変わっていないことを確認
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi);
     }
 
     /**
@@ -145,10 +227,9 @@ public class TodoControllerTest {
     @Test
     void createTodo() throws Exception {
         // API実行前の全てのTodoを取得
-        List<Todo> todosCountBeforeApi = todoRepository.findAll();
+        long todosCountBeforeApi = todoRepository.count();
 
         // Todo作成用フォームを作成
-
         CreateTodoForm createTodoForm = new CreateTodoForm("createTodo", "createDesc", 1, LocalDate.now(),
                 LocalTime.now(),
                 Set.of(1L, 2L));
@@ -172,6 +253,51 @@ public class TodoControllerTest {
         /* レスポンス検証 */
         // 内容が期待値と一致するか確認
         assertThat(responseCreatedTodo.getId()).isNotNull();
+        assertThat(responseCreatedTodo.getProjectId()).isNull();
+        assertThat(responseCreatedTodo.getName()).isEqualTo(createTodoForm.getName());
+        assertThat(responseCreatedTodo.getDescription()).isEqualTo(createTodoForm.getDescription());
+        assertThat(responseCreatedTodo.getCreatedAt()).isNotNull();
+        assertThat(responseCreatedTodo.getUpdatedAt()).isNotNull();
+
+        /* DB検証 */
+        // Todoのレコード数が1件増えていることを確認
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi + 1);
+    }
+
+    /**
+     * 特定のProjectに関連するTodoを作成するテスト。
+     * レスポンスとDBの内容が正しいかを確認する。
+     */
+    @Test
+    void createTodoWithProject() throws Exception {
+        // API実行前の全てのTodoを取得
+        long todosCountBeforeApi = todoRepository.count();
+
+        // Todo作成用フォームを作成
+        CreateTodoForm createTodoForm = new CreateTodoForm("createTodo", "createDesc", 1, LocalDate.now(),
+                LocalTime.now(),
+                Set.of(1L, 2L));
+        // フォームをJsonに変換
+        String createTodoFormJson = testUtils.toJson(createTodoForm);
+
+        // API実行
+        String json = mockMvc
+                .perform(post(apiBasePath + queryParamProjectId)
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createTodoFormJson))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        // Jsonをオブジェクトに変換
+        Todo responseCreatedTodo = testUtils.fromJsonField(json, "data", Todo.class);
+
+        /* レスポンス検証 */
+        // 内容が期待値と一致するか確認
+        assertThat(responseCreatedTodo.getId()).isNotNull();
         assertThat(responseCreatedTodo.getProjectId()).isEqualTo(projectId);
         assertThat(responseCreatedTodo.getName()).isEqualTo(createTodoForm.getName());
         assertThat(responseCreatedTodo.getDescription()).isEqualTo(createTodoForm.getDescription());
@@ -180,8 +306,8 @@ public class TodoControllerTest {
 
         /* DB検証 */
         // Todoのレコード数が1件増えていることを確認
-        List<Todo> todosCountAfterApi = todoRepository.findAll();
-        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size() + 1);
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi + 1);
     }
 
     /**
@@ -191,7 +317,7 @@ public class TodoControllerTest {
     @Test
     void updateTodo() throws Exception {
         // API実行前の全てのTodoを取得
-        List<Todo> todosCountBeforeApi = todoRepository.findAll();
+        long todosCountBeforeApi = todoRepository.count();
 
         // 更新対象のTodoId
         Long updateTodoId = 1L;
@@ -228,8 +354,8 @@ public class TodoControllerTest {
 
         /* DB検証 */
         // Todoのレコード数が変わっていないことを確認
-        List<Todo> todosCountAfterApi = todoRepository.findAll();
-        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size());
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi);
     }
 
     /**
@@ -239,7 +365,7 @@ public class TodoControllerTest {
     @Test
     void deleteTodo() throws Exception {
         // API実行前の全てのTodoを取得
-        List<Todo> todosCountBeforeApi = todoRepository.findAll();
+        long todosCountBeforeApi = todoRepository.count();
 
         // 削除対象のTodoId
         Long deleteTodoId = 1L;
@@ -264,8 +390,8 @@ public class TodoControllerTest {
         // 削除対象のレコードが見つからないことを確認
         assertTrue(todoRepository.findById(responseDeletedTodoId).isEmpty());
         // Todoのレコード数が1件分減っていることを確認
-        List<Todo> todosCountAfterApi = todoRepository.findAll();
-        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size() - 1);
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi - 1);
     }
 
     /**
@@ -275,7 +401,7 @@ public class TodoControllerTest {
     @Test
     void completeTodo() throws Exception {
         // API実行前の全てのTodoを取得
-        List<Todo> todosCountBeforeApi = todoRepository.findAll();
+        long todosCountBeforeApi = todoRepository.count();
 
         // 更新対象のTodoId
         Long completeTodoId = 1L;
@@ -308,8 +434,8 @@ public class TodoControllerTest {
 
         /* DB検証 */
         // Todoのレコード数が変わっていないことを確認
-        List<Todo> todosCountAfterApi = todoRepository.findAll();
-        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size());
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi);
     }
 
     /**
@@ -319,7 +445,7 @@ public class TodoControllerTest {
     @Test
     void incompleteTodo() throws Exception {
         // API実行前の全てのTodoを取得
-        List<Todo> todosCountBeforeApi = todoRepository.findAll();
+        long todosCountBeforeApi = todoRepository.count();
 
         // 更新対象のTodoId
         Long incompleteTodoId = 1L;
@@ -352,7 +478,7 @@ public class TodoControllerTest {
 
         /* DB検証 */
         // Todoのレコード数が変わっていないことを確認
-        List<Todo> todosCountAfterApi = todoRepository.findAll();
-        assertThat(todosCountAfterApi).hasSize(todosCountBeforeApi.size());
+        long todosCountAfterApi = todoRepository.count();
+        assertThat(todosCountAfterApi).isEqualTo(todosCountBeforeApi);
     }
 }
