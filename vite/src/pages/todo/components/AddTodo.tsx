@@ -15,7 +15,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 
 const AddTodo = (props: {
-  projectId: number;
+  projectId: number | null;
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
   labels: LabelType[];
@@ -30,8 +30,11 @@ const AddTodo = (props: {
 
   // Todo追加
   const handleAddTodo = () => {
+    const queryParameters = props.projectId
+      ? `?projectId=${props.projectId}`
+      : "";
     axios
-      .post<ApiResponse<TodoType>>(`/api/projects/${props.projectId}/todos`, {
+      .post<ApiResponse<TodoType>>(`/api/todos${queryParameters}`, {
         name,
         description,
         priority,
@@ -140,13 +143,15 @@ const AddTodo = (props: {
                           value={label.id}
                           checked={labelIds.includes(label.id)}
                           onCheckedChange={(checked) => {
-                            checked
-                              ? setLabelIds([...labelIds, label.id])
-                              : setLabelIds(
-                                  labelIds.filter(
-                                    (labelId) => labelId !== label.id,
-                                  ),
-                                );
+                            if (checked) {
+                              setLabelIds([...labelIds, label.id]);
+                            } else {
+                              setLabelIds(
+                                labelIds.filter(
+                                  (labelId) => labelId !== label.id,
+                                ),
+                              );
+                            }
                           }}
                         />
                         <span>{label.name}</span>

@@ -15,7 +15,6 @@ import { Pencil, Tag } from "lucide-react";
 import { useState } from "react";
 
 const TodoDetail = (props: {
-  projectId: number;
   todo: TodoType;
   todoDispatch: React.Dispatch<TodoReducerActions>;
   labels: LabelType[];
@@ -43,17 +42,14 @@ const TodoDetail = (props: {
   // Todo更新
   const handleUpdateTodo = (todoId: number) => {
     axios
-      .patch<ApiResponse<TodoType>>(
-        `/api/projects/${props.projectId}/todos/${todoId}`,
-        {
-          name,
-          description,
-          priority,
-          dueDate,
-          dueTime,
-          labelIds: todoLabelIds,
-        },
-      )
+      .patch<ApiResponse<TodoType>>(`/api/todos/${todoId}`, {
+        name,
+        description,
+        priority,
+        dueDate,
+        dueTime,
+        labelIds: todoLabelIds,
+      })
       .then((response) => {
         props.todoDispatch({ type: "updated", data: response.data.data });
         setName("");
@@ -66,9 +62,7 @@ const TodoDetail = (props: {
   // Todo削除
   const handleDeleteTodo = (todoId: number) => {
     axios
-      .delete<
-        ApiResponse<TodoType>
-      >(`/api/projects/${props.projectId}/todos/${todoId}`)
+      .delete<ApiResponse<TodoType>>(`/api/todos/${todoId}`)
       .then((response) => {
         props.todoDispatch({ type: "deleted", id: response.data.data });
       });

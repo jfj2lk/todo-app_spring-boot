@@ -23,7 +23,7 @@ import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 type PropsType = EntityManagerPropsContextType & {
-  resourceName: string;
+  resourcePath: string;
   entityIcon: ReactNode;
 };
 
@@ -55,7 +55,10 @@ const BaseSidebarGroup = (props: PropsType) => {
               <SidebarMenu>
                 {/* アイテム */}
                 {(props.entity as any[]).map((entity) => {
-                  const resourcePath = `/${props.resourceName}/${entity.id}`;
+                  const resourcePath = props.resourcePath.replace(
+                    ":id",
+                    entity.id,
+                  );
                   return (
                     <SidebarMenuItem key={entity.id}>
                       {/* ボタン */}

@@ -3,7 +3,6 @@ import { TodoReducerActions, TodoType } from "@/types/todo";
 import Todo from "./Todo";
 
 const TodoList = (props: {
-  projectId: number;
   todos: TodoType[];
   todoDispatch: React.Dispatch<TodoReducerActions>;
   selectedTodo: TodoType | null;
@@ -22,7 +21,6 @@ const TodoList = (props: {
         {inCompleteTodos.map((todo) => (
           <li key={todo.id}>
             <Todo
-              projectId={props.projectId}
               todo={todo}
               todos={props.todos}
               todoDispatch={props.todoDispatch}
@@ -40,7 +38,6 @@ const TodoList = (props: {
           // Todo内容表示
           <li key={todo.id}>
             <Todo
-              projectId={props.projectId}
               todo={todo}
               todos={props.todos}
               todoDispatch={props.todoDispatch}

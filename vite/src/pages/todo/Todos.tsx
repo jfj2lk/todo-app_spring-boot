@@ -11,15 +11,19 @@ import { TodoType } from "@/types/todo";
 import axios from "axios";
 import { Ellipsis } from "lucide-react";
 import { useEffect, useReducer, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import AddTodo from "./components/AddTodo";
 import TodoDetail from "./components/TodoDetail";
 import TodoList from "./components/TodoList";
 
 const Todos = () => {
-  const location = useLocation();
-  const { id } = useParams();
-  const projectId: number = id ? parseInt(id) : NaN;
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("projectId")
+    ? Number(searchParams.get("projectId"))
+    : null;
+  const labelId = searchParams.get("labelId")
+    ? Number(searchParams.get("labelId"))
+    : null;
 
   const [todos, todoDispatch] = useReducer(todosReducer, []);
   const labels = useAppSelector(labelSelectors.selectAll);
@@ -32,14 +36,21 @@ const Todos = () => {
   // Todos取得
   useEffect(() => {
     const fetchInitialData = () => {
+      let queryParameters = "";
+      if (projectId) {
+        queryParameters = `?projectId=${projectId}`;
+      } else if (labelId) {
+        queryParameters = `?labelId=${labelId}`;
+      }
+
       axios
-        .get<ApiResponse<TodoType[]>>(`/api${location.pathname}/todos`)
+        .get<ApiResponse<TodoType[]>>(`/api/todos${queryParameters}`)
         .then((response) => {
           todoDispatch({ type: "initialized", data: response.data.data });
         });
     };
     fetchInitialData();
-  }, [id]);
+  }, [projectId, labelId]);
 
   useEffect(() => {
     // Todosの要素を、並び替え要素と並び変え順の値で並び替える
@@ -112,7 +123,6 @@ const Todos = () => {
 
           {/* Todo一覧 */}
           <TodoList
-            projectId={projectId}
             todos={todos}
             todoDispatch={todoDispatch}
             selectedTodo={selectedTodo}
@@ -126,7 +136,6 @@ const Todos = () => {
       {selectedTodo && (
         <TodoDetail
           key={selectedTodo.id}
-          projectId={projectId}
           todo={selectedTodo}
           setSelectedTodo={setSelectedTodo}
           todoDispatch={todoDispatch}

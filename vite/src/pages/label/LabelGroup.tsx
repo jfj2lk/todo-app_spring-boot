@@ -23,7 +23,7 @@ const LabelGroup = () => {
       formSchema={labelFormSchema}
       defaultFormValues={defaultLabelFormValues}
       labelName="ラベル"
-      resourceName="labels"
+      resourcePath="/todos?labelId=:id"
       entityIcon={<Tag size={16} />}
     />
   );

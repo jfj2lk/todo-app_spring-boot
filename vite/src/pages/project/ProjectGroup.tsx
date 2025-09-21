@@ -23,7 +23,7 @@ const ProjectGroup = () => {
       formSchema={projectFormSchema}
       defaultFormValues={defaultProjectFormValues}
       labelName="プロジェクト"
-      resourceName="projects"
+      resourcePath="/todos?projectId=:id"
       entityIcon={<Folder size={16} />}
     />
   );
