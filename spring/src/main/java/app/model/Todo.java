@@ -43,7 +43,23 @@ public class Todo {
     private Set<TodoLabel> todoLabels = new LinkedHashSet<>();
 
     /**
-     * Todo追加フォームの値でTodoオブジェクトを作成する。
+     * Todo作成フォームの値でTodoオブジェクトを作成する。
+     */
+    public Todo(CreateTodoForm createTodoForm, Long userId) {
+        this.userId = userId;
+        this.isCompleted = false;
+        this.name = createTodoForm.getName();
+        this.description = createTodoForm.getDescription();
+        this.priority = createTodoForm.getPriority();
+        this.dueDate = createTodoForm.getDueDate();
+        this.dueTime = createTodoForm.getDueTime();
+        this.todoLabels = createTodoForm.getLabelIds().stream()
+                .map(TodoLabel::new)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Todo作成フォームの値でProjectに紐づくTodoオブジェクトを作成する。
      */
     public Todo(CreateTodoForm createTodoForm, Long userId, Long projectId) {
         this.userId = userId;

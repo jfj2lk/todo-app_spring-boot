@@ -25,21 +25,25 @@ public class TodoService {
     /**
      * Todo取得。
      */
-    public Todo get(Long todoId, Long projectId) {
-        projectRepository
-                .findById(projectId)
-                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+    public Todo get(Long userId, Long todoId) {
         return todoRepository
-                .findByIdAndProjectId(todoId, projectId)
+                .findByIdAndUserId(todoId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
+    }
+
+    /**
+     * 全てのTodo取得。
+     */
+    public List<Todo> getAll(Long userId) {
+        return todoRepository.findAllByUserId(userId);
     }
 
     /**
      * 特定のProjectに紐づく全てのTodo取得。
      */
-    public List<Todo> getAllByProject(Long projectId) {
+    public List<Todo> getAllByProject(Long userId, Long projectId) {
         projectRepository
-                .findById(projectId)
+                .findByIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
         return todoRepository.findAllByProjectId(projectId);
     }
@@ -47,9 +51,9 @@ public class TodoService {
     /**
      * 特定のLabelに紐づく全てのTodo取得。
      */
-    public List<Todo> getAllByLabel(Long labelId) {
+    public List<Todo> getAllByLabel(Long userId, Long labelId) {
         labelRepository
-                .findById(labelId)
+                .findByIdAndUserId(labelId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたLabelが見つかりません。"));
         return todoRepository.findAllByLabelId(labelId);
     }
@@ -57,23 +61,28 @@ public class TodoService {
     /**
      * Todo作成。
      */
-    public Todo create(Long projectId, CreateTodoForm createTodoForm) {
+    public Todo create(CreateTodoForm createTodoForm, Long userId) {
+        Todo createTodo = new Todo(createTodoForm, userId);
+        return todoRepository.save(createTodo);
+    }
+
+    /**
+     * Projectに紐づくTodo作成。
+     */
+    public Todo createWithProject(CreateTodoForm createTodoForm, Long userId, Long projectId) {
         projectRepository
-                .findById(projectId)
+                .findByIdAndUserId(projectId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
-        Todo createTodo = new Todo(createTodoForm, projectId);
+        Todo createTodo = new Todo(createTodoForm, userId, projectId);
         return todoRepository.save(createTodo);
     }
 
     /**
      * Todo更新。
      */
-    public Todo update(Long todoId, Long projectId, UpdateTodoForm updateTodoForm) {
-        projectRepository
-                .findById(projectId)
-                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+    public Todo update(UpdateTodoForm updateTodoForm, Long userId, Long todoId) {
         Todo updateTodo = todoRepository
-                .findByIdAndProjectId(todoId, projectId)
+                .findByIdAndUserId(todoId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
         updateTodo.updateWithForm(updateTodoForm);
         return todoRepository.save(updateTodo);
@@ -82,12 +91,9 @@ public class TodoService {
     /**
      * Todo削除。
      */
-    public Long delete(Long todoId, Long projectId) {
-        projectRepository
-                .findById(projectId)
-                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+    public Long delete(Long userId, Long todoId) {
         Todo deleteTodo = todoRepository
-                .findByIdAndProjectId(todoId, projectId)
+                .findByIdAndUserId(todoId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
         todoRepository.delete(deleteTodo);
         return todoId;
@@ -96,12 +102,9 @@ public class TodoService {
     /**
      * Todoを完了状態にする。
      */
-    public Todo complete(Long todoId, Long projectId) {
-        projectRepository
-                .findById(projectId)
-                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+    public Todo complete(Long userId, Long todoId) {
         Todo completeTodo = todoRepository
-                .findByIdAndProjectId(todoId, projectId)
+                .findByIdAndUserId(todoId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
         completeTodo.setIsCompleted(true);
         return todoRepository.save(completeTodo);
@@ -110,12 +113,9 @@ public class TodoService {
     /**
      * Todoを未完了状態にする。
      */
-    public Todo incomplete(Long todoId, Long projectId) {
-        projectRepository
-                .findById(projectId)
-                .orElseThrow(() -> new ModelNotFoundException("指定されたProjectが見つかりません。"));
+    public Todo incomplete(Long userId, Long todoId) {
         Todo completeTodo = todoRepository
-                .findByIdAndProjectId(todoId, projectId)
+                .findByIdAndUserId(todoId, userId)
                 .orElseThrow(() -> new ModelNotFoundException("指定されたTodoが見つかりません。"));
         completeTodo.setIsCompleted(false);
         return todoRepository.save(completeTodo);
